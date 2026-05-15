@@ -1,33 +1,49 @@
-import { fileURLToPath, URL } from 'node:url'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import chalk from 'chalk'
+import path from 'path'
 
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@modules': fileURLToPath(new URL('./src/modules', import.meta.url)),
-      '@shareds': fileURLToPath(new URL('./src/shareds', import.meta.url)),
-      '@assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
-      '@core': fileURLToPath(new URL('./src/core', import.meta.url))
-    }
-  },
-  build: {
-    chunkSizeWarningLimit: 500,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          mui: ['@mui/material', '@mui/icons-material']
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const requiredVars: string[] = []
+
+  requiredVars.forEach((key) => {
+    if (!env[key]) throw new Error(chalk.red(`The environment variable ${chalk.bold(key)} is not defined.`))
+  })
+
+  return {
+    plugins: [react()],
+    resolve: {
+      alias: {
+        '@mui/styled-engine': '@mui/styled-engine-sc',
+        '@shareds': path.resolve(__dirname, './src/shareds'),
+        '@modules': path.resolve(__dirname, './src/modules'),
+        '@assets': path.resolve(__dirname, './src/assets'),
+        '@core': path.resolve(__dirname, './src/core')
+      }
+    },
+    build: {
+      chunkSizeWarningLimit: 500,
+      rollupOptions: {
+        input: {
+          index: path.resolve(__dirname, 'index.html')
+        },
+        output: {
+          chunkFileNames: 'assets/chunks/[name]-[hash].js',
+          entryFileNames: 'assets/entries/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+          manualChunks: (id: string) => {
+            if (id.includes('node_modules')) return id.toString().split('node_modules/')[1].split('/')[0]
+          }
         }
       }
-    }
-  },
+    },
+    publicDir: 'public',
   server: {
     port: 1000,
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
     }
   },
-  publicDir: 'public'
+  }
 })

@@ -13,7 +13,10 @@ export const LoginForm = ({ onToggleMode, isRegister }: LoginFormProps) => {
 
   const onSubmit = async (data: AuthFormData) => {
     await useAction({
-      action: async () => isRegister ? registerWithEmail(data) : loginWithEmail(data),
+      action: async () =>
+        isRegister
+          ? registerWithEmail({ ...data, name: data.name ?? '' })
+          : loginWithEmail(data),
       toastMessages: {
         success: isRegister ? 'Conta criada com sucesso!' : 'Login realizado com sucesso!',
         pending: isRegister ? 'Criando conta...' : 'Autenticando...',
