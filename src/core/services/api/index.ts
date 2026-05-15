@@ -6,7 +6,7 @@ import defaultConfig from '@core/config/default'
 import type { AxiosInstance } from 'axios'
 
 const api: AxiosInstance = axios.create({
-  baseURL: defaultConfig.baseURL,
+  baseURL: 'http://localhost:3000/',
   headers: { 'Content-Type': 'application/json' }
 })
 
