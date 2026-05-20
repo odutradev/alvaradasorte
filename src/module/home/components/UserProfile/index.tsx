@@ -5,7 +5,8 @@ import * as S from './styles'
 import type { UserProfileProps } from './types'
 
 export const UserProfile = ({ user }: UserProfileProps) => {
-  const initials = user.name?.substring(0, 2).toUpperCase() || 'UN'
+  const displayName = user.fullName ?? user.name
+  const initials = displayName?.substring(0, 2).toUpperCase() || 'UN'
 
   return (
     <S.ProfileCard elevation={3}>
@@ -13,7 +14,7 @@ export const UserProfile = ({ user }: UserProfileProps) => {
         {initials}
       </S.StyledAvatar>
       <Typography variant="h5" fontWeight={700}>
-        {user.name}
+        {displayName}
       </Typography>
       <S.InfoContainer>
         <S.InfoRow>
@@ -26,18 +27,26 @@ export const UserProfile = ({ user }: UserProfileProps) => {
         </S.InfoRow>
         <S.InfoRow>
           <Typography variant="body2" color="text.secondary">
-            Método de Login
+            Telefone
           </Typography>
           <Typography variant="body1" fontWeight={500}>
-            {user.authProviderId}
+            {user.phone ?? 'Não informado'}
           </Typography>
         </S.InfoRow>
         <S.InfoRow>
           <Typography variant="body2" color="text.secondary">
-            ID do Usuário
+            Setor
           </Typography>
-          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-all', ml: 2 }}>
-            {user.id}
+          <Typography variant="body1" fontWeight={500}>
+            {user.department ?? 'Não informado'}
+          </Typography>
+        </S.InfoRow>
+        <S.InfoRow>
+          <Typography variant="body2" color="text.secondary">
+            Método de Login
+          </Typography>
+          <Typography variant="body1" fontWeight={500}>
+            {user.authProviderId}
           </Typography>
         </S.InfoRow>
       </S.InfoContainer>
