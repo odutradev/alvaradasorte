@@ -1,6 +1,6 @@
 {
-  "projectName": "uailab-dashboard",
-  "outputPath": "uailab-dashboard-merged.txt",
+  "projectName": "alvaradasorte",
+  "outputPath": "alvaradasorte-merged.txt",
   "port": 9876,
   "useGitignore": true,
   "onStartCommand": "npm run dev",
