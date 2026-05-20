@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import Avatar from '@mui/material/Avatar'
+import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
@@ -36,5 +38,33 @@ export const InfoRow = styled(Box)(({ theme }) => ({
 export const InfoContainer = styled(Box)({
   flexDirection: 'column',
   display: 'flex',
+  width: '100%'
+})
+
+export const ValueText = styled(Typography)({
+  wordBreak: 'break-word',
+  textAlign: 'right'
+})
+
+export const ProviderRow = styled(Box)(({ theme }) => ({
+  borderTop: `1px solid ${theme.palette.divider}`,
+  justifyContent: 'center',
+  paddingTop: theme.spacing(1.5),
+  alignItems: 'center',
+  display: 'flex',
+  width: '100%'
+}))
+
+export const ProviderIconWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.action.hover,
+  color: theme.palette.text.secondary,
+  borderRadius: theme.shape.borderRadius,
+  padding: theme.spacing(0.75),
+  alignItems: 'center',
+  display: 'flex',
+  cursor: 'default'
+}))
+
+export const IncompleteAlert = styled(Alert)({
   width: '100%'
 })

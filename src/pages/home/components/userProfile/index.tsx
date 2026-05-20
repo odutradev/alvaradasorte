@@ -1,55 +1,73 @@
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
+import GoogleIcon from '@mui/icons-material/Google'
+import AppleIcon from '@mui/icons-material/Apple'
 import Typography from '@mui/material/Typography'
+import Tooltip from '@mui/material/Tooltip'
 
-import { ProfileCard, StyledAvatar, InfoContainer, InfoRow } from './styles'
+import { ProfileCard, StyledAvatar, InfoContainer, InfoRow, ValueText, ProviderRow, ProviderIconWrapper, IncompleteAlert } from './styles'
 
 import type { UserProfileProps } from './types'
+import type { JSX } from 'react'
 
-export const UserProfile = ({ user }: UserProfileProps) => {
+const PROVIDER_ICON_MAP: Record<string, JSX.Element> = {
+  'google.com': <GoogleIcon fontSize="small" />,
+  'apple.com': <AppleIcon fontSize="small" />,
+  'password': <EmailOutlinedIcon fontSize="small" />
+}
+
+const PROVIDER_LABEL_MAP: Record<string, string> = {
+  'google.com': 'Google',
+  'apple.com': 'Apple',
+  'password': 'E-mail e Senha'
+}
+
+export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => {
   const displayName = user.fullName ?? user.name
-  const initials = displayName?.substring(0, 2).toUpperCase() || 'UN'
+  const initials = displayName?.substring(0, 2).toUpperCase() ?? 'UN'
+  const providerIcon = PROVIDER_ICON_MAP[user.authProviderId] ?? <EmailOutlinedIcon fontSize="small" />
+  const providerLabel = PROVIDER_LABEL_MAP[user.authProviderId] ?? user.authProviderId
 
   return (
     <ProfileCard elevation={3}>
       <StyledAvatar src={user.photoUrl}>
         {initials}
       </StyledAvatar>
-      <Typography variant="h5" fontWeight={700} align="center">
-        {displayName}
-      </Typography>
+      {displayName && (
+        <Typography variant="subtitle1" fontWeight={600} align="center">
+          {displayName}
+        </Typography>
+      )}
+      {user.role && (
+        <Typography variant="body2" color="text.secondary" align="center">
+          {user.role}
+        </Typography>
+      )}
+      {isProfileIncomplete && (
+        <IncompleteAlert severity="warning">
+          Complete seu perfil para participar dos bolões.
+        </IncompleteAlert>
+      )}
       <InfoContainer>
         <InfoRow>
-          <Typography variant="body2" color="text.secondary">ID</Typography>
-          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.id}</Typography>
-        </InfoRow>
-        <InfoRow>
-          <Typography variant="body2" color="text.secondary">Nome</Typography>
-          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.name}</Typography>
-        </InfoRow>
-        <InfoRow>
-          <Typography variant="body2" color="text.secondary">Nome Completo</Typography>
-          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.fullName ?? 'Não informado'}</Typography>
-        </InfoRow>
-        <InfoRow>
           <Typography variant="body2" color="text.secondary">E-mail</Typography>
-          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.email}</Typography>
+          <ValueText variant="body1" fontWeight={500}>{user.email}</ValueText>
         </InfoRow>
         <InfoRow>
           <Typography variant="body2" color="text.secondary">Telefone</Typography>
-          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.phone ?? 'Não informado'}</Typography>
+          <ValueText variant="body1" fontWeight={500}>{user.phone ?? 'Não informado'}</ValueText>
         </InfoRow>
         <InfoRow>
           <Typography variant="body2" color="text.secondary">Setor</Typography>
-          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.department ?? 'Não informado'}</Typography>
-        </InfoRow>
-        <InfoRow>
-          <Typography variant="body2" color="text.secondary">Cargo</Typography>
-          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.role}</Typography>
-        </InfoRow>
-        <InfoRow>
-          <Typography variant="body2" color="text.secondary">Login via</Typography>
-          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.authProviderId}</Typography>
+          <ValueText variant="body1" fontWeight={500}>{user.department ?? 'Não informado'}</ValueText>
         </InfoRow>
       </InfoContainer>
+      <ProviderRow>
+        <Tooltip title={`Login via ${providerLabel}`}>
+          <ProviderIconWrapper>
+            {providerIcon}
+          </ProviderIconWrapper>
+        </Tooltip>
+      </ProviderRow>
     </ProfileCard>
   )
 }

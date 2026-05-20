@@ -20,7 +20,7 @@ export const HomePage = () => {
         <Header />
         <ContentContainer>
           <GridContainer>
-            <UserProfile user={user} />
+            <UserProfile user={user} isProfileIncomplete={isProfileIncomplete} />
             <SweepstakesCarousel sweepstakes={sweepstakes} onJoin={setSelectedId} />
           </GridContainer>
         </ContentContainer>
