@@ -4,6 +4,7 @@ import PersonPinIcon from '@mui/icons-material/PersonPin';
 import GoogleIcon from '@mui/icons-material/Google'
 import AppleIcon from '@mui/icons-material/Apple'
 import Typography from '@mui/material/Typography'
+import { capitalizeWords } from '@utils/string';
 import Tooltip from '@mui/material/Tooltip'
 
 import { ProfileCard, StyledAvatar, InfoContainer, InfoRow, ValueText, ProviderRow, IconWrapper, IncompleteAlert } from './styles'
@@ -49,7 +50,7 @@ export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => 
       </StyledAvatar>
       {displayName && (
         <Typography variant="subtitle1" fontWeight={600} align="center">
-          {displayName}
+          {capitalizeWords(displayName)}
         </Typography>
       )}
       {isProfileIncomplete && (
@@ -60,7 +61,7 @@ export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => 
       <InfoContainer>
         <InfoRow>
           <Typography variant="body2" color="text.secondary">E-mail</Typography>
-          <ValueText variant="body1" fontWeight={500}>{user.email}</ValueText>
+          <ValueText variant="body1" fontWeight={500}>{user.email.toLocaleLowerCase()}</ValueText>
         </InfoRow>
         <InfoRow>
           <Typography variant="body2" color="text.secondary">Telefone</Typography>
@@ -68,7 +69,7 @@ export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => 
         </InfoRow>
         <InfoRow>
           <Typography variant="body2" color="text.secondary">Setor</Typography>
-          <ValueText variant="body1" fontWeight={500}>{user.department ?? 'Não informado'}</ValueText>
+          <ValueText variant="body1" fontWeight={500}>{capitalizeWords(user.department ?? 'Não informado')}</ValueText>
         </InfoRow>
       </InfoContainer>
       <ProviderRow>
