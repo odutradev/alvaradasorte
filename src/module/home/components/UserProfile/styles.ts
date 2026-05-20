@@ -25,6 +25,7 @@ export const InfoRow = styled(Box)(({ theme }) => ({
   justifyContent: 'space-between',
   padding: theme.spacing(1.5, 0),
   alignItems: 'center',
+  gap: theme.spacing(2),
   width: '100%',
   display: 'flex',
   '&:last-child': {

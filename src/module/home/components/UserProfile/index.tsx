@@ -13,41 +13,41 @@ export const UserProfile = ({ user }: UserProfileProps) => {
       <S.StyledAvatar src={user.photoUrl}>
         {initials}
       </S.StyledAvatar>
-      <Typography variant="h5" fontWeight={700}>
+      <Typography variant="h5" fontWeight={700} align="center">
         {displayName}
       </Typography>
       <S.InfoContainer>
         <S.InfoRow>
-          <Typography variant="body2" color="text.secondary">
-            E-mail
-          </Typography>
-          <Typography variant="body1" fontWeight={500}>
-            {user.email}
-          </Typography>
+          <Typography variant="body2" color="text.secondary">ID</Typography>
+          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.id}</Typography>
         </S.InfoRow>
         <S.InfoRow>
-          <Typography variant="body2" color="text.secondary">
-            Telefone
-          </Typography>
-          <Typography variant="body1" fontWeight={500}>
-            {user.phone ?? 'Não informado'}
-          </Typography>
+          <Typography variant="body2" color="text.secondary">Nome</Typography>
+          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.name}</Typography>
         </S.InfoRow>
         <S.InfoRow>
-          <Typography variant="body2" color="text.secondary">
-            Setor
-          </Typography>
-          <Typography variant="body1" fontWeight={500}>
-            {user.department ?? 'Não informado'}
-          </Typography>
+          <Typography variant="body2" color="text.secondary">Nome Completo</Typography>
+          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.fullName ?? 'Não informado'}</Typography>
         </S.InfoRow>
         <S.InfoRow>
-          <Typography variant="body2" color="text.secondary">
-            Método de Login
-          </Typography>
-          <Typography variant="body1" fontWeight={500}>
-            {user.authProviderId}
-          </Typography>
+          <Typography variant="body2" color="text.secondary">E-mail</Typography>
+          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.email}</Typography>
+        </S.InfoRow>
+        <S.InfoRow>
+          <Typography variant="body2" color="text.secondary">Telefone</Typography>
+          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.phone ?? 'Não informado'}</Typography>
+        </S.InfoRow>
+        <S.InfoRow>
+          <Typography variant="body2" color="text.secondary">Setor</Typography>
+          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.department ?? 'Não informado'}</Typography>
+        </S.InfoRow>
+        <S.InfoRow>
+          <Typography variant="body2" color="text.secondary">Cargo</Typography>
+          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.role}</Typography>
+        </S.InfoRow>
+        <S.InfoRow>
+          <Typography variant="body2" color="text.secondary">Login via</Typography>
+          <Typography variant="body1" fontWeight={500} sx={{ wordBreak: 'break-word', textAlign: 'right' }}>{user.authProviderId}</Typography>
         </S.InfoRow>
       </S.InfoContainer>
     </S.ProfileCard>

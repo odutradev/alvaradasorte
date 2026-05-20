@@ -2,9 +2,8 @@ import { DialogContent, DialogActions, DialogTitle, Typography, TextField, Butto
 import { useForm } from 'react-hook-form'
 
 import { updateMeData } from '@core/services/auth/me'
-import useAction from '@core/hooks/useAction'
 import useAuthStore from '@core/stores/auth'
-
+import useAction from '@core/hooks/useAction'
 import * as S from './styles'
 
 import type { CompleteProfileModalProps, ProfileFormData } from './types'
@@ -16,7 +15,7 @@ export const CompleteProfileModal = ({ open }: CompleteProfileModalProps) => {
   const onSubmit = async (data: ProfileFormData) => {
     await useAction({
       action: async () => await updateMeData(data),
-      callback: (res) => updateUser({ ...data, ...(res || {}) }),
+      callback: (res) => updateUser(res),
       toastMessages: {
         pending: 'Atualizando perfil...',
         success: 'Perfil completo!',
