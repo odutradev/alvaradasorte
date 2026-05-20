@@ -52,11 +52,6 @@ export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => 
           {displayName}
         </Typography>
       )}
-      {user.role && (
-        <Typography variant="body2" color="text.secondary" align="center">
-          {user.role}
-        </Typography>
-      )}
       {isProfileIncomplete && (
         <IncompleteAlert severity="warning">
           Complete seu perfil para participar dos bolões.
