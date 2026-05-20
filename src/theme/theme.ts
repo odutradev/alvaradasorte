@@ -7,14 +7,14 @@ export const getAppTheme = (mode: 'light' | 'dark'): Theme =>
     palette: {
       mode,
       primary: {
-        main: '#624cab',
-        light: '#7189ff',
-        dark: '#4a3b82'
+        main: '#7189ff',
+        light: '#a3b5ff',
+        dark: '#3d54c7'
       },
       secondary: {
-        main: '#758ecd',
-        light: '#a0ddff',
-        dark: '#c1cefe'
+        main: '#624cab',
+        light: '#9885d6',
+        dark: '#4a3b82'
       },
       background: {
         default: mode === 'light' ? '#fafafa' : '#121212',
@@ -67,7 +67,7 @@ export const getAppTheme = (mode: 'light' | 'dark'): Theme =>
             fontWeight: 500,
             fontSize: '1em',
             '&:hover': {
-              borderColor: '#7189ff'
+              borderColor: '#a3b5ff'
             },
             '&:focus-visible': {
               outline: '4px auto -webkit-focus-ring-color'

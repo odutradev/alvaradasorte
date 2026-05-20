@@ -16,10 +16,20 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@mui/styled-engine': '@mui/styled-engine-sc',
-        '@shareds': path.resolve(__dirname, './src/shareds'),
+        '@components': path.resolve(__dirname, './src/components'),
+        '@services': path.resolve(__dirname, './src/services'),
+        '@appTypes': path.resolve(__dirname, './src/types'),
         '@modules': path.resolve(__dirname, './src/modules'),
+        '@shareds': path.resolve(__dirname, './src/shareds'),
+        '@config': path.resolve(__dirname, './src/config'),
         '@assets': path.resolve(__dirname, './src/assets'),
-        '@core': path.resolve(__dirname, './src/core')
+        '@stores': path.resolve(__dirname, './src/stores'),
+        '@theme': path.resolve(__dirname, './src/theme'),
+        '@utils': path.resolve(__dirname, './src/utils'),
+        '@hooks': path.resolve(__dirname, './src/hooks'),
+        '@pages': path.resolve(__dirname, './src/pages'),
+        '@core': path.resolve(__dirname, './src/core'),
+        '@lib': path.resolve(__dirname, './src/lib')
       }
     },
     build: {
@@ -39,11 +49,11 @@ export default defineConfig(({ mode }) => {
       }
     },
     publicDir: 'public',
-  server: {
-    port: 1000,
-    headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
+    server: {
+      port: 1000,
+      headers: {
+        'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
+      }
     }
-  },
   }
 })
