@@ -3,10 +3,12 @@ import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
 export const CardContainer = styled(Paper)(({ theme }) => ({
+  justifyContent: 'space-between',
   flexDirection: 'column',
   padding: theme.spacing(3),
-  gap: theme.spacing(2),
-  display: 'flex'
+  minHeight: 300,
+  display: 'flex',
+  gap: theme.spacing(2)
 }))
 
 export const InfoRow = styled(Box)(({ theme }) => ({
