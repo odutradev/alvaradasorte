@@ -1,10 +1,12 @@
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
+import PersonPinIcon from '@mui/icons-material/PersonPin';
 import GoogleIcon from '@mui/icons-material/Google'
 import AppleIcon from '@mui/icons-material/Apple'
 import Typography from '@mui/material/Typography'
 import Tooltip from '@mui/material/Tooltip'
 
-import { ProfileCard, StyledAvatar, InfoContainer, InfoRow, ValueText, ProviderRow, ProviderIconWrapper, IncompleteAlert } from './styles'
+import { ProfileCard, StyledAvatar, InfoContainer, InfoRow, ValueText, ProviderRow, IconWrapper, IncompleteAlert } from './styles'
 
 import type { UserProfileProps } from './types'
 import type { JSX } from 'react'
@@ -15,10 +17,21 @@ const PROVIDER_ICON_MAP: Record<string, JSX.Element> = {
   'password': <EmailOutlinedIcon fontSize="small" />
 }
 
+
 const PROVIDER_LABEL_MAP: Record<string, string> = {
   'google.com': 'Google',
   'apple.com': 'Apple',
   'password': 'E-mail e Senha'
+}
+
+const ROLE_ICON_MAP: Record<string, JSX.Element> = {
+  'admin': <AdminPanelSettingsIcon fontSize="small" />,
+  'normal': <PersonPinIcon fontSize="small" />
+}
+
+const ROLE_LABEL_MAP: Record<string, string> = {
+  'admin': 'Usuario Administrador',
+  'normal': 'Usuario Padrão'
 }
 
 export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => {
@@ -26,6 +39,8 @@ export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => 
   const initials = displayName?.substring(0, 2).toUpperCase() ?? 'UN'
   const providerIcon = PROVIDER_ICON_MAP[user.authProviderId] ?? <EmailOutlinedIcon fontSize="small" />
   const providerLabel = PROVIDER_LABEL_MAP[user.authProviderId] ?? user.authProviderId
+  const roleLabel = PROVIDER_LABEL_MAP[user.authProviderId]
+  const roleIcon = ROLE_ICON_MAP[user.role]
 
   return (
     <ProfileCard elevation={3}>
@@ -63,9 +78,14 @@ export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => 
       </InfoContainer>
       <ProviderRow>
         <Tooltip title={`Login via ${providerLabel}`}>
-          <ProviderIconWrapper>
+          <IconWrapper>
             {providerIcon}
-          </ProviderIconWrapper>
+          </IconWrapper>
+        </Tooltip>
+        <Tooltip title={roleLabel}>
+          <IconWrapper>
+            {roleIcon}
+          </IconWrapper>
         </Tooltip>
       </ProviderRow>
     </ProfileCard>

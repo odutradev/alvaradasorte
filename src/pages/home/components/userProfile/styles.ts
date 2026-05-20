@@ -55,14 +55,15 @@ export const ProviderRow = styled(Box)(({ theme }) => ({
   width: '100%'
 }))
 
-export const ProviderIconWrapper = styled(Box)(({ theme }) => ({
+export const IconWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.action.hover,
   color: theme.palette.text.secondary,
   borderRadius: theme.shape.borderRadius,
   padding: theme.spacing(0.75),
   alignItems: 'center',
   display: 'flex',
-  cursor: 'default'
+  cursor: 'default',
+  margin: `0 ${theme.spacing(0.75)}`
 }))
 
 export const IncompleteAlert = styled(Alert)({
