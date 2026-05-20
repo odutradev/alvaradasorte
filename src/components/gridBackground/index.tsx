@@ -5,7 +5,7 @@ import { BackgroundWrapper, ContentWrapper, GlowOverlay } from './styles'
 import type { GridBackgroundProps } from './types'
 import type { MouseEvent } from 'react'
 
-export const GridBackground = ({ children }: GridBackgroundProps) => {
+export const GridBackground = ({ disableGlow = false, children }: GridBackgroundProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
@@ -20,8 +20,8 @@ export const GridBackground = ({ children }: GridBackgroundProps) => {
   }
 
   return (
-    <BackgroundWrapper ref={containerRef} onMouseMove={handleMouseMove}>
-      <GlowOverlay />
+    <BackgroundWrapper ref={containerRef} onMouseMove={disableGlow ? undefined : handleMouseMove}>
+      {!disableGlow && <GlowOverlay />}
       <ContentWrapper>{children}</ContentWrapper>
     </BackgroundWrapper>
   )
