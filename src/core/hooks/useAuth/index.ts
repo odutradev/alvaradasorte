@@ -1,29 +1,32 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, updateProfile, signOut } from 'firebase/auth'
 import { useCallback, useEffect } from 'react'
 
-import { firebaseAuth } from '@core/lib/firebase/config'
 import { syncAuthUser } from '@core/services/auth/sync'
+import { firebaseAuth } from '@core/lib/firebase/config'
 import useAuthStore from '@core/stores/auth'
 
 import type { RegisterCredentials, LoginCredentials, UseAuthReturn } from './types'
 import type { User } from 'firebase/auth'
 
 export const useAuth = (): UseAuthReturn => {
-  const { setAuthUser, setLoading, clearAuth, auth } = useAuthStore()
+  const { setAuthUser, setLoading, clearAuth, setToken, auth } = useAuthStore()
 
   const handleSync = useCallback(
     async (firebaseUser: User, providerId?: string, overrideName?: string) => {
+      const firebaseToken = await firebaseUser.getIdToken()
       const payload = {
         authProviderId: providerId ?? firebaseUser.providerData[0]?.providerId ?? 'password',
         name: overrideName ?? firebaseUser.displayName ?? 'Unknown',
         email: firebaseUser.email ?? '',
         photoUrl: firebaseUser.photoURL ?? undefined,
-        id: firebaseUser.uid
+        id: firebaseUser.uid,
+        firebaseToken
       }
-      const backendUser = await syncAuthUser(payload)
-      setAuthUser(backendUser)
+      const { token, user } = await syncAuthUser(payload)
+      setToken(token)
+      setAuthUser(user)
     },
-    [setAuthUser]
+    [setAuthUser, setToken]
   )
 
   useEffect(() => {
@@ -32,9 +35,7 @@ export const useAuth = (): UseAuthReturn => {
         clearAuth()
         return
       }
-
       const currentStoreUser = useAuthStore.getState().auth.user
-
       if (!currentStoreUser || currentStoreUser.email !== currentUser.email) {
         try {
           await handleSync(currentUser)

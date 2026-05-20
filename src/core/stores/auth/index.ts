@@ -9,6 +9,13 @@ const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
       auth: authStoreDefaultValues,
+      setToken: (token) =>
+        set((state) => ({
+          auth: {
+            ...state.auth,
+            token
+          }
+        })),
       setAuthUser: (user) =>
         set((state) => ({
           auth: {
