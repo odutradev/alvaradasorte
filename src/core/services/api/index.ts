@@ -6,7 +6,7 @@ import defaultConfig from '@core/config/default'
 import type { AxiosInstance } from 'axios'
 
 const api: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:3000/',
+  baseURL: "https://api.alvaradasorte.odutra.com",
   headers: { 'Content-Type': 'application/json' }
 })
 
