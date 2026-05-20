@@ -1,42 +1,45 @@
-import { Navigate } from 'react-router-dom'
 import Typography from '@mui/material/Typography'
+import { Navigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
-import { useState } from 'react'
 
+import { GridBackground } from '../../components/gridBackground'
+import { ThemeToggle } from '../../components/themeToggle'
 import { SocialLogin } from './components/socialLogin'
 import { LoginForm } from './components/loginForm'
 import { useAuth } from '../../hooks/useAuth'
 
-import * as S from './styles'
+import { ContentContainer, ThemeToggleWrapper, DividerWrapper, PageWrapper } from './styles'
 
 export const LoginPage = () => {
-  const [isRegister, setIsRegister] = useState(false)
   const { user } = useAuth()
 
   if (user) return <Navigate to="/" replace />
 
   return (
-    <S.PageWrapper>
-      <S.ContentContainer elevation={3}>
-        <Box textAlign="center" mb={4}>
-          <Typography variant="h4" fontWeight={700} color="primary" gutterBottom>
-            Alvaradasorte
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            {isRegister
-              ? 'Crie sua conta para continuar'
-              : 'Faça login para acessar o painel'}
-          </Typography>
-        </Box>
-        <LoginForm isRegister={isRegister} onToggleMode={() => setIsRegister(!isRegister)} />
-        <S.DividerWrapper>
-          <Typography variant="body2" color="text.secondary">
-            ou continue com
-          </Typography>
-        </S.DividerWrapper>
-        <SocialLogin />
-      </S.ContentContainer>
-    </S.PageWrapper>
+    <GridBackground>
+      <PageWrapper>
+        <ThemeToggleWrapper>
+          <ThemeToggle />
+        </ThemeToggleWrapper>
+        <ContentContainer elevation={3}>
+          <Box textAlign="center" mb={4}>
+            <Typography variant="h4" fontWeight={700} color="primary" gutterBottom>
+              Alvaradasorte
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Faça login para acessar o painel
+            </Typography>
+          </Box>
+          <LoginForm />
+          <DividerWrapper>
+            <Typography variant="body2" color="text.secondary">
+              ou continue com
+            </Typography>
+          </DividerWrapper>
+          <SocialLogin />
+        </ContentContainer>
+      </PageWrapper>
+    </GridBackground>
   )
 }
 

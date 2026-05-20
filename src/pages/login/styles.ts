@@ -2,13 +2,19 @@ import { styled } from '@mui/material/styles'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
-export const PageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.background.default,
+export const PageWrapper = styled(Box)({
   justifyContent: 'center',
   alignItems: 'center',
   minHeight: '100vh',
+  position: 'relative',
   display: 'flex',
-  padding: theme.spacing(2)
+  padding: '16px'
+})
+
+export const ThemeToggleWrapper = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  right: theme.spacing(3),
+  top: theme.spacing(3)
 }))
 
 export const ContentContainer = styled(Paper)(({ theme }) => ({

@@ -11,8 +11,3 @@ export const FormContainer = styled(Box)(({ theme }) => ({
 export const SubmitButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(1)
 }))
-
-export const ToggleContainer = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(1),
-  textAlign: 'center'
-}))
