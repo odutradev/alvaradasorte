@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 
 export const PageWrapper = styled(Box)({
   justifyContent: 'center',
+  flexDirection: 'column',
   alignItems: 'center',
   minHeight: '100vh',
   position: 'relative',
@@ -12,9 +13,7 @@ export const PageWrapper = styled(Box)({
 })
 
 export const ThemeToggleWrapper = styled(Box)(({ theme }) => ({
-  position: 'absolute',
-  right: theme.spacing(3),
-  top: theme.spacing(3)
+  marginTop: theme.spacing(3)
 }))
 
 export const ContentContainer = styled(Paper)(({ theme }) => ({

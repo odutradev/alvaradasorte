@@ -2,13 +2,12 @@ import Typography from '@mui/material/Typography'
 import { Navigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 
+import { ContentContainer, ThemeToggleWrapper, DividerWrapper, PageWrapper } from './styles'
 import { GridBackground } from '../../components/gridBackground'
 import { ThemeToggle } from '../../components/themeToggle'
 import { SocialLogin } from './components/socialLogin'
 import { LoginForm } from './components/loginForm'
 import { useAuth } from '../../hooks/useAuth'
-
-import { ContentContainer, ThemeToggleWrapper, DividerWrapper, PageWrapper } from './styles'
 
 export const LoginPage = () => {
   const { user } = useAuth()
@@ -18,13 +17,10 @@ export const LoginPage = () => {
   return (
     <GridBackground>
       <PageWrapper>
-        <ThemeToggleWrapper>
-          <ThemeToggle />
-        </ThemeToggleWrapper>
         <ContentContainer elevation={3}>
           <Box textAlign="center" mb={4}>
             <Typography variant="h4" fontWeight={700} color="primary" gutterBottom>
-              Alvaradasorte
+              AlvaraDaSorte
             </Typography>
             <Typography variant="body1" color="text.secondary">
               Faça login para acessar o painel
@@ -38,6 +34,9 @@ export const LoginPage = () => {
           </DividerWrapper>
           <SocialLogin />
         </ContentContainer>
+        <ThemeToggleWrapper>
+          <ThemeToggle />
+        </ThemeToggleWrapper>
       </PageWrapper>
     </GridBackground>
   )
