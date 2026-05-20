@@ -13,14 +13,14 @@ export const useAuth = (): UseAuthReturn => {
 
   const handleSync = useCallback(
     async (firebaseUser: User, providerId?: string, overrideName?: string) => {
-      const token = await firebaseUser.getIdToken()
       const payload = {
         authProviderId: providerId ?? firebaseUser.providerData[0]?.providerId ?? 'password',
-        name: overrideName ?? firebaseUser.displayName ?? undefined,
+        name: overrideName ?? firebaseUser.displayName ?? 'Unknown',
+        email: firebaseUser.email ?? '',
         photoUrl: firebaseUser.photoURL ?? undefined,
-        email: firebaseUser.email ?? undefined
+        id: firebaseUser.uid
       }
-      const backendUser = await syncAuthUser(payload, token)
+      const backendUser = await syncAuthUser(payload)
       setAuthUser(backendUser)
     },
     [setAuthUser]

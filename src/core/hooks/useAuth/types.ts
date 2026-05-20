@@ -3,8 +3,9 @@ import type { AuthUser } from '@core/stores/auth/types'
 export interface SyncPayload {
   authProviderId?: string
   photoUrl?: string
-  email?: string
-  name?: string
+  email: string
+  name: string
+  id: string
 }
 
 export interface LoginCredentials {
