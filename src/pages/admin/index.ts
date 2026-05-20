@@ -3,7 +3,7 @@ import { createElement } from 'react'
 import { SweepstakesAdminPage } from './sweepstakes'
 import { PresetsAdminPage } from './presets'
 
-import type { AppModule } from '../../types/module'
+import type { AppModule } from '@appTypes/module'
 
 export const adminModule: AppModule = {
   id: 'admin',

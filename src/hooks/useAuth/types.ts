@@ -1,4 +1,4 @@
-import type { AuthUser } from '../../stores/auth/types'
+import type { AuthUser } from '@stores/auth/types'
 
 export interface SyncPayload {
   authProviderId?: string

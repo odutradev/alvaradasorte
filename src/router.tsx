@@ -1,13 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { createElement } from 'react'
 
-import { adminModule } from './pages/admin'
-import NotFound from './pages/notFound'
-import { LoginPage } from './pages/login'
-import { HomePage } from './pages/home'
+import { adminModule } from '@pages/admin'
+import NotFound from '@pages/notFound'
+import { LoginPage } from '@pages/login'
+import { HomePage } from '@pages/home'
 
 import type { RouteObject } from 'react-router-dom'
-import type { AppRoute } from './types/module'
+import type { AppRoute } from '@appTypes/module'
 
 const processAdminRoutes = (routes: AppRoute[]): RouteObject[] =>
   routes.map(({ permissionCodes, children, global, auth, ...rest }) => {

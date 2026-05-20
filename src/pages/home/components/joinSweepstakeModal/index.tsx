@@ -1,8 +1,8 @@
 import { DialogContent, DialogActions, DialogTitle, TextField, Button, Dialog } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
-import { joinSweepstake } from '../../../../services/sweepstakes'
-import useAction from '../../../../hooks/useAction'
+import { joinSweepstake } from '@services/sweepstakes'
+import useAction from '@hooks/useAction'
 import * as S from './styles'
 
 import type { JoinSweepstakeModalProps, JoinFormData } from './types'

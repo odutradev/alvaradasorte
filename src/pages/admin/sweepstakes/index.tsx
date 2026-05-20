@@ -1,20 +1,20 @@
 import { useEffect, useState, useCallback } from 'react'
-import Typography from '@mui/material/Typography'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
 import { SweepstakeDetailsModal } from './components/sweepstakeDetailsModal'
 import { SweepstakeFormModal } from './components/sweepstakeFormModal'
-import { getSweepstakes } from '../../../services/sweepstakes'
-import { Header } from '../../home/components/header'
-import useAction from '../../../hooks/useAction'
-import { useAuth } from '../../../hooks/useAuth'
+import { Header } from '@pages/home/components/header'
+import { getSweepstakes } from '@services/sweepstakes'
+import useAction from '@hooks/useAction'
+import { useAuth } from '@hooks/useAuth'
 import * as S from './styles'
 
-import type { SweepstakeResponse } from '../../../services/sweepstakes/types'
+import type { SweepstakeResponse } from '@services/sweepstakes/types'
 
 export const SweepstakesAdminPage = () => {
   const [sweepstakes, setSweepstakes] = useState<SweepstakeResponse[]>([])

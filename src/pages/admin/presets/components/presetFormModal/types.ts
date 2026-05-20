@@ -1,4 +1,4 @@
-import type { CreatePresetRequest } from '../../../../../services/presets/types'
+import type { CreatePresetRequest } from '@services/presets/types'
 
 export interface PresetFormModalProps {
   onSuccess: () => void

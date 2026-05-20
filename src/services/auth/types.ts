@@ -1,5 +1,5 @@
-import type { SyncPayload } from '../../hooks/useAuth/types'
-import type { AuthUser } from '../../stores/auth/types'
+import type { SyncPayload } from '@hooks/useAuth/types'
+import type { AuthUser } from '@stores/auth/types'
 
 export interface SyncServicePayload extends SyncPayload {
   firebaseToken: string

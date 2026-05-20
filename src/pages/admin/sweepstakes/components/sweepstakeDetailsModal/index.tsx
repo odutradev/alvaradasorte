@@ -2,13 +2,12 @@ import { DialogContent, DialogActions, DialogTitle, Typography, Button, Dialog, 
 import { useEffect, useState, useCallback } from 'react'
 import dayjs from 'dayjs'
 
-import { getSweepstakeDetails } from '../../../../../services/sweepstakes'
-import useAction from '../../../../../hooks/useAction'
-
+import { getSweepstakeDetails } from '@services/sweepstakes'
+import useAction from '@hooks/useAction'
 import * as S from './styles'
 
+import type { SweepstakeDetailsResponse } from '@services/sweepstakes/types'
 import type { SweepstakeDetailsModalProps } from './types'
-import type { SweepstakeDetailsResponse } from '../../../../../services/sweepstakes/types'
 
 export const SweepstakeDetailsModal = ({ sweepstakeId, onClose, open }: SweepstakeDetailsModalProps) => {
   const [details, setDetails] = useState<SweepstakeDetailsResponse | null>(null)

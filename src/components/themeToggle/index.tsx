@@ -1,8 +1,7 @@
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 
-import useSystemStore from '../../stores/system'
-
+import useSystemStore from '@stores/system'
 import { ToggleButton } from './styles'
 
 export const ThemeToggle = () => {

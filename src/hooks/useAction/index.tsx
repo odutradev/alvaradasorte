@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify'
 
-import { defaultToastMessages } from '../../config/toastConfig'
+import { defaultToastMessages } from '@config/toastConfig'
 
 import type { UseActionProps } from './types'
 

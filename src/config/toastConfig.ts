@@ -1,7 +1,7 @@
 import { Bounce } from 'react-toastify'
 
 import type { ToastContainerProps, ToastPosition } from 'react-toastify'
-import type { ToastMessages } from '../hooks/useAction/types'
+import type { ToastMessages } from '@hooks/useAction/types'
 
 export const toastContainerConfig: ToastContainerProps = {
           position: 'top-right' as ToastPosition,

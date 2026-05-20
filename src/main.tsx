@@ -1,13 +1,13 @@
-import 'react-toastify/dist/ReactToastify.css'
 import { CssBaseline, ThemeProvider } from '@mui/material'
+import 'react-toastify/dist/ReactToastify.css'
 import { RouterProvider } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { createRoot } from 'react-dom/client'
 import { StrictMode, useMemo } from 'react'
 
-import { toastContainerConfig } from './config/toastConfig'
-import useSystemStore from './stores/system'
-import { getAppTheme } from './theme/theme'
+import { toastContainerConfig } from '@config/toastConfig'
+import useSystemStore from '@stores/system'
+import { getAppTheme } from '@theme/theme'
 import { appRouter } from './router'
 
 const App = () => {

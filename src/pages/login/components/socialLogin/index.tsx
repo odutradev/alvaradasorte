@@ -2,10 +2,9 @@ import GoogleIcon from '@mui/icons-material/Google'
 import AppleIcon from '@mui/icons-material/Apple'
 import { useNavigate } from 'react-router-dom'
 
-import useAction from '../../../../hooks/useAction'
-import { useAuth } from '../../../../hooks/useAuth'
-
 import { SocialContainer, SocialButton } from './styles'
+import useAction from '@hooks/useAction'
+import { useAuth } from '@hooks/useAuth'
 
 export const SocialLogin = () => {
   const { loginWithGoogle, loginWithApple } = useAuth()

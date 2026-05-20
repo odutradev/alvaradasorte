@@ -1,6 +1,6 @@
-import api from '../api'
+import api from '@services/api'
 
-import type { AuthUser } from '../../stores/auth/types'
+import type { AuthUser } from '@stores/auth/types'
 import type { UpdateMePayload } from './types'
 
 export const getMeData = async (): Promise<AuthUser> => {

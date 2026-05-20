@@ -1,9 +1,9 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, updateProfile, signOut } from 'firebase/auth'
 import { useCallback, useEffect } from 'react'
 
-import { syncAuthUser } from '../../services/auth/sync'
-import { firebaseAuth } from '../../lib/firebase/config'
-import useAuthStore from '../../stores/auth'
+import { syncAuthUser } from '@services/auth/sync'
+import { firebaseAuth } from '@lib/firebase/config'
+import useAuthStore from '@stores/auth'
 
 import type { RegisterCredentials, LoginCredentials, UseAuthReturn } from './types'
 import type { User } from 'firebase/auth'

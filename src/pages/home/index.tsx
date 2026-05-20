@@ -6,14 +6,14 @@ import Box from '@mui/material/Box'
 import { CompleteProfileModal } from './components/completeProfileModal'
 import { JoinSweepstakeModal } from './components/joinSweepstakeModal'
 import { SweepstakeCard } from './components/sweepstakeCard'
-import { getSweepstakes } from '../../services/sweepstakes'
 import { UserProfile } from './components/userProfile'
-import useAction from '../../hooks/useAction'
-import { useAuth } from '../../hooks/useAuth'
+import { getSweepstakes } from '@services/sweepstakes'
 import { Header } from './components/header'
+import useAction from '@hooks/useAction'
+import { useAuth } from '@hooks/useAuth'
 import * as S from './styles'
 
-import type { SweepstakeResponse } from '../../services/sweepstakes/types'
+import type { SweepstakeResponse } from '@services/sweepstakes/types'
 
 export const HomePage = () => {
   const [sweepstakes, setSweepstakes] = useState<SweepstakeResponse[]>([])

@@ -3,11 +3,11 @@ import { Navigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 
 import { ContentContainer, ThemeToggleWrapper, DividerWrapper, PageWrapper } from './styles'
-import { GridBackground } from '../../components/gridBackground'
-import { ThemeToggle } from '../../components/themeToggle'
+import { GridBackground } from '@components/gridBackground'
+import { ThemeToggle } from '@components/themeToggle'
 import { SocialLogin } from './components/socialLogin'
 import { LoginForm } from './components/loginForm'
-import { useAuth } from '../../hooks/useAuth'
+import { useAuth } from '@hooks/useAuth'
 
 export const LoginPage = () => {
   const { user } = useAuth()

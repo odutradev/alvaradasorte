@@ -1,4 +1,4 @@
-import type { SweepstakeResponse } from '../../../../services/sweepstakes/types'
+import type { SweepstakeResponse } from '@services/sweepstakes/types'
 
 export interface SweepstakeCardProps {
   onJoin: (id: string) => void

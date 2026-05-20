@@ -2,14 +2,13 @@ import { DialogContent, DialogActions, DialogTitle, TextField, MenuItem, Button,
 import { useEffect, useState, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { createSweepstake } from '../../../../../services/sweepstakes'
-import { getPresets } from '../../../../../services/presets'
-import useAction from '../../../../../hooks/useAction'
-
+import { createSweepstake } from '@services/sweepstakes'
+import { getPresets } from '@services/presets'
+import useAction from '@hooks/useAction'
 import * as S from './styles'
 
 import type { SweepstakeFormModalProps, SweepstakeFormData } from './types'
-import type { PresetResponse } from '../../../../../services/presets/types'
+import type { PresetResponse } from '@services/presets/types'
 
 export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeFormModalProps) => {
   const [presets, setPresets] = useState<PresetResponse[]>([])

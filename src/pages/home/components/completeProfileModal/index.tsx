@@ -1,9 +1,9 @@
 import { DialogContent, DialogActions, DialogTitle, Typography, TextField, Button, Dialog } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
-import { updateMeData } from '../../../../services/auth/me'
-import useAuthStore from '../../../../stores/auth'
-import useAction from '../../../../hooks/useAction'
+import { updateMeData } from '@services/auth/me'
+import useAuthStore from '@stores/auth'
+import useAction from '@hooks/useAction'
 import * as S from './styles'
 
 import type { CompleteProfileModalProps, ProfileFormData } from './types'

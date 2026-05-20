@@ -1,9 +1,8 @@
 import { DialogContent, DialogActions, DialogTitle, TextField, Button, Dialog } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
-import { createPreset } from '../../../../../services/presets'
-import useAction from '../../../../../hooks/useAction'
-
+import { createPreset } from '@services/presets'
+import useAction from '@hooks/useAction'
 import * as S from './styles'
 
 import type { PresetFormModalProps, PresetFormData } from './types'

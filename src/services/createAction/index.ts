@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import defaultConfig from '../../config/default'
+import defaultConfig from '@config/default'
 
 import type { ActionResponse, CreateActionParams } from './types'
 

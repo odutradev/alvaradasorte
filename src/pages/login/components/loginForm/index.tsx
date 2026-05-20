@@ -2,10 +2,9 @@ import { useNavigate } from 'react-router-dom'
 import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
 
-import useAction from '../../../../hooks/useAction'
-import { useAuth } from '../../../../hooks/useAuth'
-
 import { FormContainer, SubmitButton } from './styles'
+import useAction from '@hooks/useAction'
+import { useAuth } from '@hooks/useAuth'
 
 import type { AuthFormData } from './types'
 

@@ -1,19 +1,19 @@
 import { useEffect, useState, useCallback } from 'react'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
-import { getPresets, deletePreset } from '../../../services/presets'
+import { getPresets, deletePreset } from '@services/presets'
 import { PresetFormModal } from './components/presetFormModal'
-import { Header } from '../../home/components/header'
-import useAction from '../../../hooks/useAction'
-import { useAuth } from '../../../hooks/useAuth'
+import { Header } from '@pages/home/components/header'
+import useAction from '@hooks/useAction'
+import { useAuth } from '@hooks/useAuth'
 import * as S from './styles'
 
-import type { PresetResponse } from '../../../services/presets/types'
+import type { PresetResponse } from '@services/presets/types'
 
 export const PresetsAdminPage = () => {
   const [presets, setPresets] = useState<PresetResponse[]>([])

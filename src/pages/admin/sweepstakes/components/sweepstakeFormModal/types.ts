@@ -1,4 +1,4 @@
-import type { CreateSweepstakeRequest } from '../../../../../services/sweepstakes/types'
+import type { CreateSweepstakeRequest } from '@services/sweepstakes/types'
 
 export interface SweepstakeFormModalProps {
   onSuccess: () => void
