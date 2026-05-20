@@ -1,41 +1,34 @@
 import GoogleIcon from '@mui/icons-material/Google'
 import AppleIcon from '@mui/icons-material/Apple'
+import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@core/hooks/useAuth'
 import useAction from '@core/hooks/useAction'
+
 import * as S from './styles'
 
 export const SocialLogin = () => {
   const { loginWithGoogle, loginWithApple } = useAuth()
+  const navigate = useNavigate()
 
-  const handleGoogle = async () => {
+  const handleLogin = (action: () => Promise<void>) => async () => {
     await useAction({
-      action: loginWithGoogle,
+      action,
+      callback: () => navigate('/', { replace: true }),
       toastMessages: {
-        success: 'Login com Google realizado!',
-        pending: 'Redirecionando para o Google...',
-        error: 'Erro no login com Google.'
-      }
-    })
-  }
-
-  const handleApple = async () => {
-    await useAction({
-      action: loginWithApple,
-      toastMessages: {
-        success: 'Login com Apple realizado!',
-        pending: 'Redirecionando para a Apple...',
-        error: 'Erro no login com Apple.'
+        success: 'Login realizado com sucesso!',
+        pending: 'Autenticando...',
+        error: 'Ocorreu um erro na autenticação.'
       }
     })
   }
 
   return (
     <S.SocialContainer>
-      <S.SocialButton variant="outlined" startIcon={<GoogleIcon />} onClick={handleGoogle} fullWidth>
+      <S.SocialButton variant="outlined" startIcon={<GoogleIcon />} onClick={handleLogin(loginWithGoogle)} fullWidth>
         Google
       </S.SocialButton>
-      <S.SocialButton variant="outlined" startIcon={<AppleIcon />} onClick={handleApple} fullWidth>
+      <S.SocialButton variant="outlined" startIcon={<AppleIcon />} onClick={handleLogin(loginWithApple)} fullWidth>
         Apple
       </S.SocialButton>
     </S.SocialContainer>

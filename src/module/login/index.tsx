@@ -1,15 +1,17 @@
-import { Typography, Box } from '@mui/material'
 import { Navigate } from 'react-router-dom'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 import { useState } from 'react'
 
 import { SocialLogin } from './components/SocialLogin'
 import { LoginForm } from './components/LoginForm'
 import { useAuth } from '@core/hooks/useAuth'
+
 import * as S from './styles'
 
 export const LoginPage = () => {
-  const { user } = useAuth()
   const [isRegister, setIsRegister] = useState(false)
+  const { user } = useAuth()
 
   if (user) return <Navigate to="/" replace />
 
@@ -21,7 +23,9 @@ export const LoginPage = () => {
             Uailab
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            {isRegister ? 'Crie sua conta para continuar' : 'Faça login para acessar o painel'}
+            {isRegister
+              ? 'Crie sua conta para continuar'
+              : 'Faça login para acessar o painel'}
           </Typography>
         </Box>
         <LoginForm isRegister={isRegister} onToggleMode={() => setIsRegister(!isRegister)} />

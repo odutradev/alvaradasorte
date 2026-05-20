@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, updateProfile, signInWithPopup, OAuthProvider, signOut } from 'firebase/auth'
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, OAuthProvider, updateProfile, signOut } from 'firebase/auth'
 import { useCallback, useEffect } from 'react'
 
 import { firebaseAuth } from '@core/lib/firebase/config'
@@ -11,17 +11,20 @@ import type { User } from 'firebase/auth'
 export const useAuth = (): UseAuthReturn => {
   const { setAuthUser, setLoading, clearAuth, auth } = useAuthStore()
 
-  const handleSync = useCallback(async (firebaseUser: User, providerId?: string, overrideName?: string) => {
-    const token = await firebaseUser.getIdToken()
-    const payload = {
-      authProviderId: providerId ?? firebaseUser.providerData[0]?.providerId ?? 'password',
-      name: overrideName ?? firebaseUser.displayName ?? undefined,
-      photoUrl: firebaseUser.photoURL ?? undefined,
-      email: firebaseUser.email ?? undefined
-    }
-    const backendUser = await syncAuthUser(payload, token)
-    setAuthUser(backendUser)
-  }, [setAuthUser])
+  const handleSync = useCallback(
+    async (firebaseUser: User, providerId?: string, overrideName?: string) => {
+      const token = await firebaseUser.getIdToken()
+      const payload = {
+        authProviderId: providerId ?? firebaseUser.providerData[0]?.providerId ?? 'password',
+        name: overrideName ?? firebaseUser.displayName ?? undefined,
+        photoUrl: firebaseUser.photoURL ?? undefined,
+        email: firebaseUser.email ?? undefined
+      }
+      const backendUser = await syncAuthUser(payload, token)
+      setAuthUser(backendUser)
+    },
+    [setAuthUser]
+  )
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (currentUser) => {
@@ -29,14 +32,21 @@ export const useAuth = (): UseAuthReturn => {
         clearAuth()
         return
       }
-      try {
-        await handleSync(currentUser)
-      } catch {
-        clearAuth()
+
+      const currentStoreUser = useAuthStore.getState().auth.user
+
+      if (!currentStoreUser || currentStoreUser.email !== currentUser.email) {
+        try {
+          await handleSync(currentUser)
+        } catch {
+          clearAuth()
+        }
+      } else {
+        setLoading(false)
       }
     })
     return unsubscribe
-  }, [handleSync, clearAuth])
+  }, [handleSync, clearAuth, setLoading])
 
   const loginWithEmail = async ({ email, password }: LoginCredentials) => {
     const { user } = await signInWithEmailAndPassword(firebaseAuth, email, password)
@@ -70,9 +80,9 @@ export const useAuth = (): UseAuthReturn => {
   return {
     registerWithEmail,
     loginWithGoogle,
-    loading: auth.loading,
     loginWithApple,
     loginWithEmail,
+    loading: auth.loading,
     user: auth.user,
     logout
   }
