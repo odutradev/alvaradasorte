@@ -1,74 +1,79 @@
 import { createTheme } from '@mui/material/styles'
 
-export const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#D81313',
-      light: '#f24444',
-      dark: '#a80d0d'
-    },
-    secondary: {
-      main: '#f50057'
-    },
-    background: {
-      default: '#ffffff',
-      paper: '#ffffff'
-    },
-    text: {
-      primary: 'rgba(0, 0, 0, 0.87)',
-      secondary: 'rgba(0, 0, 0, 0.6)'
-    }
-  },
-  typography: {
-    fontFamily: ['Montserrat', 'Inter', 'system-ui', 'Avenir', 'Helvetica', 'Arial', 'sans-serif'].join(','),
-    h1: {
-      fontSize: '3.2em',
-      fontWeight: 700,
-      lineHeight: 1.1
-    },
-    h6: {
-      fontSize: '1em',
-      fontWeight: 500
-    }
-  },
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          transition: 'background-color 0.3s ease, color 0.3s ease'
-        }
+import type { Theme } from '@mui/material/styles'
+
+export const getAppTheme = (mode: 'light' | 'dark'): Theme =>
+  createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: '#624cab',
+        light: '#7189ff',
+        dark: '#4a3b82'
+      },
+      secondary: {
+        main: '#758ecd',
+        light: '#a0ddff',
+        dark: '#c1cefe'
+      },
+      background: {
+        default: mode === 'light' ? '#fafafa' : '#121212',
+        paper: mode === 'light' ? '#ffffff' : '#1e1e1e'
+      },
+      text: {
+        primary: mode === 'light' ? 'rgba(0, 0, 0, 0.87)' : '#ffffff',
+        secondary: mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.7)'
       }
     },
-    MuiInputBase: {
-      styleOverrides: {
-        input: {
-          '&:-webkit-autofill': {
-            WebkitBoxShadow: '0 0 0 100px #ffffff inset !important',
-            WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
-            caretColor: 'rgba(0, 0, 0, 0.87)',
-            borderRadius: 'inherit'
+    typography: {
+      fontFamily: ['Montserrat', 'Inter', 'system-ui', 'Avenir', 'Helvetica', 'Arial', 'sans-serif'].join(','),
+      h1: {
+        lineHeight: 1.1,
+        fontWeight: 700,
+        fontSize: '3.2em'
+      },
+      h6: {
+        fontWeight: 500,
+        fontSize: '1em'
+      }
+    },
+    components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            transition: 'background-color 0.3s ease, color 0.3s ease'
+          }
+        }
+      },
+      MuiInputBase: {
+        styleOverrides: {
+          input: {
+            borderRadius: 'inherit',
+            caretColor: mode === 'light' ? 'rgba(0, 0, 0, 0.87)' : '#ffffff',
+            '&:-webkit-autofill': {
+              WebkitTextFillColor: mode === 'light' ? 'rgba(0, 0, 0, 0.87) !important' : '#ffffff !important',
+              WebkitBoxShadow: mode === 'light' ? '0 0 0 100px #ffffff inset !important' : '0 0 0 100px #1e1e1e inset !important'
+            }
+          }
+        }
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            transition: 'border-color 0.25s, background-color 0.25s, color 0.25s',
+            textTransform: 'none',
+            padding: '0.6em 1.2em',
+            borderRadius: '8px',
+            fontWeight: 500,
+            fontSize: '1em',
+            '&:hover': {
+              borderColor: '#7189ff'
+            },
+            '&:focus-visible': {
+              outline: '4px auto -webkit-focus-ring-color'
+            }
           }
         }
       }
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          transition: 'border-color 0.25s, background-color 0.25s, color 0.25s',
-          textTransform: 'none',
-          padding: '0.6em 1.2em',
-          borderRadius: '8px',
-          fontWeight: 500,
-          fontSize: '1em',
-          '&:hover': {
-            borderColor: '#D81313'
-          },
-          '&:focus-visible': {
-            outline: '4px auto -webkit-focus-ring-color'
-          }
-        }
-      }
     }
-  }
-})
+  })

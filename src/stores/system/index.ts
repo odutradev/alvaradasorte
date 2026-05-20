@@ -17,7 +17,7 @@ const useSystemStore = create<SystemStore>()(
             ...partialSystem
           }
         })),
-      setLoading: (currentLoading?: boolean) =>
+      setLoading: (currentLoading) =>
         set((state) => ({
           system: {
             ...state.system,
@@ -31,14 +31,21 @@ const useSystemStore = create<SystemStore>()(
             sidebarOpen: !state.system.sidebarOpen
           }
         })),
+      toggleTheme: () =>
+        set((state) => ({
+          system: {
+            ...state.system,
+            themeMode: state.system.themeMode === 'light' ? 'dark' : 'light'
+          }
+        })),
       reset: () => {
         set({ system: systemStoreDefaultValues })
         localStorage.removeItem('system-store')
       }
     }),
     {
-      name: 'system-store',
-      storage: createJSONStorage(() => localStorage)
+      storage: createJSONStorage(() => localStorage),
+      name: 'system-store'
     }
   )
 )
