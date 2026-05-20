@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { updateMeData } from '@services/auth/me'
 import useAuthStore from '@stores/auth'
 import useAction from '@hooks/useAction'
-import * as S from './styles'
+import { FormContainer } from './styles'
 
 import type { CompleteProfileModalProps, ProfileFormData } from './types'
 
@@ -31,11 +31,11 @@ export const CompleteProfileModal = ({ open }: CompleteProfileModalProps) => {
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Para participar de bolões, precisamos de mais algumas informações suas.
         </Typography>
-        <S.FormContainer component="form" id="profile-form" onSubmit={handleSubmit(onSubmit)}>
+        <FormContainer component="form" id="profile-form" onSubmit={handleSubmit(onSubmit)}>
           <TextField {...register('fullName')} label="Nome Completo" required fullWidth />
           <TextField {...register('department')} label="Setor" required fullWidth />
           <TextField {...register('phone')} label="Telefone" required fullWidth />
-        </S.FormContainer>
+        </FormContainer>
       </DialogContent>
       <DialogActions>
         <Button type="submit" form="profile-form" variant="contained" color="primary">

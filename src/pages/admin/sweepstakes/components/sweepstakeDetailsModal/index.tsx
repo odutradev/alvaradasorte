@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 
 import { getSweepstakeDetails } from '@services/sweepstakes'
 import useAction from '@hooks/useAction'
-import * as S from './styles'
+import { ListContainer } from './styles'
 
 import type { SweepstakeDetailsResponse } from '@services/sweepstakes/types'
 import type { SweepstakeDetailsModalProps } from './types'
@@ -39,7 +39,7 @@ export const SweepstakeDetailsModal = ({ sweepstakeId, onClose, open }: Sweepsta
             <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>
               Participações ({details.participations.length})
             </Typography>
-            <S.ListContainer>
+            <ListContainer>
               {details.participations.map((part) => (
                 <Paper key={part.id} sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }} variant="outlined">
                   <Typography variant="body2">
@@ -54,7 +54,7 @@ export const SweepstakeDetailsModal = ({ sweepstakeId, onClose, open }: Sweepsta
               {details.participations.length === 0 && (
                 <Typography variant="body2" color="text.secondary">Nenhum participante ainda.</Typography>
               )}
-            </S.ListContainer>
+            </ListContainer>
           </>
         )}
       </DialogContent>

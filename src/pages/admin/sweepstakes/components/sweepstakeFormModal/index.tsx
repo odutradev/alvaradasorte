@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { createSweepstake } from '@services/sweepstakes'
 import { getPresets } from '@services/presets'
 import useAction from '@hooks/useAction'
-import * as S from './styles'
+import { FormContainer } from './styles'
 
 import type { SweepstakeFormModalProps, SweepstakeFormData } from './types'
 import type { PresetResponse } from '@services/presets/types'
@@ -50,7 +50,7 @@ export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeForm
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Novo Bolão</DialogTitle>
       <DialogContent>
-        <S.FormContainer component="form" id="sweepstake-form" onSubmit={handleSubmit(onSubmit)}>
+        <FormContainer component="form" id="sweepstake-form" onSubmit={handleSubmit(onSubmit)}>
           <TextField {...register('title')} label="Título" required fullWidth />
           <TextField {...register('quotaPrice')} label="Valor da Cota (R$)" type="number" required fullWidth />
           <TextField {...register('prizeValue')} label="Valor do Prêmio (R$)" type="number" required fullWidth />
@@ -62,7 +62,7 @@ export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeForm
               <MenuItem key={p.id} value={p.id}>{p.description} ({p.bank})</MenuItem>
             ))}
           </TextField>
-        </S.FormContainer>
+        </FormContainer>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">Cancelar</Button>

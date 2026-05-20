@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 
 import { createPreset } from '@services/presets'
 import useAction from '@hooks/useAction'
-import * as S from './styles'
+import { FormContainer } from './styles'
 
 import type { PresetFormModalProps, PresetFormData } from './types'
 
@@ -26,12 +26,12 @@ export const PresetFormModal = ({ onSuccess, onClose, open }: PresetFormModalPro
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Nova Predefinição</DialogTitle>
       <DialogContent>
-        <S.FormContainer component="form" id="preset-form" onSubmit={handleSubmit(onSubmit)}>
+        <FormContainer component="form" id="preset-form" onSubmit={handleSubmit(onSubmit)}>
           <TextField {...register('description')} label="Descrição" required fullWidth />
           <TextField {...register('pix')} label="Chave PIX" required fullWidth />
           <TextField {...register('receiverName')} label="Nome do Recebedor" required fullWidth />
           <TextField {...register('bank')} label="Banco" required fullWidth />
-        </S.FormContainer>
+        </FormContainer>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">Cancelar</Button>

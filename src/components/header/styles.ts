@@ -1,4 +1,5 @@
 import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import Toolbar from '@mui/material/Toolbar'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
@@ -25,6 +26,14 @@ export const StyledToolbar = styled(Toolbar)({
   alignItems: 'center',
   display: 'flex'
 })
+
+export const LogoText = styled(Typography)(({ theme }) => ({
+  transition: 'opacity 0.2s ease',
+  cursor: 'pointer',
+  '&:hover': {
+    opacity: 0.8
+  }
+}))
 
 export const NavContainer = styled(Box)(({ theme }) => ({
   alignItems: 'center',
