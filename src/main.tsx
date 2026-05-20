@@ -6,9 +6,9 @@ import { StrictMode } from 'react'
 
 import 'react-toastify/dist/ReactToastify.css'
 
-import { toastContainerConfig } from '@core/config/toastConfig'
-import { theme } from '@core/theme/theme'
-import { appRouter } from '@core/router'
+import { toastContainerConfig } from './config/toastConfig'
+import { theme } from './theme/theme'
+import { appRouter } from './router'
 
 const App = () => (
   <ThemeProvider theme={theme}>
