@@ -30,8 +30,8 @@ const ROLE_ICON_MAP: Record<string, JSX.Element> = {
 }
 
 const ROLE_LABEL_MAP: Record<string, string> = {
-  'admin': 'Usuario Administrador',
-  'normal': 'Usuario Padrão'
+  'admin': 'Administrador',
+  'normal': 'Padrão'
 }
 
 export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => {
@@ -39,7 +39,7 @@ export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => 
   const initials = displayName?.substring(0, 2).toUpperCase() ?? 'UN'
   const providerIcon = PROVIDER_ICON_MAP[user.authProviderId] ?? <EmailOutlinedIcon fontSize="small" />
   const providerLabel = PROVIDER_LABEL_MAP[user.authProviderId] ?? user.authProviderId
-  const roleLabel = PROVIDER_LABEL_MAP[user.authProviderId]
+  const roleLabel = ROLE_LABEL_MAP[user.role]
   const roleIcon = ROLE_ICON_MAP[user.role]
 
   return (
@@ -82,7 +82,7 @@ export const UserProfile = ({ user, isProfileIncomplete }: UserProfileProps) => 
             {providerIcon}
           </IconWrapper>
         </Tooltip>
-        <Tooltip title={roleLabel}>
+        <Tooltip title={`Usuário ${roleLabel}`}>
           <IconWrapper>
             {roleIcon}
           </IconWrapper>

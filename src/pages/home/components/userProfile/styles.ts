@@ -47,7 +47,6 @@ export const ValueText = styled(Typography)({
 })
 
 export const ProviderRow = styled(Box)(({ theme }) => ({
-  borderTop: `1px solid ${theme.palette.divider}`,
   justifyContent: 'center',
   paddingTop: theme.spacing(1.5),
   alignItems: 'center',
