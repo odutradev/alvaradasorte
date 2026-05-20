@@ -1,5 +1,5 @@
 export interface JoinFormData {
-  receiptUrl: string
+  receipt: FileList
 }
 
 export interface JoinSweepstakeModalProps {

@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 
 import { joinSweepstake } from '@core/services/sweepstakes'
 import useAction from '@core/hooks/useAction'
-
 import * as S from './styles'
 
 import type { JoinSweepstakeModalProps, JoinFormData } from './types'
@@ -12,8 +11,10 @@ export const JoinSweepstakeModal = ({ sweepstakeId, onSuccess, onClose, open }: 
   const { handleSubmit, register, reset } = useForm<JoinFormData>()
 
   const onSubmit = async (data: JoinFormData) => {
+    if (!data.receipt || data.receipt.length === 0) return
+
     await useAction({
-      action: async () => await joinSweepstake(sweepstakeId, data),
+      action: async () => await joinSweepstake(sweepstakeId, { receipt: data.receipt[0] }),
       callback: () => {
         onSuccess()
         onClose()
@@ -32,7 +33,7 @@ export const JoinSweepstakeModal = ({ sweepstakeId, onSuccess, onClose, open }: 
       <DialogTitle>Participar do Bolão</DialogTitle>
       <DialogContent>
         <S.FormContainer component="form" id="join-form" onSubmit={handleSubmit(onSubmit)}>
-          <TextField {...register('receiptUrl')} label="URL do Comprovante" type="url" required fullWidth />
+          <TextField {...register('receipt')} label="Comprovante de Pagamento" type="file" InputLabelProps={{ shrink: true }} inputProps={{ accept: 'image/*,application/pdf' }} required fullWidth />
         </S.FormContainer>
       </DialogContent>
       <DialogActions>

@@ -18,5 +18,11 @@ export const getSweepstakeDetails = async (id: string): Promise<SweepstakeDetail
 }
 
 export const joinSweepstake = async (id: string, payload: JoinSweepstakeRequest): Promise<void> => {
-  await api.post(`/iam/v1/sweepstakes/${id}/join`, payload)
+  const formData = new FormData()
+  formData.append('receipt', payload.receipt)
+  await api.post(`/iam/v1/sweepstakes/${id}/join`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 }

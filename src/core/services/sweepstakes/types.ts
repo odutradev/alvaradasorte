@@ -38,5 +38,5 @@ export interface SweepstakeDetailsResponse extends SweepstakeResponse {
 }
 
 export interface JoinSweepstakeRequest {
-  receiptUrl: string
+  receipt: File
 }
