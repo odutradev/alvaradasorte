@@ -1,17 +1,17 @@
-import DeleteIcon from '@mui/icons-material/Delete'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import DeleteIcon from '@mui/icons-material/Delete'
 import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
+import { PageWrapper, ContentContainer, HeaderSection, ListContainer, InfoGrid, EmptyStateWrapper } from './styles'
 import { PresetFormModal } from './components/presetFormModal'
 import GridBackground from '@components/gridBackground'
 import Header from '@components/header'
 import { usePresets } from './hook'
-import { PageWrapper, ContentContainer, HeaderSection, ListContainer, InfoGrid, EmptyStateWrapper } from './styles'
 
-export const PresetsAdminPage = () => {
+export const PresetsPage = () => {
   const { handleDelete, setModalOpen, loadPresets, modalOpen, presets, user } = usePresets()
 
   if (!user) return null

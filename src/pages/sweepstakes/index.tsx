@@ -1,19 +1,19 @@
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
+import { PageWrapper, ContentContainer, HeaderSection, ListContainer, InfoGrid, EmptyStateWrapper } from './styles'
 import { SweepstakeDetailsModal } from './components/sweepstakeDetailsModal'
 import { SweepstakeFormModal } from './components/sweepstakeFormModal'
 import GridBackground from '@components/gridBackground'
-import Header from '@components/header'
 import { useSweepstakesAdmin } from './hook'
-import { PageWrapper, ContentContainer, HeaderSection, ListContainer, InfoGrid, EmptyStateWrapper } from './styles'
+import Header from '@components/header'
 
-export const SweepstakesAdminPage = () => {
+export const SweepstakesPage = () => {
   const { loadSweepstakes, setDetailsId, setModalOpen, sweepstakes, detailsId, modalOpen, user } = useSweepstakesAdmin()
 
   if (!user) return null

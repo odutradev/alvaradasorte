@@ -2,9 +2,9 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import { useNavigate } from 'react-router-dom'
 import Button from '@mui/material/Button'
 
+import { HeaderWrapper, StyledAppBar, StyledToolbar, LogoText, NavContainer, AdminNav } from './styles'
 import ThemeToggle from '@components/themeToggle'
 import { useAuth } from '@hooks/useAuth'
-import { HeaderWrapper, StyledAppBar, StyledToolbar, LogoText, NavContainer, AdminNav } from './styles'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -20,10 +20,10 @@ const Header = () => {
           <NavContainer>
             {user?.role === 'admin' && (
               <AdminNav>
-                <Button color="inherit" onClick={() => navigate('/admin/presets')}>
+                <Button color="inherit" onClick={() => navigate('/presets')}>
                   Predefinições
                 </Button>
-                <Button color="inherit" onClick={() => navigate('/admin/sweepstakes')}>
+                <Button color="inherit" onClick={() => navigate('/sweepstakes')}>
                   Bolões
                 </Button>
               </AdminNav>
