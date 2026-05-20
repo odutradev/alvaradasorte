@@ -14,7 +14,7 @@ export const Header = ({ onLogout, userRole }: HeaderProps) => {
     <S.StyledAppBar position="static">
       <S.StyledToolbar>
         <Typography variant="h6" fontWeight={700}>
-          Uailab Dashboard
+          alvara da sorte
         </Typography>
         <S.NavContainer>
           {userRole === 'admin' && (

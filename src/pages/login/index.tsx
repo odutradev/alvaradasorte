@@ -20,7 +20,7 @@ export const LoginPage = () => {
       <S.ContentContainer elevation={3}>
         <Box textAlign="center" mb={4}>
           <Typography variant="h4" fontWeight={700} color="primary" gutterBottom>
-            Uailab
+            Alvaradasorte
           </Typography>
           <Typography variant="body1" color="text.secondary">
             {isRegister
