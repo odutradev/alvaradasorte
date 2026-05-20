@@ -1,5 +1,6 @@
 import { createElement } from 'react'
 
+import { adminModule } from './admin'
 import { LoginPage } from './login'
 import { HomePage } from './home'
 
@@ -10,8 +11,8 @@ export const authModule: AppModule = {
   routes: [
     {
       path: '/login',
-      auth: false,
-      element: createElement(LoginPage)
+      element: createElement(LoginPage),
+      auth: false
     }
   ]
 }
@@ -21,8 +22,10 @@ export const homeModule: AppModule = {
   routes: [
     {
       path: '/',
-      auth: true,
-      element: createElement(HomePage)
+      element: createElement(HomePage),
+      auth: true
     }
   ]
 }
+
+export { adminModule }

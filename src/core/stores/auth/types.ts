@@ -1,8 +1,12 @@
 export interface AuthUser {
   authProviderId: string
+  department?: string
+  fullName?: string
   photoUrl?: string
+  phone?: string
   email: string
   name: string
+  role: string
   id: string
 }
 

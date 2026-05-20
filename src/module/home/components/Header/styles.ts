@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import AppBar from '@mui/material/AppBar'
+import Box from '@mui/material/Box'
 
 export const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -13,3 +14,9 @@ export const StyledToolbar = styled(Toolbar)({
   alignItems: 'center',
   display: 'flex'
 })
+
+export const NavContainer = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  gap: theme.spacing(2),
+  display: 'flex'
+}))

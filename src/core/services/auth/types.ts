@@ -6,11 +6,14 @@ export interface SyncServicePayload extends SyncPayload {
 }
 
 export interface SyncResponse {
-  user: AuthUser
   token: string
+  user: AuthUser
 }
 
 export interface UpdateMePayload {
+  department?: string
+  fullName?: string
   photoUrl?: string
+  phone?: string
   name?: string
 }

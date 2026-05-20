@@ -15,3 +15,14 @@ export const ContentContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flex: 1
 }))
+
+export const GridContainer = styled(Box)(({ theme }) => ({
+  gridTemplateColumns: 'minmax(300px, 400px) 1fr',
+  maxWidth: 1200,
+  width: '100%',
+  display: 'grid',
+  gap: theme.spacing(4),
+  [theme.breakpoints.down('md')]: {
+    gridTemplateColumns: '1fr'
+  }
+}))
