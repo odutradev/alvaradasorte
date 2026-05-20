@@ -1,29 +1,13 @@
-import { useNavigate } from 'react-router-dom'
 import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
 
 import { FormContainer, SubmitButton } from './styles'
-import useAction from '@hooks/useAction'
-import { useAuth } from '@hooks/useAuth'
 
-import type { AuthFormData } from './types'
+import type { AuthFormData } from '../../hook/types'
+import type { LoginFormProps } from './types'
 
-export const LoginForm = () => {
-  const { loginWithEmail } = useAuth()
+const LoginForm = ({ onSubmit }: LoginFormProps) => {
   const { handleSubmit, register } = useForm<AuthFormData>()
-  const navigate = useNavigate()
-
-  const onSubmit = async (data: AuthFormData) => {
-    await useAction({
-      action: async () => await loginWithEmail(data),
-      callback: () => navigate('/', { replace: true }),
-      toastMessages: {
-        success: 'Login realizado com sucesso!',
-        pending: 'Autenticando...',
-        error: 'Ocorreu um erro na autenticação.'
-      }
-    })
-  }
 
   return (
     <FormContainer component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -35,3 +19,5 @@ export const LoginForm = () => {
     </FormContainer>
   )
 }
+
+export default LoginForm

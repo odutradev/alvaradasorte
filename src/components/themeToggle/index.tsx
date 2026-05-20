@@ -4,7 +4,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 import useSystemStore from '@stores/system'
 import { ToggleButton } from './styles'
 
-export const ThemeToggle = () => {
+const ThemeToggle = () => {
   const { toggleTheme, system } = useSystemStore()
   const isDark = system.themeMode === 'dark'
 
@@ -14,3 +14,5 @@ export const ThemeToggle = () => {
     </ToggleButton>
   )
 }
+
+export default ThemeToggle

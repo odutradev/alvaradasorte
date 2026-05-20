@@ -3,16 +3,16 @@ import { Navigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
 
 import { ContentContainer, ThemeToggleWrapper, DividerWrapper, PageWrapper } from './styles'
-import { GridBackground } from '@components/gridBackground'
-import { ThemeToggle } from '@components/themeToggle'
-import { SocialLogin } from './components/socialLogin'
-import { LoginForm } from './components/loginForm'
-import { useAuth } from '@hooks/useAuth'
+import GridBackground from '@components/gridBackground'
+import SocialLogin from './components/socialLogin'
+import ThemeToggle from '@components/themeToggle'
+import LoginForm from './components/loginForm'
+import { useLogin } from './hook'
 
-export const LoginPage = () => {
-  const { user } = useAuth()
+const LoginPage = () => {
+  const { isAuthenticated, handleAppleLogin, handleGoogleLogin, handleEmailLogin } = useLogin()
 
-  if (user) return <Navigate to="/" replace />
+  if (isAuthenticated) return <Navigate to="/" replace />
 
   return (
     <GridBackground>
@@ -26,13 +26,13 @@ export const LoginPage = () => {
               Faça login para acessar o painel
             </Typography>
           </Box>
-          <LoginForm />
+          <LoginForm onSubmit={handleEmailLogin} />
           <DividerWrapper>
             <Typography variant="body2" color="text.secondary">
               ou continue com
             </Typography>
           </DividerWrapper>
-          <SocialLogin />
+          <SocialLogin onGoogleLogin={handleGoogleLogin} onAppleLogin={handleAppleLogin} />
         </ContentContainer>
         <ThemeToggleWrapper>
           <ThemeToggle />

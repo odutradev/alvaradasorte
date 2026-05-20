@@ -1,14 +1,14 @@
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { RouterProvider } from 'react-router-dom'
-import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer } from 'react-toastify'
 import { createRoot } from 'react-dom/client'
 import { StrictMode, useMemo } from 'react'
 
 import { getToastContainerConfig } from '@config/toastConfig'
 import useSystemStore from '@stores/system'
 import { getAppTheme } from '@theme/theme'
-import { appRouter } from './router'
+import appRouter from './router'
 
 const App = () => {
   const { themeMode } = useSystemStore((state) => state.system)
