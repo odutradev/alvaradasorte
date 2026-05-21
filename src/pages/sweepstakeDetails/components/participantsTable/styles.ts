@@ -21,3 +21,9 @@ export const TableHeader = styled(Box)({
   alignItems: 'center',
   display: 'flex'
 })
+
+export const ActionsContainer = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  display: 'flex',
+  gap: theme.spacing(1)
+}))

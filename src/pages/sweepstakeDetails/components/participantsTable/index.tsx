@@ -1,22 +1,26 @@
 import TableContainer from '@mui/material/TableContainer'
+import InputAdornment from '@mui/material/InputAdornment'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+import SearchIcon from '@mui/icons-material/Search'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
+import TextField from '@mui/material/TextField'
 import TableRow from '@mui/material/TableRow'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import Table from '@mui/material/Table'
 import Link from '@mui/material/Link'
-import Box from '@mui/material/Box'
 import { useState } from 'react'
+import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
+import { TableContainerWrapper, TableHeader, ActionsContainer, EmptyBox } from './styles'
 import { StatementValidationModal } from './subcomponents/statementValidationModal'
-import { TableContainerWrapper, TableHeader, EmptyBox } from './styles'
+import { capitalizeWords } from '@utils/string'
 
 import type { ParticipantsTableProps } from './types'
 
@@ -24,8 +28,15 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
   const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null)
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [isValidationOpen, setIsValidationOpen] = useState(false)
+  const [copiedList, setCopiedList] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+
   const sortedParticipations = [...participations].sort((a, b) =>
     a.userName.localeCompare(b.userName)
+  )
+
+  const filteredParticipations = sortedParticipations.filter((part) =>
+    part.userName.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const handleOpenReceipt = (url: string, name: string) => {
@@ -38,20 +49,67 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
     setSelectedUser(null)
   }
 
+  const handleCopyList = () => {
+    const textToCopy = sortedParticipations
+      .map((part, index) => `${index + 1}. ${capitalizeWords(part.userName)}`)
+      .join('\n')
+    const textarea = document.createElement('textarea')
+    textarea.value = textToCopy
+    textarea.style.position = 'fixed'
+    textarea.style.left = '-9999px'
+    textarea.style.top = '0'
+    document.body.appendChild(textarea)
+    textarea.focus()
+    textarea.select()
+    try {
+      document.execCommand('copy')
+      setCopiedList(true)
+      setTimeout(() => setCopiedList(false), 2000)
+    } catch (err) {
+    }
+    document.body.removeChild(textarea)
+  }
+
   return (
     <TableContainerWrapper elevation={2}>
       <TableHeader>
         <Typography variant="h6" fontWeight={600}>
           Participantes ({participations.length})
         </Typography>
-        <Button size="small" variant="outlined" onClick={() => setIsValidationOpen(true)}>
-          Validar Extrato
-        </Button>
+        <ActionsContainer>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={handleCopyList}
+            color={copiedList ? 'success' : 'primary'}
+            disabled={sortedParticipations.length === 0}
+          >
+            {copiedList ? 'Copiado!' : 'Copiar Lista'}
+          </Button>
+          <Button size="small" variant="outlined" onClick={() => setIsValidationOpen(true)}>
+            Validar Extrato
+          </Button>
+        </ActionsContainer>
       </TableHeader>
-      {sortedParticipations.length === 0 ? (
+      <TextField
+        placeholder="Pesquisar participante..."
+        variant="outlined"
+        size="small"
+        fullWidth
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon fontSize="small" />
+            </InputAdornment>
+          )
+        }}
+      />
+      {filteredParticipations.length === 0 ? (
         <EmptyBox>
           <Typography variant="body2" color="text.secondary">
-            Nenhum participante ainda.
+            {searchQuery ? 'Nenhum participante encontrado.' : 'Nenhum participante ainda.'}
           </Typography>
         </EmptyBox>
       ) : (
@@ -65,7 +123,7 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedParticipations.map((part) => (
+              {filteredParticipations.map((part) => (
                 <TableRow key={part.id} hover>
                   <TableCell>{part.userName}</TableCell>
                   <TableCell>
