@@ -1,15 +1,14 @@
-import { SweepstakeDetailsModal } from './components/sweepstakeDetailsModal'
-import { SweepstakeFormModal } from './components/sweepstakeFormModal'
 import { PageWrapper, ContentContainer, ListContainer } from './styles'
-import GridBackground from '@components/gridBackground'
+import { SweepstakeFormModal } from './components/sweepstakeFormModal'
 import SweepstakeCard from './components/sweepstakeCard'
+import GridBackground from '@components/gridBackground'
 import EmptyState from '@components/emptyState'
 import { useSweepstakesAdmin } from './hook'
 import Subheader from '@components/subheader'
 import Header from '@components/header'
 
 export const SweepstakesPage = () => {
-  const { loadSweepstakes, setDetailsId, setModalOpen, sweepstakes, detailsId, modalOpen, user } = useSweepstakesAdmin()
+  const { loadSweepstakes, setModalOpen, viewDetails, sweepstakes, modalOpen, user } = useSweepstakesAdmin()
 
   if (!user) return null
 
@@ -25,7 +24,7 @@ export const SweepstakesPage = () => {
           />
           <ListContainer>
             {sweepstakes.map((swp) => (
-              <SweepstakeCard key={swp.id} sweepstake={swp} onViewDetails={setDetailsId} />
+              <SweepstakeCard key={swp.id} sweepstake={swp} onViewDetails={viewDetails} />
             ))}
             {sweepstakes.length === 0 && (
               <EmptyState description="Nenhum bolão cadastrado no sistema." />
@@ -33,9 +32,6 @@ export const SweepstakesPage = () => {
           </ListContainer>
         </ContentContainer>
         <SweepstakeFormModal open={modalOpen} onClose={() => setModalOpen(false)} onSuccess={loadSweepstakes} />
-        {!!detailsId && (
-          <SweepstakeDetailsModal sweepstakeId={detailsId} open={true} onClose={() => setDetailsId(null)} />
-        )}
       </PageWrapper>
     </GridBackground>
   )

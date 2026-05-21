@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { createElement } from 'react'
 
+import { SweepstakeDetailsPage } from '@pages/sweepstakeDetails'
 import { SweepstakesPage } from '@pages/sweepstakes'
 import PresetsPage from '@pages/presets'
 import { HomePage } from '@pages/home'
@@ -22,6 +23,7 @@ const appRouter = createBrowserRouter([
   { path: '/', element: createElement(HomePage) },
   ...processProtectedRoutes([
     { path: '/sweepstakes', element: createElement(SweepstakesPage), auth: true },
+    { path: '/sweepstakes/:id', element: createElement(SweepstakeDetailsPage), auth: true },
     { path: '/presets', element: createElement(PresetsPage), auth: true }
   ]),
   { path: '*', element: createElement(NotFound) }

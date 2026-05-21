@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { getSweepstakes } from '@services/sweepstakes'
 import { useAuth } from '@hooks/useAuth'
@@ -9,9 +10,9 @@ import type { UseSweepstakesAdminReturn } from './types'
 
 export const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
   const [sweepstakes, setSweepstakes] = useState<SweepstakeResponse[]>([])
-  const [detailsId, setDetailsId] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const { logout, user } = useAuth()
+  const navigate = useNavigate()
 
   const loadSweepstakes = useCallback(async () => {
     if (!user) return
@@ -22,16 +23,19 @@ export const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
     })
   }, [user])
 
+  const viewDetails = useCallback((id: string) => {
+    navigate(`/sweepstakes/${id}`)
+  }, [navigate])
+
   useEffect(() => {
     if (user) loadSweepstakes()
   }, [user, loadSweepstakes])
 
   return {
     loadSweepstakes,
-    setDetailsId,
     setModalOpen,
+    viewDetails,
     sweepstakes,
-    detailsId,
     modalOpen,
     logout,
     user
