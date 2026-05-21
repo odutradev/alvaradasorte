@@ -1,5 +1,5 @@
-import TableContainer from '@mui/material/TableContainer'
 import InputAdornment from '@mui/material/InputAdornment'
+import TableContainer from '@mui/material/TableContainer'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import SearchIcon from '@mui/icons-material/Search'
@@ -14,8 +14,8 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import Table from '@mui/material/Table'
 import Link from '@mui/material/Link'
-import { useState } from 'react'
 import Box from '@mui/material/Box'
+import { useState } from 'react'
 import dayjs from 'dayjs'
 
 import { TableContainerWrapper, TableHeader, ActionsContainer, EmptyBox } from './styles'
@@ -51,7 +51,11 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
 
   const handleCopyList = () => {
     const textToCopy = sortedParticipations
-      .map((part, index) => `${index + 1}. ${capitalizeWords(part.userName)}`)
+      .map((part, index) => {
+        const sector = part.userSector || part.sector || ''
+        const sectorSuffix = sector ? ` - ${capitalizeWords(sector)}` : ''
+        return `${index + 1}. ${capitalizeWords(part.userName)}${sectorSuffix}`
+      })
       .join('\n')
     const textarea = document.createElement('textarea')
     textarea.value = textToCopy
