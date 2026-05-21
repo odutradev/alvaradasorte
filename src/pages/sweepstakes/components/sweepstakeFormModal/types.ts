@@ -7,7 +7,7 @@ export interface SweepstakeFormModalProps {
 }
 
 export type SweepstakeFormData = Omit<CreateSweepstakeRequest, 'availableQuotas' | 'prizeValue' | 'quotaPrice'> & {
-  availableQuotas: string
+  availableQuotas: number
   prizeValue: string
-  quotaPrice: string
+  quotaPrice: number
 }
