@@ -15,7 +15,7 @@ export const useHome = (): UseHomeReturn => {
   const fetchSweepstakes = useCallback(async () => {
     if (!user) return
     await useAction({
-      action: async () => await getSweepstakes(user.id ?? user.uid),
+      action: async () => await getSweepstakes(user.id ?? user.id),
       callback: (data) => setSweepstakes(data),
       silent: true
     })
