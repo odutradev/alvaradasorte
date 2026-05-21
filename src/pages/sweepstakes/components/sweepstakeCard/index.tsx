@@ -1,33 +1,24 @@
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
-import { InfoGrid } from './styles'
+import { CardContainer, InfoWrapper, InfoGrid } from './styles'
+import { QuotaProgress } from '@components/quotaProgress'
 
 import type { SweepstakeCardProps } from './types'
 
 const SweepstakeCard = ({ sweepstake, onViewDetails }: SweepstakeCardProps) => (
-  <Paper
-    elevation={2}
-    sx={{
-      p: 3,
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      borderRadius: 2
-    }}
-  >
-    <Box>
-      <Typography variant="h6" fontWeight={600} gutterBottom>
+  <CardContainer elevation={2}>
+    <InfoWrapper>
+      <Typography variant="h6" fontWeight={600}>
         {sweepstake.title}
       </Typography>
+      <QuotaProgress
+        availableQuotas={sweepstake.availableQuotas}
+        filledQuotas={sweepstake.metadata.filledQuotas}
+      />
       <InfoGrid>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Cotas Disponíveis:</strong> {sweepstake.availableQuotas}
-        </Typography>
         <Typography variant="body2" color="text.secondary">
           <strong>Valor do Prêmio:</strong> R$ {sweepstake.prizeValue.toFixed(2)}
         </Typography>
@@ -35,11 +26,11 @@ const SweepstakeCard = ({ sweepstake, onViewDetails }: SweepstakeCardProps) => (
           <strong>Sorteio:</strong> {dayjs(sweepstake.drawDate).format('DD/MM/YYYY')}
         </Typography>
       </InfoGrid>
-    </Box>
-    <IconButton color="primary" onClick={() => onViewDetails(sweepstake.id)} size="large" sx={{ ml: 2 }}>
+    </InfoWrapper>
+    <IconButton color="primary" onClick={() => onViewDetails(sweepstake.id)} size="large">
       <VisibilityIcon />
     </IconButton>
-  </Paper>
+  </CardContainer>
 )
 
 export default SweepstakeCard

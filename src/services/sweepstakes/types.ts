@@ -10,6 +10,13 @@ export interface SweepstakeResponse {
   adminId: string
   title: string
   id: string
+  metadata: {
+    filledQuotas: number
+  }
+  userParticipation?: {
+    isParticipant: boolean
+    joinedAt: string | null
+  }
 }
 
 export type ListSweepstakesResponse = SweepstakeResponse[]

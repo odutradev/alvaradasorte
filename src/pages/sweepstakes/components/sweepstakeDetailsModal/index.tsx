@@ -1,10 +1,11 @@
-import { DialogContent, DialogActions, DialogTitle, Typography, Button, Dialog, Paper, Link } from '@mui/material'
+import { DialogContent, DialogActions, DialogTitle, Typography, Button, Dialog, Link } from '@mui/material'
 import { useEffect, useState, useCallback } from 'react'
 import dayjs from 'dayjs'
 
+import { ListContainer, ProgressWrapper, SectionTitle, ParticipationCard } from './styles'
 import { getSweepstakeDetails } from '@services/sweepstakes'
+import { QuotaProgress } from '@components/quotaProgress'
 import useAction from '@hooks/useAction'
-import { ListContainer } from './styles'
 
 import type { SweepstakeDetailsResponse } from '@services/sweepstakes/types'
 import type { SweepstakeDetailsModalProps } from './types'
@@ -33,15 +34,21 @@ export const SweepstakeDetailsModal = ({ sweepstakeId, onClose, open }: Sweepsta
         ) : (
           <>
             <Typography variant="h6">{details.title}</Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              Cotas Disponíveis: {details.availableQuotas} | Preço: R$ {details.quotaPrice}
+            <Typography variant="body2" color="text.secondary">
+              Preço da Cota: R$ {details.quotaPrice.toFixed(2)}
             </Typography>
-            <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 2 }}>
+            <ProgressWrapper>
+              <QuotaProgress
+                availableQuotas={details.availableQuotas}
+                filledQuotas={details.metadata.filledQuotas}
+              />
+            </ProgressWrapper>
+            <SectionTitle variant="subtitle1">
               Participações ({details.participations.length})
-            </Typography>
+            </SectionTitle>
             <ListContainer>
               {details.participations.map((part) => (
-                <Paper key={part.id} sx={{ p: 2, display: 'flex', justifyContent: 'space-between' }} variant="outlined">
+                <ParticipationCard key={part.id} variant="outlined">
                   <Typography variant="body2">
                     <strong>{part.userName}</strong><br />
                     Data: {dayjs(part.createdAt).format('DD/MM/YYYY HH:mm')}
@@ -49,7 +56,7 @@ export const SweepstakeDetailsModal = ({ sweepstakeId, onClose, open }: Sweepsta
                   <Link href={part.receiptUrl} target="_blank" rel="noreferrer">
                     Ver Comprovante
                   </Link>
-                </Paper>
+                </ParticipationCard>
               ))}
               {details.participations.length === 0 && (
                 <Typography variant="body2" color="text.secondary">Nenhum participante ainda.</Typography>

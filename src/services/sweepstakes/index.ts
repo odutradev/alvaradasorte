@@ -2,8 +2,10 @@ import api from '@services/api'
 
 import type { ListSweepstakesResponse, SweepstakeDetailsResponse, CreateSweepstakeRequest, JoinSweepstakeRequest, SweepstakeResponse } from './types'
 
-export const getSweepstakes = async (): Promise<ListSweepstakesResponse> => {
-  const response = await api.get<ListSweepstakesResponse>('/iam/v1/sweepstakes')
+export const getSweepstakes = async (userId?: string): Promise<ListSweepstakesResponse> => {
+  const response = await api.get<ListSweepstakesResponse>('/iam/v1/sweepstakes', {
+    params: userId ? { userId } : undefined
+  })
   return response.data
 }
 

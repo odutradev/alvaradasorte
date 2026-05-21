@@ -13,12 +13,13 @@ export const useHome = (): UseHomeReturn => {
   const { logout, user } = useAuth()
 
   const fetchSweepstakes = useCallback(async () => {
+    if (!user) return
     await useAction({
-      action: async () => await getSweepstakes(),
+      action: async () => await getSweepstakes(user.id ?? user.uid),
       callback: (data) => setSweepstakes(data),
       silent: true
     })
-  }, [])
+  }, [user])
 
   useEffect(() => {
     if (user) fetchSweepstakes()
