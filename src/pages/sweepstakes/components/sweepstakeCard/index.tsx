@@ -15,6 +15,11 @@ const SweepstakeCard = ({ sweepstake, onViewDetails }: SweepstakeCardProps) => (
       <Typography variant="h6" fontWeight={600}>
         {sweepstake.title}
       </Typography>
+      {sweepstake.description && (
+        <Typography variant="body2" color="text.secondary" sx={{ mt: -1 }}>
+          {sweepstake.description}
+        </Typography>
+      )}
       <QuotaProgress
         availableQuotas={sweepstake.availableQuotas}
         filledQuotas={sweepstake.metadata?.filledQuotas ?? 0}

@@ -16,6 +16,11 @@ export const DetailsCard = ({ data }: DetailsCardProps) => {
       <Typography variant="h6" fontWeight={600} color="primary">
         {capitalizeWords(data.title)}
       </Typography>
+      {data.description && (
+        <Typography variant="body2" color="text.secondary">
+          {data.description}
+        </Typography>
+      )}
       <DividerLine />
       <InfoRow>
         <Typography variant="body2" color="text.secondary">Valor da Cota</Typography>

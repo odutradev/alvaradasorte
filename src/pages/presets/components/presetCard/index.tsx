@@ -30,12 +30,6 @@ const PresetCard = ({ preset, onDelete }: PresetCardProps) => (
         <Typography variant="body2" color="text.secondary">
           <strong>Banco:</strong> {preset.bank}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          <strong>Decrição:</strong>
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-           {preset.description}
-        </Typography>
       </InfoGrid>
     </Box>
     <IconButton color="error" onClick={() => onDelete(preset.id)} size="large" sx={{ ml: 2 }}>

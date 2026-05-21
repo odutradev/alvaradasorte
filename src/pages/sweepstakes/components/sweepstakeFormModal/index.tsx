@@ -3,8 +3,8 @@ import { useEffect, useState, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 
 import { createSweepstake } from '@services/sweepstakes'
-import ValueSlider from '@components/valueSlider'
 import { FormContainer, DateRow } from './styles'
+import ValueSlider from '@components/valueSlider'
 import { getPresets } from '@services/presets'
 import useAction from '@hooks/useAction'
 
@@ -17,6 +17,7 @@ export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeForm
   const { handleSubmit, register, control, reset } = useForm<SweepstakeFormData>({
     defaultValues: {
       title: '',
+      description: '',
       quotaPrice: 10,
       prizeValue: '',
       availableQuotas: 100,
@@ -62,6 +63,7 @@ export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeForm
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <FormContainer component="form" id="sweepstake-form" onSubmit={handleSubmit(onSubmit)}>
         <TextField {...register('title')} label="Título" required fullWidth />
+        <TextField {...register('description')} label="Descrição" required fullWidth multiline rows={3} />
         <Controller
           name="quotaPrice"
           control={control}

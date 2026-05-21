@@ -1,6 +1,7 @@
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
 import { CardContainer, HeaderRow, InfoRow } from './styles'
@@ -15,18 +16,25 @@ export const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
 
   return (
     <CardContainer elevation={2}>
-      <HeaderRow>
-        <Typography variant="h6" fontWeight={600}>
-          {data.title}
-        </Typography>
-        {isParticipant && (
-          <Chip
-            label={data.userParticipation?.joinedAt ? `Inscrito ${dayjs(data.userParticipation.joinedAt).format('DD/MM')}` : 'Inscrito'}
-            color="success"
-            size="small"
-          />
+      <Box>
+        <HeaderRow>
+          <Typography variant="h6" fontWeight={600}>
+            {data.title}
+          </Typography>
+          {isParticipant && (
+            <Chip
+              label={data.userParticipation?.joinedAt ? `Inscrito ${dayjs(data.userParticipation.joinedAt).format('DD/MM')}` : 'Inscrito'}
+              color="success"
+              size="small"
+                />
+              )}
+        </HeaderRow>
+        {data.description && (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 0.5 }}>
+            {data.description}
+          </Typography>
         )}
-      </HeaderRow>
+      </Box>
       <InfoRow>
         <Typography variant="body2" color="text.secondary">Valor da Cota:</Typography>
         <Typography variant="body1" fontWeight={500}>

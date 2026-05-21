@@ -1,6 +1,7 @@
 export interface SweepstakeResponse {
   purchaseLimitDate: string
   availableQuotas: number
+  description: string
   prizeValue: number
   quotaPrice: number
   createdAt: string
@@ -24,6 +25,7 @@ export type ListSweepstakesResponse = SweepstakeResponse[]
 export interface CreateSweepstakeRequest {
   purchaseLimitDate: string
   availableQuotas: number
+  description: string
   prizeValue: number
   quotaPrice: number
   presetId: string
