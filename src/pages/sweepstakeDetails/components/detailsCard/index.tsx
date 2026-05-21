@@ -1,16 +1,11 @@
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
+import { useState, ChangeEvent } from 'react'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
-import { useState } from 'react'
-import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
+import { CardContainer, InfoRow, DividerLine, ProgressContainer, ProgressHeader, ProgressBarTrack, ProgressBarFill, StyledDialogContent, StyledDialogActions, StyledTextField, StyledTextButton } from './styles'
 import { capitalizeWords, formatCurrency } from '@utils/string'
-import { CardContainer, InfoRow, DividerLine } from './styles'
 
 import type { DetailsCardProps } from './types'
 
@@ -23,19 +18,19 @@ const QuotaProgress = ({ availableQuotas, filledQuotas }: QuotaProgressProps) =>
   const total = availableQuotas
   const percentage = total > 0 ? (filledQuotas / total) * 100 : 0
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+    <ProgressContainer>
+      <ProgressHeader>
         <Typography variant="body2" color="text.secondary">
           Cotas Preenchidas
         </Typography>
         <Typography variant="body2" fontWeight={600}>
           {filledQuotas}/{total}
         </Typography>
-      </Box>
-      <Box sx={{ height: 8, width: '100%', bgcolor: 'action.hover', borderRadius: 1, overflow: 'hidden' }}>
-        <Box sx={{ height: '100%', width: `${percentage}%`, bgcolor: 'primary.main', borderRadius: 1 }} />
-      </Box>
-    </Box>
+      </ProgressHeader>
+      <ProgressBarTrack>
+        <ProgressBarFill percentage={percentage} />
+      </ProgressBarTrack>
+    </ProgressContainer>
   )
 }
 
@@ -105,9 +100,12 @@ export const DetailsCard = ({ data, preset }: DetailsCardProps) => {
     const textarea = document.createElement('textarea')
     textarea.value = messageText
     textarea.style.position = 'fixed'
+    textarea.style.left = '-9999px'
+    textarea.style.top = '0'
     document.body.appendChild(textarea)
     textarea.focus()
     textarea.select()
+    textarea.setSelectionRange(0, 99999)
     try {
       document.execCommand('copy')
       setCopied(true)
@@ -122,9 +120,9 @@ export const DetailsCard = ({ data, preset }: DetailsCardProps) => {
       <Typography variant="h6" fontWeight={600} color="primary">
         {capitalizeWords(data.title)}
       </Typography>
-      <Button variant="text" size="small" onClick={handleOpen} sx={{ alignSelf: 'flex-start', p: 0 }}>
+      <StyledTextButton variant="text" size="small" onClick={handleOpen}>
         Ver Mensagem
-      </Button>
+      </StyledTextButton>
       <DividerLine />
       <InfoRow>
         <Typography variant="body2" color="text.secondary">Valor da Cota</Typography>
@@ -162,30 +160,24 @@ export const DetailsCard = ({ data, preset }: DetailsCardProps) => {
           {dayjs(data.drawDate).format('DD/MM/YYYY HH:mm')}
         </Typography>
       </InfoRow>
-      <Dialog open={isModalOpen} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>Mensagem do Bolão</DialogTitle>
-        <DialogContent dividers>
-          <TextField
+      <Dialog
+        open={isModalOpen}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="md"
+        disableEnforceFocus
+      >
+        <StyledDialogContent>
+          <StyledTextField
             multiline
             fullWidth
             rows={12}
             variant="outlined"
             value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
-            sx={{
-              '& .MuiInputBase-input': {
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                overflow: 'hidden'
-              },
-              '& .MuiInputBase-root': {
-                overflow: 'hidden'
-              },
-              bgcolor: 'action.hover'
-            }}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setMessageText(e.target.value)}
           />
-        </DialogContent>
-        <DialogActions>
+        </StyledDialogContent>
+        <StyledDialogActions>
           <Button
             onClick={handleCopyMessage}
             variant="contained"
@@ -196,7 +188,7 @@ export const DetailsCard = ({ data, preset }: DetailsCardProps) => {
           <Button onClick={handleClose} color="inherit">
             Fechar
           </Button>
-        </DialogActions>
+        </StyledDialogActions>
       </Dialog>
     </CardContainer>
   )
