@@ -1,8 +1,8 @@
 import { Navigate } from 'react-router-dom'
 
 import { CompleteProfileModal } from './components/completeProfileModal'
-import { SweepstakesCarousel } from './components/sweepstakesCarousel'
 import { PageWrapper, ContentContainer, GridContainer } from './styles'
+import { SweepstakesCarousel } from './components/sweepstakesCarousel'
 import { JoinSweepstakeModal } from './components/joinSweepstakeModal'
 import GridBackground from '@components/gridBackground'
 import { UserProfile } from './components/userProfile'
@@ -46,7 +46,7 @@ export const HomePage = () => {
           open={!!selectedId}
           onClose={() => setSelectedId(null)}
           onSuccess={fetchSweepstakes}
-          sweepstake={sweepstakes.find((s) => s.id === selectedId) ?? null}
+          sweepstakeId={selectedId ?? ''}
         />
       </PageWrapper>
     </GridBackground>

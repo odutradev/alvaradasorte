@@ -1,34 +1,18 @@
-import { DialogContent, DialogActions, DialogTitle, Typography, Button, Dialog, Alert, Box } from '@mui/material'
+import { DialogContent, DialogActions, DialogTitle, Typography, Button, Dialog, Box } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 
-import { FileUploadBox, FormContainer, StepBadge, StepBox, PixBox } from './styles'
+import { FileUploadBox, FormContainer, InstructionBox } from './styles'
 import { joinSweepstake } from '@services/sweepstakes'
-import { formatCurrency } from '@utils/string'
 import useAction from '@hooks/useAction'
 
 import type { JoinSweepstakeModalProps, JoinFormData } from './types'
 
-const PIX_KEY = 'pix@alvaradasorte.com.br'
-
-export const JoinSweepstakeModal = ({ sweepstake, onSuccess, onClose, open }: JoinSweepstakeModalProps) => {
+export const JoinSweepstakeModal = ({ sweepstakeId, onSuccess, onClose, open }: JoinSweepstakeModalProps) => {
   const { register, handleSubmit, reset } = useForm<JoinFormData>()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [copied, setCopied] = useState(false)
-
-  const handleCopyPix = () => {
-    const input = document.createElement('input')
-    input.value = PIX_KEY
-    document.body.appendChild(input)
-    input.select()
-    document.execCommand('copy')
-    document.body.removeChild(input)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
 
   const handleClose = () => {
     setSelectedFile(null)
@@ -37,10 +21,9 @@ export const JoinSweepstakeModal = ({ sweepstake, onSuccess, onClose, open }: Jo
   }
 
   const onSubmit = async (data: JoinFormData) => {
-    if (!sweepstake || !data.receipt || data.receipt.length === 0) return
-
+    if (!data.receipt || data.receipt.length === 0) return
     await useAction({
-      action: async () => await joinSweepstake(sweepstake.id, { receipt: data.receipt[0] }),
+      action: async () => await joinSweepstake(sweepstakeId, { receipt: data.receipt[0] }),
       callback: () => {
         setSelectedFile(null)
         onSuccess()
@@ -58,91 +41,57 @@ export const JoinSweepstakeModal = ({ sweepstake, onSuccess, onClose, open }: Jo
   const { onChange, ...restRegister } = register('receipt', { required: true })
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ fontWeight: 700, fontSize: '1.5rem' }}>Participar do Bolão</DialogTitle>
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
+      <DialogTitle sx={{ fontWeight: 700, fontSize: '1.25rem', pb: 1 }}>Participar do Bolão</DialogTitle>
       <DialogContent>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Siga os passos simples abaixo para confirmar sua participação no bolão.
-        </Typography>
         <FormContainer component="form" id="join-form" onSubmit={handleSubmit(onSubmit)}>
-          <StepBox>
-            <StepBadge>1</StepBadge>
-            <Typography variant="h6" fontWeight={700}>
-              Copie a Chave PIX e o Valor
+          <InstructionBox>
+            <Typography variant="subtitle2" fontWeight={700} color="primary">
+              Como Participar:
             </Typography>
-            <Typography variant="body1" sx={{ mt: 0.5 }}>
-              Valor por cota: <strong>{sweepstake ? formatCurrency(sweepstake.quotaPrice) : ''}</strong>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              1. Realize a transferência PIX no valor correto desta cota.
             </Typography>
-            <PixBox elevation={0}>
-              <Typography variant="body1" fontWeight={700} sx={{ wordBreak: 'break-all' }}>
-                {PIX_KEY}
-              </Typography>
-              <Button
-                variant="contained"
-                size="medium"
-                startIcon={copied ? <CheckCircleIcon /> : <ContentCopyIcon />}
-                onClick={handleCopyPix}
-                sx={{ minWidth: 140 }}
-                color={copied ? 'success' : 'primary'}
-              >
-                {copied ? 'Copiado!' : 'Copiar'}
-              </Button>
-            </PixBox>
-          </StepBox>
-          <StepBox>
-            <StepBadge>2</StepBadge>
-            <Typography variant="h6" fontWeight={700}>
-              Faça a Transferência
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              2. Tire uma foto ou salve o comprovante da transação.
             </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Abra o aplicativo do seu banco no celular, escolha a opção PIX e realize o pagamento do valor informado.
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              3. Toque no botão abaixo para selecionar o comprovante.
             </Typography>
-          </StepBox>
-          <StepBox>
-            <StepBadge>3</StepBadge>
-            <Typography variant="h6" fontWeight={700}>
-              Envie o Comprovante
-            </Typography>
-            <FileUploadBox component="label" htmlFor="receipt-upload">
-              <input
-                {...restRegister}
-                id="receipt-upload"
-                type="file"
-                accept="image/*,application/pdf"
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                  onChange(e)
-                  const file = e.target.files?.[0] || null
-                  setSelectedFile(file)
-                }}
-              />
-              {selectedFile ? (
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                  <CheckCircleIcon color="success" sx={{ fontSize: 40 }} />
-                  <Typography variant="subtitle1" fontWeight={700} color="success.main">
-                    Comprovante Selecionado!
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-                    {selectedFile.name}
-                  </Typography>
-                </Box>
-              ) : (
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                  <CloudUploadIcon color="primary" sx={{ fontSize: 40 }} />
-                  <Typography variant="subtitle1" fontWeight={700}>
-                    Clique aqui para selecionar o comprovante
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Tire uma foto ou envie o arquivo PDF do comprovante
-                  </Typography>
-                </Box>
-              )}
-            </FileUploadBox>
-          </StepBox>
+          </InstructionBox>
+          <FileUploadBox component="label" htmlFor="receipt-upload">
+            <input
+              {...restRegister}
+              id="receipt-upload"
+              type="file"
+              accept="image/*,application/pdf"
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                onChange(e)
+                const file = e.target.files?.[0] || null
+                setSelectedFile(file)
+              }}
+            />
+            {selectedFile ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                <CheckCircleIcon color="success" fontSize="small" />
+                <Typography variant="body2" fontWeight={700} color="success.main" noWrap>
+                  {selectedFile.name}
+                </Typography>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                <CloudUploadIcon color="primary" fontSize="small" />
+                <Typography variant="body2" fontWeight={700}>
+                  Selecionar Foto do Comprovante
+                </Typography>
+              </Box>
+            )}
+          </FileUploadBox>
         </FormContainer>
       </DialogContent>
-      <DialogActions sx={{ padding: 3, gap: 1 }}>
-        <Button onClick={handleClose} color="inherit" size="large" sx={{ fontWeight: 600 }}>
+      <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+        <Button onClick={handleClose} color="inherit" size="medium" sx={{ fontWeight: 600 }}>
           Cancelar
         </Button>
         <Button
@@ -151,10 +100,10 @@ export const JoinSweepstakeModal = ({ sweepstake, onSuccess, onClose, open }: Jo
           variant="contained"
           color="primary"
           disabled={!selectedFile}
-          size="large"
-          sx={{ fontWeight: 600, minWidth: 120 }}
+          size="medium"
+          sx={{ fontWeight: 600, px: 3 }}
         >
-          Enviar
+          Confirmar
         </Button>
       </DialogActions>
     </Dialog>
