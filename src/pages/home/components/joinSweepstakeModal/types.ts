@@ -1,10 +1,12 @@
+import type { SweepstakeResponse } from '@services/sweepstakes/types'
+
 export interface JoinFormData {
   receipt: FileList
 }
 
 export interface JoinSweepstakeModalProps {
   onSuccess: () => void
-  sweepstakeId: string
+  sweepstake: SweepstakeResponse | null
   onClose: () => void
   open: boolean
 }
