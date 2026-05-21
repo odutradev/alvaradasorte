@@ -1,11 +1,12 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
 import { useState } from 'react'
 
+import { CarouselWrapper, CarouselHeader, NavigationRow, CounterText } from './styles'
+import { EmptyState } from '@components/emptyState'
 import { SweepstakeCard } from '../sweepstakeCard'
-import { CarouselWrapper, CarouselHeader, NavigationRow, CounterText, EmptyStateWrapper } from './styles'
 
 import type { SweepstakesCarouselProps } from './types'
 
@@ -15,12 +16,10 @@ export const SweepstakesCarousel = ({ sweepstakes, onJoin }: SweepstakesCarousel
   if (sweepstakes.length === 0) {
     return (
       <CarouselWrapper>
-        <Typography variant="h5" fontWeight={700} gutterBottom>Bolões Disponíveis</Typography>
-        <EmptyStateWrapper elevation={1}>
-          <Typography variant="body1" color="text.secondary" align="center">
-            Nenhum bolão aberto no momento. Fique de olho!
-          </Typography>
-        </EmptyStateWrapper>
+        <Typography variant="h5" fontWeight={700} gutterBottom>
+          Bolões Disponíveis
+        </Typography>
+        <EmptyState description="Nenhum bolão aberto no momento. Fique de olho!" />
       </CarouselWrapper>
     )
   }
@@ -31,9 +30,13 @@ export const SweepstakesCarousel = ({ sweepstakes, onJoin }: SweepstakesCarousel
   return (
     <CarouselWrapper>
       <CarouselHeader>
-        <Typography variant="h5" fontWeight={700}>Bolões Disponíveis</Typography>
+        <Typography variant="h5" fontWeight={700}>
+          Bolões Disponíveis
+        </Typography>
         <NavigationRow>
-          <CounterText variant="body2">{currentIndex + 1} / {sweepstakes.length}</CounterText>
+          <CounterText variant="body2">
+            {currentIndex + 1} / {sweepstakes.length}
+          </CounterText>
           <IconButton onClick={goToPrev} disabled={currentIndex === 0} size="small" aria-label="Bolão anterior">
             <ChevronLeftIcon />
           </IconButton>
