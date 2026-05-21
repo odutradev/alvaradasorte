@@ -1,87 +1,23 @@
-import DialogContentText from '@mui/material/DialogContentText'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
+import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
-import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import { useState } from 'react'
 import dayjs from 'dayjs'
+import { capitalizeWords, formatCurrency } from '@utils/string'
 
-export interface ParticipationResponse {
-  sweepstakeId: string
-  receiptUrl: string
-  createdAt: string
-  userName: string
-  userId: string
-  id: string
-}
+import { CardContainer, InfoRow, DividerLine } from './styles'
 
-export interface SweepstakeDetailsResponse {
-  purchaseLimitDate: string
-  availableQuotas: number
-  description: string
-  prizeValue: number
-  quotaPrice: number
-  createdAt: string
-  updatedAt: string
-  presetId: string
-  drawDate: string
-  adminId: string
-  title: string
-  id: string
-  participations: ParticipationResponse[]
-  metadata: {
-    filledQuotas: number
-  }
-}
-
-export interface DetailsCardProps {
-  data: SweepstakeDetailsResponse
-}
+import type { DetailsCardProps } from './types'
 
 interface QuotaProgressProps {
   availableQuotas: number
   filledQuotas: number
 }
-
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(value)
-}
-
-const capitalizeWords = (str: string) => {
-  if (!str) return ''
-  return str
-    .toLowerCase()
-    .split(' ')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-}
-
-const CardContainer = styled(Paper)(({ theme }) => ({
-  flexDirection: 'column',
-  padding: theme.spacing(3),
-  display: 'flex',
-  gap: theme.spacing(2)
-}))
-
-const InfoRow = styled(Box)({
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  display: 'flex'
-})
-
-const DividerLine = styled(Box)(({ theme }) => ({
-  backgroundColor: theme?.palette?.divider || '#e0e0e0',
-  height: '1px',
-  width: '100%'
-}))
 
 const QuotaProgress = ({ availableQuotas, filledQuotas }: QuotaProgressProps) => {
   const total = availableQuotas
@@ -103,22 +39,87 @@ const QuotaProgress = ({ availableQuotas, filledQuotas }: QuotaProgressProps) =>
   )
 }
 
-export const DetailsCard = ({ data }: DetailsCardProps) => {
+export const DetailsCard = ({ data, preset }: DetailsCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const collectedValue = (data.participations.length ?? 0) * data.quotaPrice
-  const handleOpen = () => setIsModalOpen(true)
-  const handleClose = () => setIsModalOpen(false)
+  const [messageText, setMessageText] = useState('')
+  const [copied, setCopied] = useState(false)
+  const collectedValue = (data.participations?.length ?? 0) * data.quotaPrice
+
+  const handleOpen = () => {
+    setMessageText(generateMessage())
+    setIsModalOpen(true)
+  }
+
+  const handleClose = () => {
+    setIsModalOpen(false)
+    setCopied(false)
+  }
+
+  const generateMessage = () => {
+    const limitDateObj = dayjs(data.purchaseLimitDate)
+    const limitTime = limitDateObj.minute() === 0 ? limitDateObj.format('H[h]') : limitDateObj.format('H:mm')
+    const limitDay = limitDateObj.format('DD/MM')
+    const drawDateFormatted = dayjs(data.drawDate).format('DD/MM/YYYY')
+    const prizeValueFormatted = formatCurrency(data.prizeValue)
+    const quotaPriceFormatted = formatCurrency(data.quotaPrice)
+    const pixKey = preset?.pix || ''
+    const receiverName = preset?.receiverName || ''
+    const bankName = preset?.bank || ''
+
+    const parts = []
+    parts.push(capitalizeWords(data.title))
+    if (data.description) {
+      parts.push(data.description)
+      parts.push('')
+    }
+    parts.push('')
+    parts.push(`${drawDateFormatted}`)
+    parts.push('')
+    parts.push(`Prêmio estimado: ${prizeValueFormatted} 👀`)
+    parts.push(`Cota: ${quotaPriceFormatted}`)
+    parts.push('')
+    parts.push(`⏱️ PIX até ${limitTime} do dia ${limitDay} em ponto 😉`)
+    parts.push('')
+    if (pixKey) {
+      parts.push(`📲 PIX: ${pixKey}`)
+      if (receiverName) {
+        parts.push(`Nome do recebedor: ${capitalizeWords(receiverName)}`)
+      }
+      if (bankName) {
+        parts.push(`Banco: ${capitalizeWords(bankName)}`)
+      }
+      parts.push('')
+    }
+    parts.push(`⚠️ Participação confirmada via sistema enviando o comprovante até ${limitTime}`)
+    parts.push('⚠️ O PIX deve estar no nome do participante')
+    parts.push('')
+    return parts.join('\n')
+  }
+
+  const handleCopyMessage = () => {
+    const textarea = document.createElement('textarea')
+    textarea.value = messageText
+    textarea.style.position = 'fixed'
+    document.body.appendChild(textarea)
+    textarea.focus()
+    textarea.select()
+    try {
+      document.execCommand('copy')
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+    }
+    document.body.removeChild(textarea)
+  }
 
   return (
     <CardContainer elevation={2}>
       <Typography variant="h6" fontWeight={600} color="primary">
         {capitalizeWords(data.title)}
       </Typography>
-      {data.description && (
-        <Button variant="text" size="small" onClick={handleOpen} sx={{ alignSelf: 'flex-start', p: 0 }}>
-          Ver Descrição
-        </Button>
-      )}
+      <Button variant="text" size="small" onClick={handleOpen} sx={{ alignSelf: 'flex-start', p: 0 }}>
+        Ver Mensagem
+      </Button>
       <DividerLine />
       <InfoRow>
         <Typography variant="body2" color="text.secondary">Valor da Cota</Typography>
@@ -141,7 +142,7 @@ export const DetailsCard = ({ data }: DetailsCardProps) => {
       <DividerLine />
       <QuotaProgress
         availableQuotas={data.availableQuotas}
-        filledQuotas={data.participations.length ?? 0}
+        filledQuotas={data.participations?.length ?? 0}
       />
       <DividerLine />
       <InfoRow>
@@ -157,14 +158,37 @@ export const DetailsCard = ({ data }: DetailsCardProps) => {
         </Typography>
       </InfoRow>
       <Dialog open={isModalOpen} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>{capitalizeWords(data.title)}</DialogTitle>
+        <DialogTitle>Mensagem do Bolão</DialogTitle>
         <DialogContent dividers>
-          <DialogContentText color="text.primary" sx={{ whiteSpace: 'pre-wrap' }}>
-            {data.description}
-          </DialogContentText>
+          <TextField
+            multiline
+            fullWidth
+            rows={12}
+            variant="outlined"
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
+            sx={{
+              '& .MuiInputBase-input': {
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                overflow: 'hidden'
+              },
+              '& .MuiInputBase-root': {
+                overflow: 'hidden'
+              },
+              bgcolor: 'action.hover'
+            }}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button
+            onClick={handleCopyMessage}
+            variant="contained"
+            color={copied ? 'success' : 'primary'}
+          >
+            {copied ? 'Copiado!' : 'Copiar Mensagem'}
+          </Button>
+          <Button onClick={handleClose} color="inherit">
             Fechar
           </Button>
         </DialogActions>
