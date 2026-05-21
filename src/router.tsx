@@ -2,9 +2,9 @@ import { createBrowserRouter } from 'react-router-dom'
 import { createElement } from 'react'
 
 import { SweepstakesPage } from '@pages/sweepstakes'
-import { PresetsPage } from '@pages/presets'
-import NotFound from '@pages/notFound'
+import PresetsPage from '@pages/presets'
 import { HomePage } from '@pages/home'
+import NotFound from '@pages/notFound'
 import LoginPage from '@pages/login'
 
 import type { RouteObject } from 'react-router-dom'

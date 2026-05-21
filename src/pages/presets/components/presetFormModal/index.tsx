@@ -1,39 +1,22 @@
 import { DialogActions, TextField, Button, Dialog } from '@mui/material'
-import { useForm } from 'react-hook-form'
 
-import { createPreset } from '@services/presets'
 import { FormContainer } from './styles'
-import useAction from '@hooks/useAction'
 
-import type { PresetFormModalProps, PresetFormData } from './types'
+import type { PresetFormModalProps } from './types'
 
-export const PresetFormModal = ({ onSuccess, onClose, open }: PresetFormModalProps) => {
-  const { handleSubmit, register, reset } = useForm<PresetFormData>()
+const PresetFormModal = ({ handleSubmit, register, onClose, onSubmit, open }: PresetFormModalProps) => (
+  <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+    <FormContainer component="form" id="preset-form" onSubmit={handleSubmit(onSubmit)}>
+      <TextField {...register('description')} label="Descrição" required fullWidth multiline rows={4} />
+      <TextField {...register('pix')} label="Chave PIX" required fullWidth />
+      <TextField {...register('receiverName')} label="Nome do Recebedor" required fullWidth />
+      <TextField {...register('bank')} label="Banco" required fullWidth />
+    </FormContainer>
+    <DialogActions sx={{ px: 3, pb: 3, pt: 0 }}>
+      <Button onClick={onClose} color="inherit">Cancelar</Button>
+      <Button type="submit" form="preset-form" variant="contained" color="primary">Salvar</Button>
+    </DialogActions>
+  </Dialog>
+)
 
-  const onSubmit = async (data: PresetFormData) => {
-    await useAction({
-      action: async () => await createPreset(data),
-      callback: () => {
-        onSuccess()
-        onClose()
-        reset()
-      },
-      toastMessages: { success: 'Predefinição criada!', pending: 'Salvando...', error: 'Erro ao criar' }
-    })
-  }
-
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <FormContainer component="form" id="preset-form" onSubmit={handleSubmit(onSubmit)}>
-        <TextField {...register('description')} label="Descrição" required fullWidth multiline rows={4} />
-        <TextField {...register('pix')} label="Chave PIX" required fullWidth />
-        <TextField {...register('receiverName')} label="Nome do Recebedor" required fullWidth />
-        <TextField {...register('bank')} label="Banco" required fullWidth />
-      </FormContainer>
-      <DialogActions sx={{ px: 3, pb: 3, pt: 0 }}>
-        <Button onClick={onClose} color="inherit">Cancelar</Button>
-        <Button type="submit" form="preset-form" variant="contained" color="primary">Salvar</Button>
-      </DialogActions>
-    </Dialog>
-  )
-}
+export default PresetFormModal

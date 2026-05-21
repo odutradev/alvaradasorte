@@ -21,26 +21,8 @@ export const ContentContainer = styled(Box)(({ theme }) => ({
   }
 }))
 
-export const HeaderSection = styled(Box)(({ theme }) => ({
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  display: 'flex',
-  [theme.breakpoints.down('sm')]: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: theme.spacing(2)
-  }
-}))
-
 export const ListContainer = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   display: 'flex',
   gap: theme.spacing(2)
-}))
-
-export const InfoGrid = styled(Box)(({ theme }) => ({
-  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-  display: 'grid',
-  gap: theme.spacing(1),
-  marginTop: theme.spacing(1)
 }))

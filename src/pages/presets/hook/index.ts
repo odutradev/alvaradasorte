@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 
-import { deletePreset, getPresets } from '@services/presets'
-import useAction from '@hooks/useAction'
+import { deletePreset, getPresets, createPreset } from '@services/presets'
 import { useAuth } from '@hooks/useAuth'
+import useAction from '@hooks/useAction'
 
+import type { PresetFormData } from '../components/presetFormModal/types'
 import type { PresetResponse } from '@services/presets/types'
 import type { UsePresetsReturn } from './types'
 
-export const usePresets = (): UsePresetsReturn => {
+const usePresets = (): UsePresetsReturn => {
   const [presets, setPresets] = useState<PresetResponse[]>([])
   const [modalOpen, setModalOpen] = useState(false)
   const { logout, user } = useAuth()
+  const { handleSubmit, register, reset } = useForm<PresetFormData>()
 
   const loadPresets = useCallback(async () => {
     await useAction({
@@ -32,13 +35,31 @@ export const usePresets = (): UsePresetsReturn => {
     })
   }
 
+  const onSubmit = async (data: PresetFormData) => {
+    await useAction({
+      action: async () => await createPreset(data),
+      callback: () => {
+        loadPresets()
+        setModalOpen(false)
+        reset()
+      },
+      toastMessages: { success: 'Predefinição criada!', pending: 'Salvando...', error: 'Erro ao criar' }
+    })
+  }
+
   return {
     handleDelete,
+    handleSubmit,
     setModalOpen,
     loadPresets,
     modalOpen,
+    onSubmit,
+    register,
     presets,
     logout,
+    reset,
     user
   }
 }
+
+export default usePresets
