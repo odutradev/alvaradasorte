@@ -4,9 +4,9 @@ import { useForm, Controller } from 'react-hook-form'
 
 import { createSweepstake } from '@services/sweepstakes'
 import ValueSlider from '@components/valueSlider'
+import { FormContainer, DateRow } from './styles'
 import { getPresets } from '@services/presets'
 import useAction from '@hooks/useAction'
-import { FormContainer, DateRow } from './styles'
 
 import type { SweepstakeFormModalProps, SweepstakeFormData } from './types'
 import type { PresetResponse } from '@services/presets/types'
@@ -73,6 +73,7 @@ export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeForm
               min={5}
               max={150}
               format="currency"
+              markStep={5}
             />
           )}
         />
@@ -88,6 +89,7 @@ export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeForm
               min={10}
               max={100}
               format="number"
+              markStep={5}
             />
           )}
         />

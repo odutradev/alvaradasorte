@@ -6,4 +6,5 @@ export interface ValueSliderProps {
   max: number
   step?: number
   format?: 'number' | 'currency'
+  markStep?: number
 }
