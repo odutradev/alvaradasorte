@@ -1,26 +1,42 @@
 import { DialogContent, DialogActions, DialogTitle, Typography, TextField, Button, Dialog, Alert } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { useForm } from 'react-hook-form'
+import Box from '@mui/material/Box'
 import { useEffect } from 'react'
 
-import { updateMeData } from '@services/auth/me'
-import { FormContainer } from './styles'
-import useAction from '@hooks/useAction'
-import useAuthStore from '@stores/auth'
+import { updateMeData } from '../../../../services/auth/me'
+import useAction from '../../../../hooks/useAction'
+import useAuthStore from '../../../../stores/auth'
 
-import type { CompleteProfileModalProps, ProfileFormData } from './types'
+interface ProfileFormData {
+  department: string
+  fullName: string
+  phone: string
+}
+
+interface CompleteProfileModalProps {
+  isProfileIncomplete: boolean
+  onClose: () => void
+  open: boolean
+}
+
+const FormContainer = styled(Box)(({ theme }) => ({
+  flexDirection: 'column',
+  gap: theme.spacing(2),
+  display: 'flex'
+}))
 
 export const CompleteProfileModal = ({ isProfileIncomplete, onClose, open }: CompleteProfileModalProps) => {
-  const { user, updateUser } = useAuthStore()
+  const { auth: { user }, updateUser } = useAuthStore()
   const { handleSubmit, register, reset } = useForm<ProfileFormData>()
 
   useEffect(() => {
-    if (open && user) {
-      reset({
-        fullName: user.fullName ?? '',
-        department: user.department ?? '',
-        phone: user.phone ?? ''
-      })
-    }
+    if (!open || !user) return
+    reset({
+      fullName: user.fullName ?? '',
+      department: user.department ?? '',
+      phone: user.phone ?? ''
+    })
   }, [open, user, reset])
 
   const onSubmit = async (data: ProfileFormData) => {
