@@ -7,19 +7,22 @@ export const CardContainer = styled(Paper)(({ theme }) => ({
   alignItems: 'center',
   borderRadius: 8,
   padding: theme.spacing(3),
-  display: 'flex'
+  display: 'flex',
+  gap: theme.spacing(2)
 }))
 
 export const InfoWrapper = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   display: 'flex',
-  width: '100%',
+  flex: 1,
+  minWidth: 0,
   gap: theme.spacing(2)
 }))
 
 export const InfoGrid = styled(Box)(({ theme }) => ({
   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
   display: 'grid',
+  width: '100%',
   gap: theme.spacing(1),
   marginTop: theme.spacing(1)
 }))

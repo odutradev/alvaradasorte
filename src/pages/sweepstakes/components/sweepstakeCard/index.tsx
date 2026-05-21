@@ -17,7 +17,7 @@ const SweepstakeCard = ({ sweepstake, onViewDetails }: SweepstakeCardProps) => (
       </Typography>
       <QuotaProgress
         availableQuotas={sweepstake.availableQuotas}
-        filledQuotas={sweepstake.metadata.filledQuotas}
+        filledQuotas={sweepstake.metadata?.filledQuotas ?? 0}
       />
       <InfoGrid>
         <Typography variant="body2" color="text.secondary">
@@ -27,7 +27,7 @@ const SweepstakeCard = ({ sweepstake, onViewDetails }: SweepstakeCardProps) => (
           <strong>Sorteio:</strong> {dayjs(sweepstake.drawDate).format('DD/MM/YYYY')}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          <strong>Valor Arrecadado:</strong> {formatCurrency(sweepstake.metadata.filledQuotas * sweepstake.quotaPrice)}
+          <strong>Valor Arrecadado:</strong> {formatCurrency((sweepstake.metadata?.filledQuotas ?? 0) * sweepstake.quotaPrice)}
         </Typography>
       </InfoGrid>
     </InfoWrapper>

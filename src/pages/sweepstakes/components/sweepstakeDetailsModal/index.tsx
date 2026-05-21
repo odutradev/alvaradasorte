@@ -41,7 +41,7 @@ export const SweepstakeDetailsModal = ({ sweepstakeId, onClose, open }: Sweepsta
             <ProgressWrapper>
               <QuotaProgress
                 availableQuotas={details.availableQuotas}
-                filledQuotas={details.metadata.filledQuotas}
+                filledQuotas={details.metadata?.filledQuotas ?? 0}
               />
             </ProgressWrapper>
             <SectionTitle variant="subtitle1">
