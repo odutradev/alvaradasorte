@@ -15,20 +15,24 @@ import Box from '@mui/material/Box'
 import { useState } from 'react'
 import dayjs from 'dayjs'
 
-import { TableContainerWrapper, EmptyBox } from './styles'
+import { StatementValidationModal } from './subcomponents/statementValidationModal'
+import { TableContainerWrapper, TableHeader, EmptyBox } from './styles'
 
 import type { ParticipantsTableProps } from './types'
 
 export const ParticipantsTable = ({ participations }: ParticipantsTableProps) => {
   const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null)
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
+  const [isValidationOpen, setIsValidationOpen] = useState(false)
   const sortedParticipations = [...participations].sort((a, b) =>
     a.userName.localeCompare(b.userName)
   )
+
   const handleOpenReceipt = (url: string, name: string) => {
     setSelectedReceipt(url)
     setSelectedUser(name)
   }
+
   const handleCloseReceipt = () => {
     setSelectedReceipt(null)
     setSelectedUser(null)
@@ -36,9 +40,14 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
 
   return (
     <TableContainerWrapper elevation={2}>
-      <Typography variant="h6" fontWeight={600}>
-        Participantes ({participations.length})
-      </Typography>
+      <TableHeader>
+        <Typography variant="h6" fontWeight={600}>
+          Participantes ({participations.length})
+        </Typography>
+        <Button size="small" variant="outlined" onClick={() => setIsValidationOpen(true)}>
+          Validar Extrato
+        </Button>
+      </TableHeader>
       {sortedParticipations.length === 0 ? (
         <EmptyBox>
           <Typography variant="body2" color="text.secondary">
@@ -85,23 +94,21 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
             component="img"
             src={selectedReceipt ?? ''}
             alt="Comprovante"
-            sx={{
-              maxWidth: '100%',
-              maxHeight: '70vh',
-              objectFit: 'contain',
-              borderRadius: 1
-            }}
+            sx={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain', borderRadius: 1 }}
           />
         </DialogContent>
         <DialogActions>
           <Button href={selectedReceipt ?? ''} target="_blank" rel="noreferrer" color="secondary">
             Abrir em nova aba
           </Button>
-          <Button onClick={handleCloseReceipt} color="primary">
-            Fechar
-          </Button>
+          <Button onClick={handleCloseReceipt} color="primary">Fechar</Button>
         </DialogActions>
       </Dialog>
+      <StatementValidationModal
+        participations={participations}
+        open={isValidationOpen}
+        onClose={() => setIsValidationOpen(false)}
+      />
     </TableContainerWrapper>
   )
 }
