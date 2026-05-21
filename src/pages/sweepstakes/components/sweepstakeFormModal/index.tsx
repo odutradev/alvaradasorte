@@ -99,7 +99,7 @@ export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeForm
         </DateRow>
         <TextField {...register('presetId')} select label="Conta Recebedora" defaultValue="" required fullWidth>
           {presets.map((p) => (
-            <MenuItem key={p.id} value={p.id}>{p.description} ({p.bank})</MenuItem>
+            <MenuItem key={p.id} value={p.id}>{p.receiverName} ({p.bank})</MenuItem>
           ))}
         </TextField>
       </FormContainer>
