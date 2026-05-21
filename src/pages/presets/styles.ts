@@ -1,5 +1,4 @@
 import { styled } from '@mui/material/styles'
-import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
 export const PageWrapper = styled(Box)({
@@ -44,14 +43,4 @@ export const InfoGrid = styled(Box)(({ theme }) => ({
   display: 'grid',
   gap: theme.spacing(1),
   marginTop: theme.spacing(1)
-}))
-
-export const EmptyStateWrapper = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  border: `1px dashed ${theme.palette.divider}`,
-  padding: theme.spacing(6, 4),
-  borderRadius: theme.shape.borderRadius * 2,
-  justifyContent: 'center',
-  alignItems: 'center',
-  display: 'flex'
 }))

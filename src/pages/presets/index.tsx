@@ -1,13 +1,14 @@
+import DeleteIcon from '@mui/icons-material/Delete'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import DeleteIcon from '@mui/icons-material/Delete'
 import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
-import { PageWrapper, ContentContainer, HeaderSection, ListContainer, InfoGrid, EmptyStateWrapper } from './styles'
+import { PageWrapper, ContentContainer, HeaderSection, ListContainer, InfoGrid } from './styles'
 import { PresetFormModal } from './components/presetFormModal'
 import GridBackground from '@components/gridBackground'
+import EmptyState from '@components/emptyState'
 import Header from '@components/header'
 import { usePresets } from './hook'
 
@@ -31,7 +32,17 @@ export const PresetsPage = () => {
           </HeaderSection>
           <ListContainer>
             {presets.map((preset) => (
-              <Paper key={preset.id} elevation={2} sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: 2 }}>
+              <Paper
+                key={preset.id}
+                elevation={2}
+                sx={{
+                  p: 3,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderRadius: 2
+                }}
+              >
                 <Box>
                   <Typography variant="h6" fontWeight={600} gutterBottom>
                     {preset.description}
@@ -54,11 +65,7 @@ export const PresetsPage = () => {
               </Paper>
             ))}
             {presets.length === 0 && (
-              <EmptyStateWrapper elevation={1}>
-                <Typography variant="body1" color="text.secondary" align="center">
-                  Nenhuma predefinição cadastrada.
-                </Typography>
-              </EmptyStateWrapper>
+              <EmptyState description="Nenhuma predefinição cadastrada no sistema." />
             )}
           </ListContainer>
         </ContentContainer>

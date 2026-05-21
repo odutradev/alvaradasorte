@@ -5,7 +5,7 @@ import { Container, IconWrapper } from './styles'
 
 import type { EmptyStateProps } from './types'
 
-export const EmptyState = ({ description, title, icon }: EmptyStateProps) => {
+const EmptyState = ({ description, title, icon }: EmptyStateProps) => {
   const renderedIcon = icon ?? <SentimentDissatisfiedIcon sx={{ fontSize: 48 }} />
 
   return (
@@ -22,3 +22,5 @@ export const EmptyState = ({ description, title, icon }: EmptyStateProps) => {
     </Container>
   )
 }
+
+export default EmptyState

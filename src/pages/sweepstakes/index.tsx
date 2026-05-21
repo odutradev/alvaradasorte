@@ -6,10 +6,11 @@ import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
-import { PageWrapper, ContentContainer, HeaderSection, ListContainer, InfoGrid, EmptyStateWrapper } from './styles'
+import { PageWrapper, ContentContainer, HeaderSection, ListContainer, InfoGrid } from './styles'
 import { SweepstakeDetailsModal } from './components/sweepstakeDetailsModal'
 import { SweepstakeFormModal } from './components/sweepstakeFormModal'
 import GridBackground from '@components/gridBackground'
+import EmptyState from '@components/emptyState'
 import { useSweepstakesAdmin } from './hook'
 import Header from '@components/header'
 
@@ -33,7 +34,17 @@ export const SweepstakesPage = () => {
           </HeaderSection>
           <ListContainer>
             {sweepstakes.map((swp) => (
-              <Paper key={swp.id} elevation={2} sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: 2 }}>
+              <Paper
+                key={swp.id}
+                elevation={2}
+                sx={{
+                  p: 3,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderRadius: 2
+                }}
+              >
                 <Box>
                   <Typography variant="h6" fontWeight={600} gutterBottom>
                     {swp.title}
@@ -56,16 +67,14 @@ export const SweepstakesPage = () => {
               </Paper>
             ))}
             {sweepstakes.length === 0 && (
-              <EmptyStateWrapper elevation={1}>
-                <Typography variant="body1" color="text.secondary" align="center">
-                  Nenhum bolão cadastrado no sistema.
-                </Typography>
-              </EmptyStateWrapper>
+              <EmptyState description="Nenhum bolão cadastrado no sistema." />
             )}
           </ListContainer>
         </ContentContainer>
         <SweepstakeFormModal open={modalOpen} onClose={() => setModalOpen(false)} onSuccess={loadSweepstakes} />
-        {!!detailsId && <SweepstakeDetailsModal sweepstakeId={detailsId} open={true} onClose={() => setDetailsId(null)} />}
+        {!!detailsId && (
+          <SweepstakeDetailsModal sweepstakeId={detailsId} open={true} onClose={() => setDetailsId(null)} />
+        )}
       </PageWrapper>
     </GridBackground>
   )

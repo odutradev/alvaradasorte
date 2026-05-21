@@ -5,8 +5,8 @@ import IconButton from '@mui/material/IconButton'
 import { useState } from 'react'
 
 import { CarouselWrapper, CarouselHeader, NavigationRow, CounterText } from './styles'
-import { EmptyState } from '@components/emptyState'
 import { SweepstakeCard } from '../sweepstakeCard'
+import EmptyState from '@components/emptyState'
 
 import type { SweepstakesCarouselProps } from './types'
 
