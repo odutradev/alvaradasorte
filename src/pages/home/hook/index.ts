@@ -9,6 +9,7 @@ import type { UseHomeReturn } from './types'
 
 export const useHome = (): UseHomeReturn => {
   const [sweepstakes, setSweepstakes] = useState<SweepstakeResponse[]>([])
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const { logout, user } = useAuth()
 
@@ -28,6 +29,8 @@ export const useHome = (): UseHomeReturn => {
   const isProfileIncomplete = Boolean(user && (!user.fullName || !user.department || !user.phone))
 
   return {
+    setIsProfileModalOpen,
+    isProfileModalOpen,
     isProfileIncomplete,
     fetchSweepstakes,
     setSelectedId,

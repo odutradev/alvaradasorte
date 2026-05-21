@@ -5,5 +5,7 @@ export interface ProfileFormData {
 }
 
 export interface CompleteProfileModalProps {
+  isProfileIncomplete: boolean
+  onClose: () => void
   open: boolean
 }

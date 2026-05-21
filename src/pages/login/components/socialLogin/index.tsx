@@ -10,9 +10,9 @@ const SocialLogin = ({ onGoogleLogin, onAppleLogin }: SocialLoginProps) => (
     <SocialButton variant="outlined" startIcon={<GoogleIcon />} onClick={onGoogleLogin} fullWidth>
       Google
     </SocialButton>
-    <SocialButton variant="outlined" startIcon={<AppleIcon />} onClick={onAppleLogin} fullWidth>
+    {/* <SocialButton variant="outlined" startIcon={<AppleIcon />} onClick={onAppleLogin} fullWidth>
       Apple
-    </SocialButton>
+    </SocialButton> */}
   </SocialContainer>
 )
 

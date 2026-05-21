@@ -1,6 +1,7 @@
-import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { styled } from '@mui/material/styles'
 import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
@@ -45,6 +46,11 @@ export const ValueText = styled(Typography)({
   wordBreak: 'break-word',
   textAlign: 'right'
 })
+
+export const EditProfileButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  width: '100%'
+}))
 
 export const ProviderRow = styled(Box)(({ theme }) => ({
   justifyContent: 'center',

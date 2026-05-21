@@ -1,16 +1,25 @@
 import { Navigate } from 'react-router-dom'
 
 import { CompleteProfileModal } from './components/completeProfileModal'
+import { PageWrapper, ContentContainer, GridContainer } from './styles'
 import { SweepstakesCarousel } from './components/sweepstakesCarousel'
 import { JoinSweepstakeModal } from './components/joinSweepstakeModal'
-import { UserProfile } from './components/userProfile'
 import GridBackground from '@components/gridBackground'
+import { UserProfile } from './components/userProfile'
 import Header from '@components/header'
 import { useHome } from './hook'
-import { PageWrapper, ContentContainer, GridContainer } from './styles'
 
 export const HomePage = () => {
-  const { isProfileIncomplete, fetchSweepstakes, setSelectedId, sweepstakes, selectedId, user } = useHome()
+  const {
+    setIsProfileModalOpen,
+    isProfileModalOpen,
+    isProfileIncomplete,
+    fetchSweepstakes,
+    setSelectedId,
+    sweepstakes,
+    selectedId,
+    user
+  } = useHome()
 
   if (!user) return <Navigate to="/login" replace />
 
@@ -20,12 +29,25 @@ export const HomePage = () => {
         <Header />
         <ContentContainer>
           <GridContainer>
-            <UserProfile user={user} isProfileIncomplete={isProfileIncomplete} />
+            <UserProfile
+              user={user}
+              isProfileIncomplete={isProfileIncomplete}
+              onEditProfile={() => setIsProfileModalOpen(true)}
+            />
             <SweepstakesCarousel sweepstakes={sweepstakes} onJoin={setSelectedId} />
           </GridContainer>
         </ContentContainer>
-        <CompleteProfileModal open={isProfileIncomplete} />
-        <JoinSweepstakeModal open={!!selectedId} onClose={() => setSelectedId(null)} onSuccess={fetchSweepstakes} sweepstakeId={selectedId ?? ''} />
+        <CompleteProfileModal
+          open={isProfileIncomplete || isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          isProfileIncomplete={isProfileIncomplete}
+        />
+        <JoinSweepstakeModal
+          open={!!selectedId}
+          onClose={() => setSelectedId(null)}
+          onSuccess={fetchSweepstakes}
+          sweepstakeId={selectedId ?? ''}
+        />
       </PageWrapper>
     </GridBackground>
   )
