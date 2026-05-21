@@ -1,4 +1,5 @@
 import { styled } from '@mui/material/styles'
+import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
@@ -38,4 +39,11 @@ export const DividerWrapper = styled(Box)(({ theme }) => ({
   '& > *': {
     padding: theme.spacing(0, 2)
   }
+}))
+
+export const ModeToggleButton = styled(Button)(({ theme }) => ({
+  textTransform: 'none',
+  marginTop: theme.spacing(2),
+  color: theme.palette.primary.main,
+  fontWeight: 600
 }))
