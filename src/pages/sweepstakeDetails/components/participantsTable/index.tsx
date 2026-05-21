@@ -1,11 +1,18 @@
 import TableContainer from '@mui/material/TableContainer'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableRow from '@mui/material/TableRow'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
 import Table from '@mui/material/Table'
 import Link from '@mui/material/Link'
+import Box from '@mui/material/Box'
+import { useState } from 'react'
 import dayjs from 'dayjs'
 
 import { TableContainerWrapper, EmptyBox } from './styles'
@@ -13,9 +20,19 @@ import { TableContainerWrapper, EmptyBox } from './styles'
 import type { ParticipantsTableProps } from './types'
 
 export const ParticipantsTable = ({ participations }: ParticipantsTableProps) => {
+  const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null)
+  const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const sortedParticipations = [...participations].sort((a, b) =>
     a.userName.localeCompare(b.userName)
   )
+  const handleOpenReceipt = (url: string, name: string) => {
+    setSelectedReceipt(url)
+    setSelectedUser(name)
+  }
+  const handleCloseReceipt = () => {
+    setSelectedReceipt(null)
+    setSelectedUser(null)
+  }
 
   return (
     <TableContainerWrapper elevation={2}>
@@ -46,7 +63,12 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
                     {dayjs(part.createdAt).format('DD/MM/YYYY HH:mm')}
                   </TableCell>
                   <TableCell align="right">
-                    <Link href={part.receiptUrl} target="_blank" rel="noreferrer" underline="hover">
+                    <Link
+                      component="button"
+                      variant="body2"
+                      onClick={() => handleOpenReceipt(part.receiptUrl, part.userName)}
+                      underline="hover"
+                    >
                       Visualizar
                     </Link>
                   </TableCell>
@@ -56,6 +78,30 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
           </Table>
         </TableContainer>
       )}
+      <Dialog open={!!selectedReceipt} onClose={handleCloseReceipt} fullWidth maxWidth="sm">
+        <DialogTitle>Comprovante - {selectedUser}</DialogTitle>
+        <DialogContent dividers sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+          <Box
+            component="img"
+            src={selectedReceipt ?? ''}
+            alt="Comprovante"
+            sx={{
+              maxWidth: '100%',
+              maxHeight: '70vh',
+              objectFit: 'contain',
+              borderRadius: 1
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button href={selectedReceipt ?? ''} target="_blank" rel="noreferrer" color="secondary">
+            Abrir em nova aba
+          </Button>
+          <Button onClick={handleCloseReceipt} color="primary">
+            Fechar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </TableContainerWrapper>
   )
 }
