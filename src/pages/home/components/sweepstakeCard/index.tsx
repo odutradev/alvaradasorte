@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 
 import { CardContainer, HeaderRow, InfoRow } from './styles'
 import { QuotaProgress } from '@components/quotaProgress'
+import { formatCurrency } from '@utils/string'
 
 import type { SweepstakeCardProps } from './types'
 
@@ -28,11 +29,15 @@ export const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
       </HeaderRow>
       <InfoRow>
         <Typography variant="body2" color="text.secondary">Valor da Cota:</Typography>
-        <Typography variant="body1" fontWeight={500}>R$ {data.quotaPrice.toFixed(2)}</Typography>
+        <Typography variant="body1" fontWeight={500}>
+          {formatCurrency(data.quotaPrice)}
+        </Typography>
       </InfoRow>
       <InfoRow>
         <Typography variant="body2" color="text.secondary">Prêmio Total:</Typography>
-        <Typography variant="body1" fontWeight={500}>R$ {data.prizeValue.toFixed(2)}</Typography>
+        <Typography variant="body1" fontWeight={500}>
+          {formatCurrency(data.prizeValue)}
+        </Typography>
       </InfoRow>
       <QuotaProgress
         availableQuotas={data.availableQuotas}
