@@ -1,9 +1,9 @@
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
-import Paper from '@mui/material/Paper'
+import { styled } from '@mui/material/styles'
 import Button from '@mui/material/Button'
+import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
 export const CardContainer = styled(Paper)(({ theme }) => ({
@@ -61,17 +61,13 @@ export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   padding: theme.spacing(0, 3, 3)
 }))
 
-export const StyledTextField = styled(TextField)(({ theme }) => ({
+export const StyledTextField = styled(TextField)({
   '& .MuiInputBase-input': {
     fontFamily: 'monospace',
-    fontSize: '0.875rem',
-    overflow: 'hidden'
+    fontSize: '0.875rem'
   },
-  '& .MuiInputBase-root': {
-    overflow: 'hidden'
-  },
-  backgroundColor: theme.palette.action.hover
-}))
+  backgroundColor: 'transparent'
+})
 
 export const StyledTextButton = styled(Button)({
   alignSelf: 'flex-start',
