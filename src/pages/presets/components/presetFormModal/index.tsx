@@ -1,4 +1,4 @@
-import { DialogContent, DialogActions, DialogTitle, TextField, Button, Dialog } from '@mui/material'
+import { DialogActions, TextField, Button, Dialog } from '@mui/material'
 import { useForm } from 'react-hook-form'
 
 import { createPreset } from '@services/presets'
@@ -24,16 +24,13 @@ export const PresetFormModal = ({ onSuccess, onClose, open }: PresetFormModalPro
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>Nova Predefinição</DialogTitle>
-      <DialogContent>
-        <FormContainer component="form" id="preset-form" onSubmit={handleSubmit(onSubmit)}>
-          <TextField {...register('description')} label="Descrição" required fullWidth multiline rows={4} />
-          <TextField {...register('pix')} label="Chave PIX" required fullWidth />
-          <TextField {...register('receiverName')} label="Nome do Recebedor" required fullWidth />
-          <TextField {...register('bank')} label="Banco" required fullWidth />
-        </FormContainer>
-      </DialogContent>
-      <DialogActions>
+      <FormContainer component="form" id="preset-form" onSubmit={handleSubmit(onSubmit)}>
+        <TextField {...register('description')} label="Descrição" required fullWidth multiline rows={4} />
+        <TextField {...register('pix')} label="Chave PIX" required fullWidth />
+        <TextField {...register('receiverName')} label="Nome do Recebedor" required fullWidth />
+        <TextField {...register('bank')} label="Banco" required fullWidth />
+      </FormContainer>
+      <DialogActions sx={{ px: 3, pb: 3, pt: 0 }}>
         <Button onClick={onClose} color="inherit">Cancelar</Button>
         <Button type="submit" form="preset-form" variant="contained" color="primary">Salvar</Button>
       </DialogActions>

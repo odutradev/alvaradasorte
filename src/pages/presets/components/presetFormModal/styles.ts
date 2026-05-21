@@ -5,5 +5,5 @@ export const FormContainer = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   gap: theme.spacing(2),
   display: 'flex',
-  marginTop: 8
+  padding: theme.spacing(3, 3, 2, 3)
 }))
