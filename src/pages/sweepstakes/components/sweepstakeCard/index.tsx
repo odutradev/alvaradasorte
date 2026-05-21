@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 
 import { CardContainer, InfoWrapper, InfoGrid } from './styles'
 import { QuotaProgress } from '@components/quotaProgress'
+import { formatCurrency } from '@utils/string'
 
 import type { SweepstakeCardProps } from './types'
 
@@ -20,10 +21,13 @@ const SweepstakeCard = ({ sweepstake, onViewDetails }: SweepstakeCardProps) => (
       />
       <InfoGrid>
         <Typography variant="body2" color="text.secondary">
-          <strong>Valor do Prêmio:</strong> R$ {sweepstake.prizeValue.toFixed(2)}
+          <strong>Valor do Prêmio:</strong> {formatCurrency(sweepstake.prizeValue)}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           <strong>Sorteio:</strong> {dayjs(sweepstake.drawDate).format('DD/MM/YYYY')}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          <strong>Valor Arrecadado:</strong> {formatCurrency(sweepstake.metadata.filledQuotas * sweepstake.quotaPrice)}
         </Typography>
       </InfoGrid>
     </InfoWrapper>

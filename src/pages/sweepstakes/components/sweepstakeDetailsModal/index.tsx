@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import { ListContainer, ProgressWrapper, SectionTitle, ParticipationCard } from './styles'
 import { getSweepstakeDetails } from '@services/sweepstakes'
 import { QuotaProgress } from '@components/quotaProgress'
+import { formatCurrency } from '@utils/string'
 import useAction from '@hooks/useAction'
 
 import type { SweepstakeDetailsResponse } from '@services/sweepstakes/types'
@@ -35,7 +36,7 @@ export const SweepstakeDetailsModal = ({ sweepstakeId, onClose, open }: Sweepsta
           <>
             <Typography variant="h6">{details.title}</Typography>
             <Typography variant="body2" color="text.secondary">
-              Preço da Cota: R$ {details.quotaPrice.toFixed(2)}
+              Preço da Cota: {formatCurrency(details.quotaPrice)}
             </Typography>
             <ProgressWrapper>
               <QuotaProgress
