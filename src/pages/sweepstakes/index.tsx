@@ -1,17 +1,17 @@
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
-import { PageWrapper, ContentContainer, HeaderSection, ListContainer, InfoGrid } from './styles'
+import { PageWrapper, ContentContainer, ListContainer, InfoGrid } from './styles'
 import { SweepstakeDetailsModal } from './components/sweepstakeDetailsModal'
 import { SweepstakeFormModal } from './components/sweepstakeFormModal'
 import GridBackground from '@components/gridBackground'
 import EmptyState from '@components/emptyState'
 import { useSweepstakesAdmin } from './hook'
+import Subheader from '@components/subheader'
 import Header from '@components/header'
 
 export const SweepstakesPage = () => {
@@ -24,14 +24,11 @@ export const SweepstakesPage = () => {
       <PageWrapper>
         <Header />
         <ContentContainer>
-          <HeaderSection>
-            <Typography variant="h4" fontWeight={700} color="primary">
-              Gerenciamento de Bolões
-            </Typography>
-            <Button variant="contained" size="large" onClick={() => setModalOpen(true)}>
-              Novo Bolão
-            </Button>
-          </HeaderSection>
+          <Subheader
+            title="Gerenciamento de Bolões"
+            buttonLabel="Novo Bolão"
+            onButtonClick={() => setModalOpen(true)}
+          />
           <ListContainer>
             {sweepstakes.map((swp) => (
               <Paper

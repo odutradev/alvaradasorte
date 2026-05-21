@@ -21,7 +21,7 @@ const PresetCard = ({ preset, onDelete }: PresetCardProps) => (
   >
     <Box>
       <Typography variant="h6" fontWeight={600} gutterBottom>
-        {preset.description}
+        {preset.receiverName}
       </Typography>
       <InfoGrid>
         <Typography variant="body2" color="text.secondary">
@@ -31,7 +31,10 @@ const PresetCard = ({ preset, onDelete }: PresetCardProps) => (
           <strong>Banco:</strong> {preset.bank}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          <strong>Titular:</strong> {preset.receiverName}
+          <strong>Decrição:</strong>
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+           {preset.description}
         </Typography>
       </InfoGrid>
     </Box>

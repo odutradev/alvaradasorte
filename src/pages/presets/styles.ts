@@ -12,7 +12,7 @@ export const ContentContainer = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   padding: theme.spacing(2, 4, 8),
   margin: '0 auto',
-  maxWidth: 1000,
+  maxWidth: 1200,
   display: 'flex',
   width: '100%',
   gap: theme.spacing(4),

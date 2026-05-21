@@ -1,9 +1,9 @@
 import { PageWrapper, ContentContainer, ListContainer } from './styles'
 import PresetFormModal from './components/presetFormModal'
 import GridBackground from '@components/gridBackground'
-import PresetHeader from './components/presetHeader'
-import PresetCard from './components/presetCard'
 import EmptyState from '@components/emptyState'
+import PresetCard from './components/presetCard'
+import Subheader from '@components/subheader'
 import Header from '@components/header'
 import usePresets from './hook'
 
@@ -26,7 +26,11 @@ const PresetsPage = () => {
       <PageWrapper>
         <Header />
         <ContentContainer>
-          <PresetHeader onAdd={() => setModalOpen(true)} />
+          <Subheader
+            title="Predefinições de Pagamento"
+            buttonLabel="Nova Predefinição"
+            onButtonClick={() => setModalOpen(true)}
+          />
           <ListContainer>
             {presets.map((preset) => (
               <PresetCard key={preset.id} preset={preset} onDelete={handleDelete} />
