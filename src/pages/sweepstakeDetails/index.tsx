@@ -58,7 +58,7 @@ export const SweepstakeDetailsPage = () => {
             <Typography variant="body1">Carregando...</Typography>
           ) : (
             <GridContainer>
-              <DetailsCard data={details} preset={preset} />
+              <DetailsCard data={details} preset={preset} onUpdate={fetchDetails} />
               <ParticipantsTable participations={details.participations} />
             </GridContainer>
           )}

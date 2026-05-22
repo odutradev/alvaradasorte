@@ -4,6 +4,8 @@ export interface SweepstakeResponse {
   description: string
   prizeValue: number
   quotaPrice: number
+  games?: number[][]
+  result?: number[]
   createdAt: string
   updatedAt: string
   presetId: string
@@ -33,10 +35,20 @@ export interface CreateSweepstakeRequest {
   title: string
 }
 
+export interface SetGamesRequest {
+  games: number[][]
+}
+
+export interface SetResultRequest {
+  result: number[]
+}
+
 export interface ParticipationResponse {
+  userDepartment: string
   sweepstakeId: string
   receiptUrl: string
   createdAt: string
+  userPhone: string
   userName: string
   userId: string
   id: string

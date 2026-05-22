@@ -52,7 +52,7 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
   const handleCopyList = () => {
     const textToCopy = sortedParticipations
       .map((part, index) => {
-        const sector = part.userSector || part.sector || ''
+        const sector = part.userDepartment || part.userSector || part.sector || ''
         const sectorSuffix = sector ? ` - ${capitalizeWords(sector)}` : ''
         return `${index + 1}. ${capitalizeWords(part.userName)}${sectorSuffix}`
       })
@@ -122,6 +122,8 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
             <TableHead>
               <TableRow>
                 <TableCell><strong>Nome</strong></TableCell>
+                <TableCell><strong>Setor</strong></TableCell>
+                <TableCell><strong>Telefone</strong></TableCell>
                 <TableCell><strong>Data de Adesão</strong></TableCell>
                 <TableCell align="right"><strong>Comprovante</strong></TableCell>
               </TableRow>
@@ -131,8 +133,10 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
                 <TableRow key={part.id} hover>
                   <TableCell>{part.userName}</TableCell>
                   <TableCell>
-                    {dayjs(part.createdAt).format('DD/MM/YYYY HH:mm')}
+                    {capitalizeWords(part.userDepartment || part.userSector || part.sector || '—')}
                   </TableCell>
+                  <TableCell>{part.userPhone || '—'}</TableCell>
+                  <TableCell>{dayjs(part.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
                   <TableCell align="right">
                     <Link
                       component="button"
