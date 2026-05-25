@@ -12,7 +12,7 @@ export interface UseLoginReturn {
   handleEmailLogin: (data: AuthFormData) => Promise<void>
   handleGoogleLogin: () => Promise<void>
   handleAppleLogin: () => Promise<void>
-  toggleMode: () => void
   isAuthenticated: boolean
+  toggleMode: () => void
   mode: LoginMode
 }

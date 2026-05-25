@@ -6,24 +6,34 @@ import { firebaseAuth } from '@lib/firebase/config'
 import useAction from '@hooks/useAction'
 import { useAuth } from '@hooks/useAuth'
 
-import type { UseLoginReturn, AuthFormData } from './types'
+import type { UseLoginReturn, AuthFormData, LoginMode } from './types'
 
-export const useLogin = (): UseLoginReturn => {
+const AUTH_TOAST = {
+  success: 'Login realizado com sucesso!',
+  error: 'Ocorreu um erro na autenticação.',
+  pending: 'Autenticando...'
+}
+
+const REGISTER_TOAST = {
+  success: 'Conta criada com sucesso!',
+  error: 'Ocorreu um erro ao criar a conta.',
+  pending: 'Criando conta...'
+}
+
+const useLogin = (): UseLoginReturn => {
   const { loginWithGoogle, loginWithApple, loginWithEmail, user } = useAuth()
+  const [mode, setMode] = useState<LoginMode>('login')
   const navigate = useNavigate()
-  const [mode, setMode] = useState<'login' | 'register'>('login')
 
-  const toggleMode = () => setMode(prev => prev === 'login' ? 'register' : 'login')
+  const navigateHome = () => navigate('/', { replace: true })
+
+  const toggleMode = () => setMode((prev) => (prev === 'login' ? 'register' : 'login'))
 
   const handleEmailLogin = async (data: AuthFormData) => {
     await useAction({
       action: async () => await loginWithEmail(data),
-      callback: () => navigate('/', { replace: true }),
-      toastMessages: {
-        success: 'Login realizado com sucesso!',
-        error: 'Ocorreu um erro na autenticação.',
-        pending: 'Autenticando...'
-      }
+      callback: navigateHome,
+      toastMessages: AUTH_TOAST
     })
   }
 
@@ -35,36 +45,24 @@ export const useLogin = (): UseLoginReturn => {
           await updateProfile(userCredential.user, { displayName: data.name })
         }
       },
-      callback: () => navigate('/', { replace: true }),
-      toastMessages: {
-        success: 'Conta criada com sucesso!',
-        error: 'Ocorreu um erro ao criar a conta.',
-        pending: 'Criando conta...'
-      }
+      callback: navigateHome,
+      toastMessages: REGISTER_TOAST
     })
   }
 
   const handleGoogleLogin = async () => {
     await useAction({
       action: loginWithGoogle,
-      callback: () => navigate('/', { replace: true }),
-      toastMessages: {
-        success: 'Login realizado com sucesso!',
-        error: 'Ocorreu um erro na autenticação.',
-        pending: 'Autenticando...'
-      }
+      callback: navigateHome,
+      toastMessages: AUTH_TOAST
     })
   }
 
   const handleAppleLogin = async () => {
     await useAction({
       action: loginWithApple,
-      callback: () => navigate('/', { replace: true }),
-      toastMessages: {
-        success: 'Login realizado com sucesso!',
-        error: 'Ocorreu um erro na autenticação.',
-        pending: 'Autenticando...'
-      }
+      callback: navigateHome,
+      toastMessages: AUTH_TOAST
     })
   }
 
@@ -75,8 +73,10 @@ export const useLogin = (): UseLoginReturn => {
     handleEmailLogin,
     handleGoogleLogin,
     handleAppleLogin,
-    toggleMode,
     isAuthenticated,
+    toggleMode,
     mode
   }
 }
+
+export default useLogin

@@ -6,7 +6,7 @@ import { SweepstakesPage } from '@pages/sweepstakes'
 import PresetsPage from '@pages/presets'
 import { HomePage } from '@pages/home'
 import NotFound from '@pages/notFound'
-import LoginPage from '@pages/login'
+import Login from '@pages/login'
 
 import type { RouteObject } from 'react-router-dom'
 import type { AppRoute } from '@appTypes/module'
@@ -19,7 +19,7 @@ const processProtectedRoutes = (routes: AppRoute[]): RouteObject[] =>
   })
 
 const appRouter = createBrowserRouter([
-  { path: '/login', element: createElement(LoginPage) },
+  { path: '/login', element: createElement(Login) },
   { path: '/', element: createElement(HomePage) },
   ...processProtectedRoutes([
     { path: '/sweepstakes', element: createElement(SweepstakesPage), auth: true },
