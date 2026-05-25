@@ -8,7 +8,7 @@ import useAuthStore from '@stores/auth'
 import type { RegisterCredentials, LoginCredentials, UseAuthReturn } from './types'
 import type { User } from 'firebase/auth'
 
-export const useAuth = (): UseAuthReturn => {
+const useAuth = (): UseAuthReturn => {
   const { setAuthUser, setLoading, clearAuth, setToken, auth } = useAuthStore()
 
   const handleSync = useCallback(
@@ -88,3 +88,5 @@ export const useAuth = (): UseAuthReturn => {
     logout
   }
 }
+
+export default useAuth

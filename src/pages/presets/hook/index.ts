@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { deletePreset, getPresets, createPreset } from '@services/presets'
-import { useAuth } from '@hooks/useAuth'
+import useAuth from '@hooks/useAuth'
+
 import useAction from '@hooks/useAction'
 
 import type { PresetFormData } from '../components/presetFormModal/types'

@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react'
 
 import { firebaseAuth } from '@lib/firebase/config'
 import useAction from '@hooks/useAction'
-import { useAuth } from '@hooks/useAuth'
+import useAuth from '@hooks/useAuth'
+
 
 import type { UseLoginReturn, AuthFormData } from './types'
 

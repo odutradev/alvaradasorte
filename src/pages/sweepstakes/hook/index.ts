@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { getSweepstakes } from '@services/sweepstakes'
-import { useAuth } from '@hooks/useAuth'
 import useAction from '@hooks/useAction'
+import useAuth from '@hooks/useAuth'
 
 import type { SweepstakeResponse } from '@services/sweepstakes/types'
 import type { UseSweepstakesAdminReturn } from './types'
