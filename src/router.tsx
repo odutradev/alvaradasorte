@@ -20,7 +20,7 @@ const processProtectedRoutes = (routes: AppRoute[]): RouteObject[] =>
 
 const appRouter = createBrowserRouter([
   { path: '/login', element: createElement(Login) },
-  { path: '/', element: createElement(HomePage) },
+  { path: '/', element: createElement(Home) },
   ...processProtectedRoutes([
     { path: '/sweepstakes', element: createElement(SweepstakesPage), auth: true },
     { path: '/sweepstakes/:id', element: createElement(SweepstakeDetailsPage), auth: true },
