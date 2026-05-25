@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import { getSweepstakes } from '@services/sweepstakes'
-import useAction from '@hooks/useAction'
 import { useAuth } from '@hooks/useAuth'
+import useAction from '@hooks/useAction'
 
 import type { SweepstakeResponse } from '@services/sweepstakes/types'
 import type { UseHomeReturn } from './types'
 
-export const useHome = (): UseHomeReturn => {
+const useHome = (): UseHomeReturn => {
   const [sweepstakes, setSweepstakes] = useState<SweepstakeResponse[]>([])
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -16,7 +16,7 @@ export const useHome = (): UseHomeReturn => {
   const fetchSweepstakes = useCallback(async () => {
     if (!user) return
     await useAction({
-      action: async () => await getSweepstakes(user.id ?? user.id),
+      action: async () => await getSweepstakes(user.id),
       callback: (data) => setSweepstakes(data),
       silent: true
     })
@@ -40,3 +40,5 @@ export const useHome = (): UseHomeReturn => {
     user
   }
 }
+
+export default useHome

@@ -35,7 +35,7 @@ const ROLE_LABEL_MAP: Record<string, string> = {
   'normal': 'Padrão'
 }
 
-export const UserProfile = ({ onEditProfile, isProfileIncomplete, user }: UserProfileProps) => {
+const UserProfile = ({ onEditProfile, isProfileIncomplete, user }: UserProfileProps) => {
   const displayName = user.fullName ?? user.name
   const initials = displayName?.substring(0, 2).toUpperCase() ?? 'UN'
   const providerIcon = PROVIDER_ICON_MAP[user.authProviderId] ?? <EmailOutlinedIcon fontSize="small" />
@@ -95,3 +95,5 @@ export const UserProfile = ({ onEditProfile, isProfileIncomplete, user }: UserPr
     </ProfileCard>
   )
 }
+
+export default UserProfile

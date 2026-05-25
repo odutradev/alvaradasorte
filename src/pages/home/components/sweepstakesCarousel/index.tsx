@@ -5,12 +5,12 @@ import IconButton from '@mui/material/IconButton'
 import { useState } from 'react'
 
 import { CarouselWrapper, CarouselHeader, NavigationRow, CounterText } from './styles'
-import { SweepstakeCard } from '../sweepstakeCard'
 import EmptyState from '@components/emptyState'
+import SweepstakeCard from '../sweepstakeCard'
 
 import type { SweepstakesCarouselProps } from './types'
 
-export const SweepstakesCarousel = ({ sweepstakes, onJoin }: SweepstakesCarouselProps) => {
+const SweepstakesCarousel = ({ sweepstakes, onJoin }: SweepstakesCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0)
 
   if (sweepstakes.length === 0) {
@@ -49,3 +49,5 @@ export const SweepstakesCarousel = ({ sweepstakes, onJoin }: SweepstakesCarousel
     </CarouselWrapper>
   )
 }
+
+export default SweepstakesCarousel

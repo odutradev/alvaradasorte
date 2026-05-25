@@ -1,25 +1,16 @@
 import { Navigate } from 'react-router-dom'
 
-import { CompleteProfileModal } from './components/completeProfileModal'
 import { PageWrapper, ContentContainer, GridContainer } from './styles'
-import { SweepstakesCarousel } from './components/sweepstakesCarousel'
-import { JoinSweepstakeModal } from './components/joinSweepstakeModal'
+import CompleteProfileModal from './components/completeProfileModal'
+import SweepstakesCarousel from './components/sweepstakesCarousel'
+import JoinSweepstakeModal from './components/joinSweepstakeModal'
 import GridBackground from '@components/gridBackground'
-import { UserProfile } from './components/userProfile'
+import UserProfile from './components/userProfile'
 import Header from '@components/header'
-import { useHome } from './hook'
+import useHome from './hook'
 
-export const HomePage = () => {
-  const {
-    setIsProfileModalOpen,
-    isProfileModalOpen,
-    isProfileIncomplete,
-    fetchSweepstakes,
-    setSelectedId,
-    sweepstakes,
-    selectedId,
-    user
-  } = useHome()
+const Home = () => {
+  const { setIsProfileModalOpen, isProfileModalOpen, isProfileIncomplete, fetchSweepstakes, setSelectedId,  sweepstakes, selectedId, user } = useHome()
 
   if (!user) return <Navigate to="/login" replace />
 
@@ -53,4 +44,4 @@ export const HomePage = () => {
   )
 }
 
-export default HomePage
+export default Home

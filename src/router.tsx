@@ -4,7 +4,7 @@ import { createElement } from 'react'
 import { SweepstakeDetailsPage } from '@pages/sweepstakeDetails'
 import { SweepstakesPage } from '@pages/sweepstakes'
 import PresetsPage from '@pages/presets'
-import { HomePage } from '@pages/home'
+import Home from '@pages/home'
 import NotFound from '@pages/notFound'
 import Login from '@pages/login'
 
