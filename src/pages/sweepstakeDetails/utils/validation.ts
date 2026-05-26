@@ -3,7 +3,7 @@ import { normalizeString, jaroWinklerSimilarity } from '@utils/string'
 import type { CsvRow, ValidationResult, MatchedParticipant, GroupedParticipation, UnidentifiedRow } from '../components/statementValidationModal/types'
 import type { ParticipationResponse } from '@services/sweepstakes/types'
 
-const SIMILARITY_THRESHOLD = 0.75
+const SIMILARITY_THRESHOLD = 0.9
 
 export const detectSeparator = (line: string): string => (line.includes(';') ? ';' : ',')
 

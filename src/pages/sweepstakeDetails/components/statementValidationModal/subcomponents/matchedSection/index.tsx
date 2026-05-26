@@ -1,12 +1,25 @@
 import Typography from '@mui/material/Typography'
+import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 
-import { SectionContainer, SectionHeader, ListContainer, ListItem, ItemHeaderRow, RowsContainer, SingleRowItem } from './styles'
+import { SectionContainer, SectionHeader, ListContainer, ListItem, ItemHeaderRow, RowsContainer, SingleRowItem, TooltipContent, TooltipRow } from './styles'
 
 import type { MatchedSectionProps } from './types'
+import type { CsvRow } from '../../types'
+
+const buildRowTooltip = (csvRow: CsvRow) => (
+  <TooltipContent>
+    {Object.entries(csvRow).map(([key, value]) => (
+      <TooltipRow key={key}>
+        <Typography variant="caption" sx={{ fontWeight: 700, opacity: 0.7 }}>{key}:</Typography>
+        <Typography variant="caption">{value || '—'}</Typography>
+      </TooltipRow>
+    ))}
+  </TooltipContent>
+)
 
 const MatchedSection = ({ matched, valueColumn, onUndo, expectedValue, onViewReceipt }: MatchedSectionProps) => {
   if (!matched.length) return null
@@ -46,9 +59,11 @@ const MatchedSection = ({ matched, valueColumn, onUndo, expectedValue, onViewRec
               <RowsContainer>
                 {m.rows.map((r) => (
                   <SingleRowItem key={r.originalRowIndex}>
-                    <Typography variant="caption" color="text.secondary">
-                      {r.csvRow[valueColumn] ? `R$ ${r.parsedValue.toFixed(2)}` : 'Sem valor'} • Similaridade: {(r.similarityScore * 100).toFixed(0)}%
-                    </Typography>
+                    <Tooltip title={buildRowTooltip(r.csvRow)} arrow placement="left">
+                      <Typography variant="caption" color="text.secondary" sx={{ cursor: 'help' }}>
+                        {r.csvRow[valueColumn] ? `R$ ${r.parsedValue.toFixed(2)}` : 'Sem valor'} • Similaridade: {(r.similarityScore * 100).toFixed(0)}%
+                      </Typography>
+                    </Tooltip>
                     {r.isManual ? (
                       <Button size="small" color="error" onClick={() => onUndo(m.participation.id, r.originalRowIndex)} sx={{ fontSize: '0.65rem', minWidth: 'auto', p: '2px 4px' }}>
                         Desfazer

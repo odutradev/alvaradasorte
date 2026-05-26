@@ -52,3 +52,15 @@ export const SingleRowItem = styled(Box)({
   alignItems: 'center',
   display: 'flex'
 })
+
+export const TooltipContent = styled(Box)(({ theme }) => ({
+  flexDirection: 'column',
+  display: 'flex',
+  gap: theme.spacing(0.5)
+}))
+
+export const TooltipRow = styled(Box)(({ theme }) => ({
+  alignItems: 'baseline',
+  display: 'flex',
+  gap: theme.spacing(1.5)
+}))
