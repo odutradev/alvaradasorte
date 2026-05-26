@@ -4,7 +4,7 @@ import Button from '@mui/material/Button'
 
 import { HeaderWrapper, StyledAppBar, StyledToolbar, LogoText, NavContainer, AdminNav } from './styles'
 import ThemeToggle from '@components/themeToggle'
-import { useAuth } from '@hooks/useAuth'
+import useAuth from '@hooks/useAuth'
 
 const Header = () => {
   const navigate = useNavigate()
