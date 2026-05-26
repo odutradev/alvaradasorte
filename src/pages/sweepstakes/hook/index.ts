@@ -8,10 +8,10 @@ import useAuth from '@hooks/useAuth'
 import type { SweepstakeResponse } from '@services/sweepstakes/types'
 import type { UseSweepstakesAdminReturn } from './types'
 
-export const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
+const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
   const [sweepstakes, setSweepstakes] = useState<SweepstakeResponse[]>([])
   const [modalOpen, setModalOpen] = useState(false)
-  const { logout, user } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
 
   const loadSweepstakes = useCallback(async () => {
@@ -37,7 +37,8 @@ export const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
     viewDetails,
     sweepstakes,
     modalOpen,
-    logout,
     user
   }
 }
+
+export default useSweepstakesAdmin

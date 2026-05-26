@@ -3,15 +3,15 @@ import { useEffect, useState, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 
 import { createSweepstake } from '@services/sweepstakes'
-import { FormContainer, DateRow } from './styles'
 import ValueSlider from '@components/valueSlider'
 import { getPresets } from '@services/presets'
 import useAction from '@hooks/useAction'
+import { FormContainer, DateRow } from './styles'
 
 import type { SweepstakeFormModalProps, SweepstakeFormData } from './types'
 import type { PresetResponse } from '@services/presets/types'
 
-export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeFormModalProps) => {
+const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeFormModalProps) => {
   const [presets, setPresets] = useState<PresetResponse[]>([])
 
   const { handleSubmit, register, control, reset } = useForm<SweepstakeFormData>({
@@ -112,3 +112,5 @@ export const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeForm
     </Dialog>
   )
 }
+
+export default SweepstakeFormModal
