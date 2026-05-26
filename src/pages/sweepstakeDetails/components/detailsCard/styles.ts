@@ -13,43 +13,10 @@ export const CardContainer = styled(Paper)(({ theme }) => ({
   gap: theme.spacing(2)
 }))
 
-export const InfoRow = styled(Box)({
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  display: 'flex'
-})
-
 export const DividerLine = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.divider,
   height: '1px',
   width: '100%'
-}))
-
-export const ProgressContainer = styled(Box)({
-  width: '100%'
-})
-
-export const ProgressHeader = styled(Box)(({ theme }) => ({
-  justifyContent: 'space-between',
-  display: 'flex',
-  marginBottom: theme.spacing(1)
-}))
-
-export const ProgressBarTrack = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.action.hover,
-  borderRadius: theme.shape.borderRadius,
-  overflow: 'hidden',
-  height: '8px',
-  width: '100%'
-}))
-
-export const ProgressBarFill = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'percentage'
-})<{ percentage: number }>(({ theme, percentage }) => ({
-  backgroundColor: theme.palette.primary.main,
-  borderRadius: theme.shape.borderRadius,
-  width: `${percentage}%`,
-  height: '100%'
 }))
 
 export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({

@@ -17,6 +17,7 @@ export const generateSweepstakeMessage = (data: SweepstakeResponse, preset: Pres
   const bankName = preset?.bank ?? ''
 
   const parts: string[] = []
+  
   parts.push(`*${capitalizeWords(data.title)}*`)
   if (data.description) parts.push(data.description)
   parts.push('')

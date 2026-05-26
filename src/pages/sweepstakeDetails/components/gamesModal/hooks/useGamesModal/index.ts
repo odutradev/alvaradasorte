@@ -3,18 +3,19 @@ import { useState, useCallback, useEffect } from 'react'
 import { setSweepstakeGames, setSweepstakeResult } from '@services/sweepstakes'
 import useAction from '@hooks/useAction'
 
-import type { NumberEntry } from './types'
+import type { UseGamesModalReturn } from './types'
+import type { NumberEntry } from '../../types'
 
 const parseNumbers = (input: string): number[] =>
   input.split(/[,\s]+/).filter(Boolean).map(Number).filter((n) => !isNaN(n) && n > 0)
 
-export const useGamesModal = (
+const useGamesModal = (
   id: string,
   initialGames: number[][],
   initialResult: number[],
   open: boolean,
-  onUpdate: () => void
-) => {
+  onUpdate: () => Promise<void>
+): UseGamesModalReturn => {
   const [games, setGames] = useState<number[][]>(initialGames)
   const [newGameInput, setNewGameInput] = useState('')
   const [resultInput, setResultInput] = useState(initialResult.join(', '))
@@ -24,7 +25,7 @@ export const useGamesModal = (
     setGames(initialGames)
     setResultInput(initialResult.join(', '))
     setNewGameInput('')
-  }, [open])
+  }, [open, initialGames, initialResult])
 
   const addGame = useCallback(() => {
     const numbers = parseNumbers(newGameInput)
@@ -71,3 +72,5 @@ export const useGamesModal = (
     getMatchedNumbers
   }
 }
+
+export default useGamesModal

@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import { createElement } from 'react'
 
-import { SweepstakeDetailsPage } from '@pages/sweepstakeDetails'
+import SweepstakeDetailsPage from '@pages/sweepstakeDetails'
 import Sweepstakes from '@pages/sweepstakes'
 import NotFound from '@pages/notFound'
 import Presets from '@pages/presets'

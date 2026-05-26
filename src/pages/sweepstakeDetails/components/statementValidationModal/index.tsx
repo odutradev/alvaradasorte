@@ -2,21 +2,22 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import FormControl from '@mui/material/FormControl'
 import DialogTitle from '@mui/material/DialogTitle'
-import Typography from '@mui/material/Typography'
 import InputLabel from '@mui/material/InputLabel'
+import Typography from '@mui/material/Typography'
 import MenuItem from '@mui/material/MenuItem'
-import { useRef, type ChangeEvent } from 'react'
 import Select from '@mui/material/Select'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import Chip from '@mui/material/Chip'
+import { useRef } from 'react'
 
 import { UploadArea, ColumnSelectorsContent, ColumnSelectorsGrid, ResultsContent, SummaryChips, ResultsScrollContainer, ResultSection, ResultSectionHeader, ResultList, ResultItem, ResultItemMeta } from './styles'
-import { useStatementValidation } from './useStatementValidation'
+import useStatementValidation from './hooks/useStatementValidation'
 
 import type { MatchedParticipant, StatementValidationModalProps } from './types'
 import type { ParticipationResponse } from '@services/sweepstakes/types'
-import type { SelectChangeEvent } from '@mui/material'
+import type { SelectChangeEvent } from '@mui/material/Select'
+import type { ChangeEvent } from 'react'
 
 const MatchedSection = ({ matched, valueColumn }: { matched: MatchedParticipant[]; valueColumn: string }) => (
   <ResultSection sectionColor="success">
@@ -62,12 +63,21 @@ const UnmatchedSection = ({ unmatched }: { unmatched: ParticipationResponse[] })
   </ResultSection>
 )
 
-export const StatementValidationModal = ({ participations, open, onClose }: StatementValidationModalProps) => {
+const StatementValidationModal = ({ participations, open, onClose }: StatementValidationModalProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
+  
   const {
-    step, csvHeaders, csvRowCount, nameColumn, valueColumn, result,
-    setNameColumn, setValueColumn,
-    handleFileUpload, handleValidate, handleReset
+    step,
+    csvHeaders,
+    csvRowCount,
+    nameColumn,
+    valueColumn,
+    result,
+    setNameColumn,
+    setValueColumn,
+    handleFileUpload,
+    handleValidate,
+    handleReset
   } = useStatementValidation(participations)
 
   const handleClose = () => {
@@ -108,7 +118,11 @@ export const StatementValidationModal = ({ participations, open, onClose }: Stat
                   value={nameColumn}
                   onChange={(e: SelectChangeEvent<string>) => setNameColumn(e.target.value)}
                 >
-                  {csvHeaders.map((h) => <MenuItem key={h} value={h}>{h}</MenuItem>)}
+                  {csvHeaders.map((h) => (
+                    <MenuItem key={h} value={h}>
+                      {h}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
               <FormControl size="small" fullWidth>
@@ -118,7 +132,11 @@ export const StatementValidationModal = ({ participations, open, onClose }: Stat
                   value={valueColumn}
                   onChange={(e: SelectChangeEvent<string>) => setValueColumn(e.target.value)}
                 >
-                  {csvHeaders.map((h) => <MenuItem key={h} value={h}>{h}</MenuItem>)}
+                  {csvHeaders.map((h) => (
+                    <MenuItem key={h} value={h}>
+                      {h}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </ColumnSelectorsGrid>
@@ -156,13 +174,21 @@ export const StatementValidationModal = ({ participations, open, onClose }: Stat
       </DialogContent>
       <DialogActions>
         {step === 'results' && (
-          <Button onClick={handleReset} color="inherit" size="small">Nova Validação</Button>
+          <Button onClick={handleReset} color="inherit" size="small">
+            Nova Validação
+          </Button>
         )}
         {step === 'columns' && (
-          <Button onClick={handleValidate} variant="contained" color="primary">Validar</Button>
+          <Button onClick={handleValidate} variant="contained" color="primary">
+            Validar
+          </Button>
         )}
-        <Button onClick={handleClose} color="inherit">Fechar</Button>
+        <Button onClick={handleClose} color="inherit">
+          Fechar
+        </Button>
       </DialogActions>
     </Dialog>
   )
 }
+
+export default StatementValidationModal

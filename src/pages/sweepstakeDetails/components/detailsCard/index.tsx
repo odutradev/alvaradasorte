@@ -1,42 +1,25 @@
 import Typography from '@mui/material/Typography'
-import { useState, ChangeEvent } from 'react'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
+import { useState } from 'react'
 import dayjs from 'dayjs'
 
-import { CardContainer, InfoRow, DividerLine, ProgressContainer, ProgressHeader, ProgressBarTrack, ProgressBarFill, StyledDialogContent, StyledDialogActions, StyledTextField, StyledTextButton } from './styles'
-import { GamesModal } from './subcomponents/gamesModal'
-import { generateSweepstakeMessage } from './utils'
+import { CardContainer, DividerLine, StyledDialogContent, StyledDialogActions, StyledTextField, StyledTextButton } from './styles'
 import { capitalizeWords, formatCurrency } from '@utils/string'
+import { QuotaProgress } from '@components/quotaProgress'
+import { generateSweepstakeMessage } from './utils'
+import GamesModal from '../gamesModal'
+import InfoRow from '../infoRow'
 
+import type { ChangeEvent } from 'react'
 import type { DetailsCardProps } from './types'
 
-interface QuotaProgressProps {
-  availableQuotas: number
-  filledQuotas: number
-}
-
-const QuotaProgress = ({ availableQuotas, filledQuotas }: QuotaProgressProps) => {
-  const total = availableQuotas
-  const percentage = total > 0 ? (filledQuotas / total) * 100 : 0
-  return (
-    <ProgressContainer>
-      <ProgressHeader>
-        <Typography variant="body2" color="text.secondary">Cotas Preenchidas</Typography>
-        <Typography variant="body2" fontWeight={600}>{filledQuotas}/{total}</Typography>
-      </ProgressHeader>
-      <ProgressBarTrack>
-        <ProgressBarFill percentage={percentage} />
-      </ProgressBarTrack>
-    </ProgressContainer>
-  )
-}
-
-export const DetailsCard = ({ data, preset, onUpdate }: DetailsCardProps) => {
+const DetailsCard = ({ data, preset, onUpdate }: DetailsCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isGamesModalOpen, setIsGamesModalOpen] = useState(false)
   const [messageText, setMessageText] = useState('')
   const [copied, setCopied] = useState(false)
+  
   const collectedValue = (data.participations?.length ?? 0) * data.quotaPrice
 
   const handleOpen = () => {
@@ -63,7 +46,7 @@ export const DetailsCard = ({ data, preset, onUpdate }: DetailsCardProps) => {
       document.execCommand('copy')
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
+    } catch {
     }
     document.body.removeChild(textarea)
   }
@@ -80,38 +63,23 @@ export const DetailsCard = ({ data, preset, onUpdate }: DetailsCardProps) => {
         Configurar Jogos
       </StyledTextButton>
       <DividerLine />
-      <InfoRow>
-        <Typography variant="body2" color="text.secondary">Valor da Cota</Typography>
-        <Typography variant="body1" fontWeight={600}>{formatCurrency(data.quotaPrice)}</Typography>
-      </InfoRow>
-      <InfoRow>
-        <Typography variant="body2" color="text.secondary">Prêmio Total</Typography>
-        <Typography variant="body1" fontWeight={600}>{formatCurrency(data.prizeValue)}</Typography>
-      </InfoRow>
-      <InfoRow>
-        <Typography variant="body2" color="text.secondary">Valor Arrecadado</Typography>
-        <Typography variant="body1" fontWeight={600} color="success.main">
-          {formatCurrency(collectedValue)}
-        </Typography>
-      </InfoRow>
+      <InfoRow label="Valor da Cota" value={formatCurrency(data.quotaPrice)} />
+      <InfoRow label="Prêmio Total" value={formatCurrency(data.prizeValue)} />
+      <InfoRow label="Valor Arrecadado" value={formatCurrency(collectedValue)} valueColor="success.main" />
       <DividerLine />
       <QuotaProgress
         availableQuotas={data.availableQuotas}
         filledQuotas={data.participations?.length ?? 0}
       />
       <DividerLine />
-      <InfoRow>
-        <Typography variant="body2" color="text.secondary">Limite de Compra</Typography>
-        <Typography variant="body2" fontWeight={500}>
-          {dayjs(data.purchaseLimitDate).format('DD/MM/YYYY HH:mm')}
-        </Typography>
-      </InfoRow>
-      <InfoRow>
-        <Typography variant="body2" color="text.secondary">Data do Sorteio</Typography>
-        <Typography variant="body2" fontWeight={500}>
-          {dayjs(data.drawDate).format('DD/MM/YYYY HH:mm')}
-        </Typography>
-      </InfoRow>
+      <InfoRow
+        label="Limite de Compra"
+        value={dayjs(data.purchaseLimitDate).format('DD/MM/YYYY HH:mm')}
+      />
+      <InfoRow
+        label="Data do Sorteio"
+        value={dayjs(data.drawDate).format('DD/MM/YYYY HH:mm')}
+      />
       <Dialog open={isModalOpen} onClose={handleClose} fullWidth maxWidth="md" disableEnforceFocus>
         <StyledDialogContent>
           <StyledTextField
@@ -127,7 +95,9 @@ export const DetailsCard = ({ data, preset, onUpdate }: DetailsCardProps) => {
           <Button onClick={handleCopyMessage} variant="contained" color={copied ? 'success' : 'primary'}>
             {copied ? 'Copiado!' : 'Copiar Mensagem'}
           </Button>
-          <Button onClick={handleClose} color="inherit">Fechar</Button>
+          <Button onClick={handleClose} color="inherit">
+            Fechar
+          </Button>
         </StyledDialogActions>
       </Dialog>
       <GamesModal
@@ -139,3 +109,5 @@ export const DetailsCard = ({ data, preset, onUpdate }: DetailsCardProps) => {
     </CardContainer>
   )
 }
+
+export default DetailsCard

@@ -2,8 +2,8 @@ import InputAdornment from '@mui/material/InputAdornment'
 import TableContainer from '@mui/material/TableContainer'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import SearchIcon from '@mui/icons-material/Search'
 import DialogTitle from '@mui/material/DialogTitle'
+import SearchIcon from '@mui/icons-material/Search'
 import Typography from '@mui/material/Typography'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
@@ -19,12 +19,12 @@ import { useState } from 'react'
 import dayjs from 'dayjs'
 
 import { TableContainerWrapper, TableHeader, ActionsContainer, EmptyBox } from './styles'
-import { StatementValidationModal } from './subcomponents/statementValidationModal'
+import StatementValidationModal from '../statementValidationModal'
 import { capitalizeWords } from '@utils/string'
 
 import type { ParticipantsTableProps } from './types'
 
-export const ParticipantsTable = ({ participations }: ParticipantsTableProps) => {
+const ParticipantsTable = ({ participations }: ParticipantsTableProps) => {
   const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null)
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [isValidationOpen, setIsValidationOpen] = useState(false)
@@ -57,6 +57,7 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
         return `${index + 1}. ${capitalizeWords(part.userName)}${sectorSuffix}`
       })
       .join('\n')
+
     const textarea = document.createElement('textarea')
     textarea.value = textToCopy
     textarea.style.position = 'fixed'
@@ -65,12 +66,14 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
     document.body.appendChild(textarea)
     textarea.focus()
     textarea.select()
+    
     try {
       document.execCommand('copy')
       setCopiedList(true)
       setTimeout(() => setCopiedList(false), 2000)
-    } catch (err) {
+    } catch {
     }
+    
     document.body.removeChild(textarea)
   }
 
@@ -178,3 +181,5 @@ export const ParticipantsTable = ({ participations }: ParticipantsTableProps) =>
     </TableContainerWrapper>
   )
 }
+
+export default ParticipantsTable

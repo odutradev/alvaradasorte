@@ -1,19 +1,19 @@
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
+import DeleteIcon from '@mui/icons-material/Delete'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
-import DeleteIcon from '@mui/icons-material/Delete'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 
 import { GamesSection, ResultSection, SectionDivider, GameRow, NumbersContainer, NumberChip, InputRow, SaveButton } from './styles'
-import { useGamesModal } from './useGamesModal'
+import useGamesModal from './hooks/useGamesModal'
 
 import type { GamesModalProps } from './types'
 
-export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) => {
+const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) => {
   const {
     games,
     newGameInput,
@@ -34,14 +34,18 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
         <GamesSection>
           <Typography variant="subtitle1" fontWeight={700}>Jogos do Bolão</Typography>
           {games.length === 0 && (
-            <Typography variant="body2" color="text.secondary">Nenhum jogo cadastrado.</Typography>
+            <Typography variant="body2" color="text.secondary">
+              Nenhum jogo cadastrado.
+            </Typography>
           )}
           {games.map((game, index) => (
             <GameRow key={index}>
               <Typography variant="caption" color="text.secondary">#{index + 1}</Typography>
               <NumbersContainer>
                 {getMatchedNumbers(game).map((entry, i) => (
-                  <NumberChip key={i} matched={entry.matched}>{entry.number}</NumberChip>
+                  <NumberChip key={i} matched={entry.matched}>
+                    {entry.number}
+                  </NumberChip>
                 ))}
               </NumbersContainer>
               <IconButton size="small" onClick={() => removeGame(index)} color="error">
@@ -57,7 +61,9 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
               placeholder="Ex: 1, 2, 3, 4, 5, 6"
               value={newGameInput}
               onChange={(e) => setNewGameInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') addGame() }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') addGame()
+              }}
             />
             <Button variant="outlined" onClick={addGame} disabled={!newGameInput.trim()}>
               Adicionar
@@ -94,3 +100,5 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
     </Dialog>
   )
 }
+
+export default GamesModal

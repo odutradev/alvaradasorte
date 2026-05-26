@@ -2,7 +2,7 @@ import type { SweepstakeDetailsResponse } from '@services/sweepstakes/types'
 
 export interface GamesModalProps {
   sweepstake: SweepstakeDetailsResponse
-  onUpdate: () => void
+  onUpdate: () => Promise<void>
   onClose: () => void
   open: boolean
 }
