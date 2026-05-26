@@ -17,7 +17,10 @@ const buildCopyText = (unmatched: GroupedParticipation[]): string =>
   unmatched
     .map((p, i) => {
       const quotas = p.count === 1 ? '1 cota' : `${p.count} cotas`
-      return `${i + 1}. ${p.userName} - ${p.userDepartment || '—'} - ${quotas}`
+      const suffix = p.userDepartment
+        ? ` - ${p.userDepartment} (${quotas})`
+        : ` (${quotas})`
+      return `${i + 1}. ${p.userName}${suffix}`
     })
     .join('\n')
 

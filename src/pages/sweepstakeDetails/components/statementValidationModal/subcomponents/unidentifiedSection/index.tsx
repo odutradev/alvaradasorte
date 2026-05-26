@@ -1,5 +1,7 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import InputAdornment from '@mui/material/InputAdornment'
 import Autocomplete from '@mui/material/Autocomplete'
+import SearchIcon from '@mui/icons-material/Search'
 import CheckIcon from '@mui/icons-material/Check'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
@@ -47,7 +49,19 @@ const LinkSelectInput = ({ unmatched, rowIndex, onLink }: LinkSelectInputProps) 
       }}
       sx={{ minWidth: 180 }}
       renderInput={(params) => (
-        <TextField {...params} placeholder="Vincular a..." size="small" />
+        <TextField
+          {...params}
+          placeholder="Vincular a..."
+          size="small"
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ fontSize: 16 }} />
+              </InputAdornment>
+            )
+          }}
+        />
       )}
     />
   )

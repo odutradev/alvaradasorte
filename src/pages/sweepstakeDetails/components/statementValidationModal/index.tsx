@@ -10,8 +10,8 @@ import IconButton from '@mui/material/IconButton'
 import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
-import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
+import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import Select from '@mui/material/Select'
@@ -26,17 +26,35 @@ import NegativeSection from './subcomponents/negativeSection'
 import MatchedSection from './subcomponents/matchedSection'
 import useStatementValidation from './hook'
 
-import type { StatementValidationModalProps, MatchedParticipant } from './types'
+import type { StatementValidationModalProps, GroupedParticipation, UnidentifiedRow, MatchedParticipant } from './types'
 import type { SelectChangeEvent } from '@mui/material/Select'
 import type { ChangeEvent } from 'react'
 
-const buildFullCopyText = (matched: MatchedParticipant[]): string =>
-  matched
-    .map((m, i) => {
-      const quotas = m.participation.count === 1 ? '1 cota' : `${m.participation.count} cotas`
-      return `${i + 1}. ${m.participation.userName} - ${m.participation.userDepartment || '—'} - ${quotas}`
-    })
-    .join('\n')
+const buildParticipantLabel = (userName: string, userDepartment: string, count: number): string => {
+  const quotas = count === 1 ? '1 cota' : `${count} cotas`
+  return userDepartment
+    ? `${userName} - ${userDepartment} (${quotas})`
+    : `${userName} (${quotas})`
+}
+
+const buildFullCopyText = (matched: MatchedParticipant[], unmatched: GroupedParticipation[], unidentified: UnidentifiedRow[], nameColumn: string): string => {
+  const toMatchedLine = (m: MatchedParticipant, i: number) =>
+    `${i + 1}. ${buildParticipantLabel(m.participation.userName, m.participation.userDepartment, m.participation.count)}`
+
+  const toUnmatchedLine = (p: GroupedParticipation, i: number) =>
+    `${i + 1}. ${buildParticipantLabel(p.userName, p.userDepartment, p.count)}`
+
+  const toUnidentifiedLine = (u: UnidentifiedRow, i: number) =>
+    `${i + 1}. ${u.row[nameColumn] ?? '—'}`
+
+  const sections = [
+    matched.length ? ['=== PAGAMENTO CONFIRMADO ===', ...matched.map(toMatchedLine)] : [],
+    unmatched.length ? ['=== PAGAMENTO PENDENTE ===', ...unmatched.map(toUnmatchedLine)] : [],
+    unidentified.length ? ['=== TRANSAÇÃO FORA DO FORMULÁRIO ===', ...unidentified.map(toUnidentifiedLine)] : []
+  ].filter((s) => s.length > 0)
+
+  return sections.map((s) => s.join('\n')).join('\n\n')
+}
 
 const StatementValidationModal = ({ participations, quotaPrice, open, onClose }: StatementValidationModalProps) => {
   const [isCopied, setIsCopied] = useState(false)
@@ -79,7 +97,7 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
 
   const handleCopy = () => {
     if (!result) return
-    navigator.clipboard.writeText(buildFullCopyText(result.matched))
+    navigator.clipboard.writeText(buildFullCopyText(result.matched, result.unmatched, result.unidentified, nameColumn))
     setIsCopied(true)
     setTimeout(() => setIsCopied(false), 2000)
   }
@@ -191,7 +209,7 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
       <DialogActions>
         {step === 'results' && result && (
           <Box sx={{ mr: 'auto' }}>
-            <Tooltip title={isCopied ? 'Copiado!' : 'Copiar lista completa de confirmados'}>
+            <Tooltip title={isCopied ? 'Copiado!' : 'Copiar lista completa'}>
               <IconButton size="small" onClick={handleCopy}>
                 {isCopied ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
               </IconButton>
