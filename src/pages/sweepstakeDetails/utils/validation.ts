@@ -46,7 +46,7 @@ export const runValidation = (
         usedRowIndices.add(best.index)
         return {
           ...acc,
-          matched: [...acc.matched, { participation, csvRow: rows[best.index], similarityScore: best.score }]
+          matched: [...acc.matched, { participation, csvRow: rows[best.index], similarityScore: best.score, originalRowIndex: best.index }]
         }
       }
       return { ...acc, unmatched: [...acc.unmatched, participation] }
@@ -56,6 +56,6 @@ export const runValidation = (
   return {
     matched,
     unmatched,
-    unidentified: rows.filter((_, i) => !usedRowIndices.has(i))
+    unidentified: rows.map((row, i) => ({ row, originalRowIndex: i })).filter((_, i) => !usedRowIndices.has(i))
   }
 }

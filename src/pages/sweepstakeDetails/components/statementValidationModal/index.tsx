@@ -14,15 +14,15 @@ import { useRef } from 'react'
 import { UploadArea, ColumnSelectorsContent, ColumnSelectorsGrid, ResultsContent, SummaryChips, ResultsScrollContainer, ResultSection, ResultSectionHeader, ResultList, ResultItem, ResultItemMeta } from './styles'
 import useStatementValidation from './hook'
 
-import type { MatchedParticipant, StatementValidationModalProps } from './types'
+import type { MatchedParticipant, StatementValidationModalProps, UnidentifiedRow } from './types'
 import type { ParticipationResponse } from '@services/sweepstakes/types'
 import type { SelectChangeEvent } from '@mui/material/Select'
 import type { ChangeEvent } from 'react'
 
-const MatchedSection = ({ matched, valueColumn }: { matched: MatchedParticipant[]; valueColumn: string }) => (
+const MatchedSection = ({ matched, valueColumn, onUndo }: { matched: MatchedParticipant[]; valueColumn: string; onUndo: (id: string) => void }) => (
   <ResultSection sectionColor="success">
     <ResultSectionHeader>
-      <Typography variant="subtitle2" fontWeight={700}>✅ Pagaram</Typography>
+      <Typography variant="subtitle2" fontWeight={700}>✅ Confirmados</Typography>
       <Typography variant="caption" color="text.secondary">{matched.length}</Typography>
     </ResultSectionHeader>
     <ResultList>
@@ -33,12 +33,16 @@ const MatchedSection = ({ matched, valueColumn }: { matched: MatchedParticipant[
             {m.csvRow[valueColumn] && (
               <Typography variant="caption" color="text.secondary">{m.csvRow[valueColumn]}</Typography>
             )}
-            <Chip
-              label={`${Math.round(m.similarityScore * 100)}%`}
-              size="small"
-              color="success"
-              variant="outlined"
-            />
+            {m.isManual ? (
+              <>
+                <Chip label="pagou (seleção manual)" size="small" color="info" variant="outlined" />
+                <Button size="small" color="error" onClick={() => onUndo(m.participation.id)}>
+                  Desfazer
+                </Button>
+              </>
+            ) : (
+              <Chip label="pagou" size="small" color="success" variant="outlined" />
+            )}
           </ResultItemMeta>
         </ResultItem>
       ))}
@@ -49,14 +53,63 @@ const MatchedSection = ({ matched, valueColumn }: { matched: MatchedParticipant[
 const UnmatchedSection = ({ unmatched }: { unmatched: ParticipationResponse[] }) => (
   <ResultSection sectionColor="error">
     <ResultSectionHeader>
-      <Typography variant="subtitle2" fontWeight={700}>❌ Não Pagaram</Typography>
+      <Typography variant="subtitle2" fontWeight={700}>❌ Pendentes</Typography>
       <Typography variant="caption" color="text.secondary">{unmatched.length}</Typography>
     </ResultSectionHeader>
     <ResultList>
       {unmatched.map((p) => (
         <ResultItem key={p.id}>
           <Typography variant="body2">{p.userName}</Typography>
-          <Chip label="Sem extrato" size="small" color="error" variant="outlined" />
+          <Chip label="não pagou" size="small" color="error" variant="outlined" />
+        </ResultItem>
+      ))}
+    </ResultList>
+  </ResultSection>
+)
+
+const UnidentifiedSection = ({
+  unidentified,
+  unmatched,
+  nameColumn,
+  valueColumn,
+  onLink
+}: {
+  unidentified: UnidentifiedRow[]
+  unmatched: ParticipationResponse[]
+  nameColumn: string
+  valueColumn: string
+  onLink: (participationId: string, rowIndex: number) => void
+}) => (
+  <ResultSection sectionColor="warning">
+    <ResultSectionHeader>
+      <Typography variant="subtitle2" fontWeight={700}>⚠️ Não Identificados</Typography>
+      <Typography variant="caption" color="text.secondary">{unidentified.length}</Typography>
+    </ResultSectionHeader>
+    <ResultList>
+      {unidentified.map((item) => (
+        <ResultItem key={item.originalRowIndex}>
+          <Typography variant="body2">{item.row[nameColumn] ?? '—'}</Typography>
+          <ResultItemMeta>
+            {item.row[valueColumn] && (
+              <Typography variant="caption" color="text.secondary">{item.row[valueColumn]}</Typography>
+            )}
+            <Chip label="não identificado" size="small" color="warning" variant="outlined" />
+            <Select
+              size="small"
+              value=""
+              displayEmpty
+              disabled={unmatched.length === 0}
+              onChange={(e: SelectChangeEvent<string>) => onLink(e.target.value, item.originalRowIndex)}
+              sx={{ minWidth: 140, height: 28, fontSize: '0.75rem' }}
+            >
+              <MenuItem value="" disabled>Vincular a...</MenuItem>
+              {unmatched.map((u) => (
+                <MenuItem key={u.id} value={u.id} sx={{ fontSize: '0.75rem' }}>
+                  {u.userName}
+                </MenuItem>
+              ))}
+            </Select>
+          </ResultItemMeta>
         </ResultItem>
       ))}
     </ResultList>
@@ -67,16 +120,18 @@ const StatementValidationModal = ({ participations, open, onClose }: StatementVa
   const inputRef = useRef<HTMLInputElement>(null)
   const {
     step,
+    result,
+    nameColumn,
     csvHeaders,
     csvRowCount,
-    nameColumn,
     valueColumn,
-    result,
+    handleReset,
     setNameColumn,
     setValueColumn,
-    handleFileUpload,
     handleValidate,
-    handleReset
+    handleUndoLink,
+    handleFileUpload,
+    handleManualLink
   } = useStatementValidation(participations)
 
   const handleClose = () => {
@@ -144,29 +199,20 @@ const StatementValidationModal = ({ participations, open, onClose }: StatementVa
         {step === 'results' && result && (
           <ResultsContent>
             <SummaryChips>
-              <Chip label={`${result.matched.length} pagaram`} color="success" size="small" />
-              <Chip label={`${result.unmatched.length} não pagaram`} color="error" size="small" />
+              <Chip label={`${result.matched.length} confirmados`} color="success" size="small" />
+              <Chip label={`${result.unmatched.length} pendentes`} color="error" size="small" />
               <Chip label={`${result.unidentified.length} não identificados`} color="warning" size="small" />
             </SummaryChips>
             <ResultsScrollContainer>
-              <MatchedSection matched={result.matched} valueColumn={valueColumn} />
+              <MatchedSection matched={result.matched} valueColumn={valueColumn} onUndo={handleUndoLink} />
               <UnmatchedSection unmatched={result.unmatched} />
-              <ResultSection sectionColor="warning">
-                <ResultSectionHeader>
-                  <Typography variant="subtitle2" fontWeight={700}>⚠️ Não Identificados</Typography>
-                  <Typography variant="caption" color="text.secondary">{result.unidentified.length}</Typography>
-                </ResultSectionHeader>
-                <ResultList>
-                  {result.unidentified.map((row, i) => (
-                    <ResultItem key={i}>
-                      <Typography variant="body2">{row[nameColumn] ?? '—'}</Typography>
-                      {row[valueColumn] && (
-                        <Typography variant="caption" color="text.secondary">{row[valueColumn]}</Typography>
-                      )}
-                    </ResultItem>
-                  ))}
-                </ResultList>
-              </ResultSection>
+              <UnidentifiedSection
+                unidentified={result.unidentified}
+                unmatched={result.unmatched}
+                nameColumn={nameColumn}
+                valueColumn={valueColumn}
+                onLink={handleManualLink}
+              />
             </ResultsScrollContainer>
           </ResultsContent>
         )}

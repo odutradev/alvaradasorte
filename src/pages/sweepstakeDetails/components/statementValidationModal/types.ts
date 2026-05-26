@@ -6,20 +6,27 @@ export interface CsvRow {
 
 export interface MatchedParticipant {
   participation: ParticipationResponse
-  csvRow: CsvRow
+  originalRowIndex: number
   similarityScore: number
+  isManual?: boolean
+  csvRow: CsvRow
+}
+
+export interface UnidentifiedRow {
+  originalRowIndex: number
+  row: CsvRow
 }
 
 export interface ValidationResult {
-  matched: MatchedParticipant[]
+  unidentified: UnidentifiedRow[]
   unmatched: ParticipationResponse[]
-  unidentified: CsvRow[]
+  matched: MatchedParticipant[]
 }
 
 export type ValidationStep = 'upload' | 'columns' | 'results'
 
 export interface StatementValidationModalProps {
   participations: ParticipationResponse[]
-  open: boolean
   onClose: () => void
+  open: boolean
 }
