@@ -1,6 +1,7 @@
 import type { PresetResponse } from '@services/presets/types'
 
 export interface PresetListProps {
-  presets: PresetResponse[]
+  onEdit: (preset: PresetResponse) => void
   onDelete: (id: string) => Promise<void>
+  presets: PresetResponse[]
 }

@@ -7,7 +7,7 @@ import Header from '@components/header'
 import usePresets from './hook'
 
 const PresetsPage = () => {
-  const { handleSubmit, handleDelete, setModalOpen, modalOpen, onSubmit, register, presets, user } = usePresets()
+  const { handleSubmit, handleDelete, handleEdit, setModalOpen, editingPreset, modalOpen, onSubmit, register, presets, user } = usePresets()
 
   if (!user) return null
 
@@ -21,9 +21,10 @@ const PresetsPage = () => {
             buttonLabel="Nova Predefinição"
             onButtonClick={() => setModalOpen(true)}
           />
-          <PresetList presets={presets} onDelete={handleDelete} />
+          <PresetList presets={presets} onDelete={handleDelete} onEdit={handleEdit} />
         </ContentContainer>
         <PresetFormModal
+          isEditing={!!editingPreset}
           open={modalOpen}
           register={register}
           handleSubmit={handleSubmit}

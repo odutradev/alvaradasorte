@@ -4,10 +4,10 @@ import PresetCard from '../presetCard'
 
 import type { PresetListProps } from './types'
 
-const PresetList = ({ presets, onDelete }: PresetListProps) => (
+const PresetList = ({ presets, onDelete, onEdit }: PresetListProps) => (
   <ListWrapper>
     {presets.map((preset) => (
-      <PresetCard key={preset.id} preset={preset} onDelete={onDelete} />
+      <PresetCard key={preset.id} preset={preset} onDelete={onDelete} onEdit={onEdit} />
     ))}
     {presets.length === 0 && <EmptyState description="Nenhuma predefinição cadastrada no sistema." />}
   </ListWrapper>

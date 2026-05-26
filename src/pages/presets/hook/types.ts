@@ -10,7 +10,9 @@ export interface UsePresetsReturn {
   register: UseFormRegister<PresetFormData>
   onSubmit: (data: PresetFormData) => Promise<void>
   handleDelete: (id: string) => Promise<void>
+  handleEdit: (preset: PresetResponse) => void
   setModalOpen: (open: boolean) => void
+  editingPreset: PresetResponse | null
   presets: PresetResponse[]
   user: AuthUser | null
   modalOpen: boolean

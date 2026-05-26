@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles'
-import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
+import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 
 export const CardWrapper = styled(Paper)(({ theme }) => ({
@@ -22,6 +22,23 @@ export const InfoGrid = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(1)
 }))
 
-export const DeleteButton = styled(IconButton)(({ theme }) => ({
+export const CardDates = styled(Box)(({ theme }) => ({
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  display: 'flex',
+  gap: theme.spacing(1),
+  marginTop: theme.spacing(2),
+  paddingTop: theme.spacing(1.5)
+}))
+
+export const DateChip = styled(Chip)({
+  fontSize: '0.7rem',
+  height: 22
+})
+
+export const CardActions = styled(Box)(({ theme }) => ({
+  flexDirection: 'column',
+  display: 'flex',
+  gap: theme.spacing(0.5),
   marginLeft: theme.spacing(2)
 }))

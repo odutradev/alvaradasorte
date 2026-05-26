@@ -6,6 +6,7 @@ export interface PresetFormModalProps {
   handleSubmit: UseFormHandleSubmit<PresetFormData>
   register: UseFormRegister<PresetFormData>
   onSubmit: (data: PresetFormData) => Promise<void>
+  isEditing: boolean
   onClose: () => void
   open: boolean
 }
