@@ -1,6 +1,8 @@
-import { DialogActions, TextField, Button, Dialog } from '@mui/material'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
 
-import { FormContainer } from './styles'
+import { FormContainer, ModalActions } from './styles'
 
 import type { PresetFormModalProps } from './types'
 
@@ -11,10 +13,10 @@ const PresetFormModal = ({ handleSubmit, register, onClose, onSubmit, open }: Pr
       <TextField {...register('bank')} label="Banco" required fullWidth />
       <TextField {...register('pix')} label="Chave PIX" required fullWidth />
     </FormContainer>
-    <DialogActions sx={{ px: 3, pb: 3, pt: 0 }}>
+    <ModalActions>
       <Button onClick={onClose} color="inherit">Cancelar</Button>
       <Button type="submit" form="preset-form" variant="contained" color="primary">Salvar</Button>
-    </DialogActions>
+    </ModalActions>
   </Dialog>
 )
 

@@ -1,13 +1,11 @@
-import type { UseFormRegister, UseFormHandleSubmit } from 'react-hook-form'
+import type { UseFormHandleSubmit, UseFormRegister } from 'react-hook-form'
 
-import type { CreatePresetRequest } from '@services/presets/types'
+import type { PresetFormData } from '../../hook/types'
 
 export interface PresetFormModalProps {
-  register: UseFormRegister<PresetFormData>
   handleSubmit: UseFormHandleSubmit<PresetFormData>
+  register: UseFormRegister<PresetFormData>
   onSubmit: (data: PresetFormData) => Promise<void>
   onClose: () => void
   open: boolean
 }
-
-export type PresetFormData = CreatePresetRequest

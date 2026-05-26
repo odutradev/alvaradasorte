@@ -2,18 +2,16 @@ import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { deletePreset, getPresets, createPreset } from '@services/presets'
+import useAction from '@hooks/useAction'
 import useAuth from '@hooks/useAuth'
 
-import useAction from '@hooks/useAction'
-
-import type { PresetFormData } from '../components/presetFormModal/types'
+import type { UsePresetsReturn, PresetFormData } from './types'
 import type { PresetResponse } from '@services/presets/types'
-import type { UsePresetsReturn } from './types'
 
 const usePresets = (): UsePresetsReturn => {
   const [presets, setPresets] = useState<PresetResponse[]>([])
   const [modalOpen, setModalOpen] = useState(false)
-  const { logout, user } = useAuth()
+  const { user } = useAuth()
   const { handleSubmit, register, reset } = useForm<PresetFormData>()
 
   const loadPresets = useCallback(async () => {
@@ -52,13 +50,10 @@ const usePresets = (): UsePresetsReturn => {
     handleDelete,
     handleSubmit,
     setModalOpen,
-    loadPresets,
     modalOpen,
     onSubmit,
     register,
     presets,
-    logout,
-    reset,
     user
   }
 }

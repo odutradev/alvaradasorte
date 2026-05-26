@@ -1,25 +1,13 @@
 import DeleteIcon from '@mui/icons-material/Delete'
 import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
 
-import { InfoGrid } from './styles'
+import { CardWrapper, CardInfo, InfoGrid, DeleteButton } from './styles'
 
 import type { PresetCardProps } from './types'
 
 const PresetCard = ({ preset, onDelete }: PresetCardProps) => (
-  <Paper
-    elevation={2}
-    sx={{
-      p: 3,
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      borderRadius: 2
-    }}
-  >
-    <Box>
+  <CardWrapper elevation={2}>
+    <CardInfo>
       <Typography variant="h6" fontWeight={600} gutterBottom>
         {preset.receiverName}
       </Typography>
@@ -31,11 +19,11 @@ const PresetCard = ({ preset, onDelete }: PresetCardProps) => (
           <strong>Banco:</strong> {preset.bank}
         </Typography>
       </InfoGrid>
-    </Box>
-    <IconButton color="error" onClick={() => onDelete(preset.id)} size="large" sx={{ ml: 2 }}>
+    </CardInfo>
+    <DeleteButton color="error" onClick={() => onDelete(preset.id)} size="large">
       <DeleteIcon />
-    </IconButton>
-  </Paper>
+    </DeleteButton>
+  </CardWrapper>
 )
 
 export default PresetCard

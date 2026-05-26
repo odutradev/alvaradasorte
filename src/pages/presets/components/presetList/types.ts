@@ -1,6 +1,6 @@
 import type { PresetResponse } from '@services/presets/types'
 
-export interface PresetCardProps {
-  preset: PresetResponse
+export interface PresetListProps {
+  presets: PresetResponse[]
   onDelete: (id: string) => Promise<void>
 }

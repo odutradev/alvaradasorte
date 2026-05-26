@@ -20,9 +20,3 @@ export const ContentContainer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2)
   }
 }))
-
-export const ListContainer = styled(Box)(({ theme }) => ({
-  flexDirection: 'column',
-  display: 'flex',
-  gap: theme.spacing(2)
-}))
