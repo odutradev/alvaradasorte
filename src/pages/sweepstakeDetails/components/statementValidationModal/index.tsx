@@ -48,9 +48,9 @@ const buildFullCopyText = (matched: MatchedParticipant[], unmatched: GroupedPart
     `${i + 1}. ${u.row[nameColumn] ?? '—'}`
 
   const sections = [
-    matched.length ? ['=== PAGAMENTO CONFIRMADO ===', ...matched.map(toMatchedLine)] : [],
-    unmatched.length ? ['=== PAGAMENTO PENDENTE ===', ...unmatched.map(toUnmatchedLine)] : [],
-    unidentified.length ? ['=== TRANSAÇÃO FORA DO FORMULÁRIO ===', ...unidentified.map(toUnidentifiedLine)] : []
+    matched.length ? ['✅  PAGAMENTO CONFIRMADO: ', ...matched.map(toMatchedLine)] : [],
+    unmatched.length ? ['❌ PAGAMENTO PENDENTE: ', ...unmatched.map(toUnmatchedLine)] : [],
+    unidentified.length ? ['⚠️ NÃO ENVIADO NO FORMULÁRIO: ', ...unidentified.map(toUnidentifiedLine)] : []
   ].filter((s) => s.length > 0)
 
   return sections.map((s) => s.join('\n')).join('\n\n')
