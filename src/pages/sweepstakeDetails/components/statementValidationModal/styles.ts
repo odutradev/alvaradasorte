@@ -53,5 +53,20 @@ export const ResultsScrollContainer = styled(Box)(({ theme }) => ({
   overflowY: 'auto',
   display: 'flex',
   flex: 1,
-  gap: theme.spacing(2)
+  gap: theme.spacing(2),
+  scrollbarWidth: 'thin',
+  scrollbarColor: `${theme.palette.divider} transparent`,
+  '&::-webkit-scrollbar': {
+    width: 6
+  },
+  '&::-webkit-scrollbar-track': {
+    background: 'transparent'
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.divider,
+    borderRadius: 3,
+    '&:hover': {
+      backgroundColor: theme.palette.text.disabled
+    }
+  }
 }))
