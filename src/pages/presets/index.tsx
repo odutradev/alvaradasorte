@@ -6,7 +6,7 @@ import Subheader from '@components/subheader'
 import Header from '@components/header'
 import usePresets from './hook'
 
-const PresetsPage = () => {
+const Presets = () => {
   const { handleSubmit, handleDelete, handleEdit, setModalOpen, editingPreset, modalOpen, onSubmit, register, presets, user } = usePresets()
 
   if (!user) return null
@@ -36,4 +36,4 @@ const PresetsPage = () => {
   )
 }
 
-export default PresetsPage
+export default Presets
