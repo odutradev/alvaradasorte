@@ -4,7 +4,7 @@ import { PageWrapper, ThemeToggleWrapper } from './styles'
 import GridBackground from '@components/gridBackground'
 import LoginCard from './components/loginCard'
 import ThemeToggle from '@components/themeToggle'
-import { useLogin } from './hook'
+import useLogin from './hook'
 
 const Login = () => {
   const { isAuthenticated, mode, toggleMode, handleEmailLogin, handleEmailRegister, handleGoogleLogin } = useLogin()

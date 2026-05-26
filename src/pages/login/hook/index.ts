@@ -9,7 +9,7 @@ import useAuth from '@hooks/useAuth'
 
 import type { UseLoginReturn, AuthFormData } from './types'
 
-export const useLogin = (): UseLoginReturn => {
+const useLogin = (): UseLoginReturn => {
   const { loginWithGoogle, loginWithApple, loginWithEmail, user } = useAuth()
   const navigate = useNavigate()
   const [mode, setMode] = useState<'login' | 'register'>('login')
@@ -81,3 +81,5 @@ export const useLogin = (): UseLoginReturn => {
     mode
   }
 }
+
+export default useLogin
