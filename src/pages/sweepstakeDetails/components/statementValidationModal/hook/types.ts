@@ -1,4 +1,4 @@
-import type { ValidationStep, ValidationResult } from '../../types'
+import type { ValidationStep, ValidationResult } from '../types'
 
 export interface UseStatementValidationReturn {
   step: ValidationStep

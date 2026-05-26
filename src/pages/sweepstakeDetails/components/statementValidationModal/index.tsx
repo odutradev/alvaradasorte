@@ -12,7 +12,7 @@ import Chip from '@mui/material/Chip'
 import { useRef } from 'react'
 
 import { UploadArea, ColumnSelectorsContent, ColumnSelectorsGrid, ResultsContent, SummaryChips, ResultsScrollContainer, ResultSection, ResultSectionHeader, ResultList, ResultItem, ResultItemMeta } from './styles'
-import useStatementValidation from './hooks/useStatementValidation'
+import useStatementValidation from './hook'
 
 import type { MatchedParticipant, StatementValidationModalProps } from './types'
 import type { ParticipationResponse } from '@services/sweepstakes/types'
@@ -65,7 +65,6 @@ const UnmatchedSection = ({ unmatched }: { unmatched: ParticipationResponse[] })
 
 const StatementValidationModal = ({ participations, open, onClose }: StatementValidationModalProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  
   const {
     step,
     csvHeaders,

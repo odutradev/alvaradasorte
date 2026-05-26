@@ -1,7 +1,7 @@
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
 import DeleteIcon from '@mui/icons-material/Delete'
+import DialogTitle from '@mui/material/DialogTitle'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
@@ -9,7 +9,7 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 
 import { GamesSection, ResultSection, SectionDivider, GameRow, NumbersContainer, NumberChip, InputRow, SaveButton } from './styles'
-import useGamesModal from './hooks/useGamesModal'
+import useGamesModal from './hook'
 
 import type { GamesModalProps } from './types'
 

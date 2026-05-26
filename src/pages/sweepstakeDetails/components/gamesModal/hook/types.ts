@@ -1,4 +1,4 @@
-import type { NumberEntry } from '../../types'
+import type { NumberEntry } from '../types'
 
 export interface UseGamesModalReturn {
   games: number[][]
