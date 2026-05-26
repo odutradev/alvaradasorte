@@ -1,17 +1,12 @@
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import CheckIcon from '@mui/icons-material/Check'
 import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
-import Link from '@mui/material/Link'
 import Chip from '@mui/material/Chip'
+import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
-import { useState } from 'react'
 
 import { SectionContainer, SectionHeader, ListContainer, ListItem, ItemHeaderRow, RowsContainer, SingleRowItem, TooltipContent, TooltipRow } from './styles'
 
-import type { MatchedParticipant } from '../../types'
 import type { MatchedSectionProps } from './types'
 import type { CsvRow } from '../../types'
 
@@ -26,37 +21,14 @@ const buildRowTooltip = (csvRow: CsvRow) => (
   </TooltipContent>
 )
 
-const buildCopyText = (matched: MatchedParticipant[]): string =>
-  matched
-    .map((m, i) => {
-      const quotas = m.participation.count === 1 ? '1 cota' : `${m.participation.count} cotas`
-      return `${i + 1}. ${m.participation.userName} - ${m.participation.userDepartment || '—'} - ${quotas}`
-    })
-    .join('\n')
-
 const MatchedSection = ({ matched, valueColumn, onUndo, expectedValue, onViewReceipt }: MatchedSectionProps) => {
-  const [isCopied, setIsCopied] = useState(false)
-
   if (!matched.length) return null
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(buildCopyText(matched))
-    setIsCopied(true)
-    setTimeout(() => setIsCopied(false), 2000)
-  }
 
   return (
     <SectionContainer>
       <SectionHeader>
         <Typography variant="subtitle2" fontWeight={700}>✅ Confirmados</Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Typography variant="caption" color="text.secondary">{matched.length}</Typography>
-          <Tooltip title={isCopied ? 'Copiado!' : 'Copiar lista (nome - setor - cotas)'}>
-            <IconButton size="small" onClick={handleCopy} sx={{ p: 0.25 }}>
-              {isCopied ? <CheckIcon sx={{ fontSize: 14 }} /> : <ContentCopyIcon sx={{ fontSize: 14 }} />}
-            </IconButton>
-          </Tooltip>
-        </Box>
+        <Typography variant="caption" color="text.secondary">{matched.length}</Typography>
       </SectionHeader>
       <ListContainer>
         {matched.map((m) => {

@@ -1,19 +1,23 @@
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import InputAdornment from '@mui/material/InputAdornment'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import FormControl from '@mui/material/FormControl'
 import DialogTitle from '@mui/material/DialogTitle'
+import FormControl from '@mui/material/FormControl'
 import SearchIcon from '@mui/icons-material/Search'
-import Typography from '@mui/material/Typography'
+import CheckIcon from '@mui/icons-material/Check'
+import IconButton from '@mui/material/IconButton'
 import InputLabel from '@mui/material/InputLabel'
+import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
-import Select from '@mui/material/Select'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
+import Select from '@mui/material/Select'
+import { useRef, useState } from 'react'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
-import { useRef } from 'react'
 
 import { UploadArea, ColumnSelectorsContent, ColumnSelectorsGrid, ResultsContent, SearchContainer, SummaryChips, ResultsScrollContainer } from './styles'
 import UnidentifiedSection from './subcomponents/unidentifiedSection'
@@ -22,11 +26,20 @@ import NegativeSection from './subcomponents/negativeSection'
 import MatchedSection from './subcomponents/matchedSection'
 import useStatementValidation from './hook'
 
-import type { StatementValidationModalProps } from './types'
+import type { StatementValidationModalProps, MatchedParticipant } from './types'
 import type { SelectChangeEvent } from '@mui/material/Select'
 import type { ChangeEvent } from 'react'
 
+const buildFullCopyText = (matched: MatchedParticipant[]): string =>
+  matched
+    .map((m, i) => {
+      const quotas = m.participation.count === 1 ? '1 cota' : `${m.participation.count} cotas`
+      return `${i + 1}. ${m.participation.userName} - ${m.participation.userDepartment || '—'} - ${quotas}`
+    })
+    .join('\n')
+
 const StatementValidationModal = ({ participations, quotaPrice, open, onClose }: StatementValidationModalProps) => {
+  const [isCopied, setIsCopied] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const {
     estimatedQuotaPrice,
@@ -46,6 +59,7 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
     handleReset,
     csvHeaders,
     nameColumn,
+    result,
     step
   } = useStatementValidation(participations, quotaPrice)
 
@@ -61,6 +75,13 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
 
   const handleViewReceipt = (url: string, name: string) => {
     setSelectedReceipt({ url, name })
+  }
+
+  const handleCopy = () => {
+    if (!result) return
+    navigator.clipboard.writeText(buildFullCopyText(result.matched))
+    setIsCopied(true)
+    setTimeout(() => setIsCopied(false), 2000)
   }
 
   return (
@@ -150,10 +171,7 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
                 expectedValue={estimatedQuotaPrice}
                 onViewReceipt={handleViewReceipt}
               />
-              <UnmatchedSection
-                unmatched={filteredResult.unmatched}
-                onViewReceipt={handleViewReceipt}
-              />
+              <UnmatchedSection unmatched={filteredResult.unmatched} onViewReceipt={handleViewReceipt} />
               <UnidentifiedSection
                 unidentified={filteredResult.unidentified}
                 unmatched={filteredResult.unmatched}
@@ -171,6 +189,15 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
         )}
       </DialogContent>
       <DialogActions>
+        {step === 'results' && result && (
+          <Box sx={{ mr: 'auto' }}>
+            <Tooltip title={isCopied ? 'Copiado!' : 'Copiar lista completa de confirmados'}>
+              <IconButton size="small" onClick={handleCopy}>
+                {isCopied ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        )}
         {step === 'results' && (
           <Button onClick={handleReset} color="inherit" size="small">
             Nova Validação

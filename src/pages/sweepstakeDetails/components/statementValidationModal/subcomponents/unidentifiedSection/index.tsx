@@ -1,24 +1,57 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import Autocomplete from '@mui/material/Autocomplete'
 import CheckIcon from '@mui/icons-material/Check'
-import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
-import MenuItem from '@mui/material/MenuItem'
-import Select from '@mui/material/Select'
+import { useState } from 'react'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
-import { useState } from 'react'
 
 import { SectionContainer, SectionHeader, ListContainer, ListItem, ItemMeta } from './styles'
 
-import type { SelectChangeEvent } from '@mui/material/Select'
+import type { GroupedParticipation, UnidentifiedRow } from '../../types'
 import type { UnidentifiedSectionProps } from './types'
-import type { UnidentifiedRow } from '../../types'
 
 const buildCopyText = (unidentified: UnidentifiedRow[], nameColumn: string): string =>
   unidentified
     .map((u, i) => `${i + 1}. ${u.row[nameColumn] ?? '—'}`)
     .join('\n')
+
+interface LinkSelectInputProps {
+  unmatched: GroupedParticipation[]
+  rowIndex: number
+  onLink: (participationId: string, rowIndex: number) => void
+}
+
+const LinkSelectInput = ({ unmatched, rowIndex, onLink }: LinkSelectInputProps) => {
+  const [inputValue, setInputValue] = useState('')
+
+  return (
+    <Autocomplete
+      options={unmatched}
+      getOptionLabel={(option) => option.userName}
+      inputValue={inputValue}
+      value={null}
+      noOptionsText="Sem opções"
+      disabled={unmatched.length === 0}
+      onInputChange={(_, value, reason) => {
+        if (reason === 'reset') return
+        setInputValue(value)
+      }}
+      onChange={(_, value) => {
+        if (!value) return
+        onLink(value.id, rowIndex)
+        setInputValue('')
+      }}
+      sx={{ minWidth: 180 }}
+      renderInput={(params) => (
+        <TextField {...params} placeholder="Vincular a..." size="small" />
+      )}
+    />
+  )
+}
 
 const UnidentifiedSection = ({ unidentified, unmatched, nameColumn, valueColumn, onLink }: UnidentifiedSectionProps) => {
   const [isCopied, setIsCopied] = useState(false)
@@ -53,21 +86,7 @@ const UnidentifiedSection = ({ unidentified, unmatched, nameColumn, valueColumn,
                 {item.row[valueColumn] ? `R$ ${item.parsedValue.toFixed(2)}` : ''}
               </Typography>
               <Chip label="não identificado" size="small" color="warning" variant="outlined" />
-              <Select
-                size="small"
-                value=""
-                displayEmpty
-                disabled={unmatched.length === 0}
-                onChange={(e: SelectChangeEvent<string>) => onLink(e.target.value, item.originalRowIndex)}
-                sx={{ minWidth: 140, height: 28, fontSize: '0.75rem' }}
-              >
-                <MenuItem value="" disabled>Vincular a...</MenuItem>
-                {unmatched.map((u) => (
-                  <MenuItem key={u.id} value={u.id} sx={{ fontSize: '0.75rem' }}>
-                    {u.userName}
-                  </MenuItem>
-                ))}
-              </Select>
+              <LinkSelectInput unmatched={unmatched} rowIndex={item.originalRowIndex} onLink={onLink} />
             </ItemMeta>
           </ListItem>
         ))}
