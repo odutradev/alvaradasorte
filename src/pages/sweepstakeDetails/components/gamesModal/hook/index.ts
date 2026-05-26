@@ -1,13 +1,11 @@
 import { useState, useCallback, useEffect } from 'react'
 
 import { setSweepstakeGames, setSweepstakeResult } from '@services/sweepstakes'
+import { parseNumbers } from '../../../utils/games'
 import useAction from '@hooks/useAction'
 
 import type { UseGamesModalReturn } from './types'
 import type { NumberEntry } from '../types'
-
-const parseNumbers = (input: string): number[] =>
-  input.split(/[,\s]+/).filter(Boolean).map(Number).filter((n) => !isNaN(n) && n > 0)
 
 const useGamesModal = (
   id: string,
