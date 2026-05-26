@@ -10,9 +10,11 @@ const VALUE_CANDIDATES = ['valor', 'value', 'quantia', 'amount', 'montante']
 const NAME_CANDIDATES = ['nome', 'name', 'descricao', 'remetente', 'pagador', 'titular']
 
 const useStatementValidation = (participations: ParticipationResponse[], quotaPrice?: number): UseStatementValidationReturn => {
+  const [selectedReceipt, setSelectedReceipt] = useState<{ url: string; name: string } | null>(null)
   const [csvHeaders, setCsvHeaders] = useState<string[]>([])
   const [result, setResult] = useState<ValidationResult | null>(null)
   const [step, setStep] = useState<ValidationStep>('upload')
+  const [searchQuery, setSearchQuery] = useState('')
   const [valueColumn, setValueColumn] = useState('')
   const [csvRows, setCsvRows] = useState<CsvRow[]>([])
   const [nameColumn, setNameColumn] = useState('')
@@ -21,12 +23,23 @@ const useStatementValidation = (participations: ParticipationResponse[], quotaPr
     if (quotaPrice) return quotaPrice
     if (!result || result.matched.length === 0) return 0
     const counts = result.matched.reduce<Record<number, number>>((acc, m) => {
-      m.rows.forEach(r => { acc[r.parsedValue] = (acc[r.parsedValue] || 0) + 1 })
+      m.rows.forEach((r) => { acc[r.parsedValue] = (acc[r.parsedValue] || 0) + 1 })
       return acc
     }, {})
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1])
     return sorted.length ? Number(sorted[0][0]) : 0
   }, [quotaPrice, result])
+
+  const filteredResult = useMemo(() => {
+    if (!result) return null
+    const lowerQuery = searchQuery.toLowerCase()
+    return {
+      matched: result.matched.filter((m) => m.participation.userName.toLowerCase().includes(lowerQuery)),
+      unmatched: result.unmatched.filter((u) => u.userName.toLowerCase().includes(lowerQuery)),
+      unidentified: result.unidentified.filter((u) => (u.row[nameColumn] ?? '').toLowerCase().includes(lowerQuery)),
+      negatives: result.negatives.filter((n) => (n.row[nameColumn] ?? '').toLowerCase().includes(lowerQuery))
+    }
+  }, [result, searchQuery, nameColumn])
 
   const handleFileUpload = useCallback((file: File) => {
     const reader = new FileReader()
@@ -50,6 +63,8 @@ const useStatementValidation = (participations: ParticipationResponse[], quotaPr
   }, [participations, csvRows, nameColumn, valueColumn])
 
   const handleReset = useCallback(() => {
+    setSelectedReceipt(null)
+    setSearchQuery('')
     setResult(null)
     setStep('upload')
     setCsvHeaders([])
@@ -64,14 +79,14 @@ const useStatementValidation = (participations: ParticipationResponse[], quotaPr
       const itemToLink = prev.unidentified.find((u) => u.originalRowIndex === originalRowIndex)
       if (!itemToLink) return prev
 
-      let targetMatch = prev.matched.find(m => m.participation.id === participationId)
+      let targetMatch = prev.matched.find((m) => m.participation.id === participationId)
       let newUnmatched = prev.unmatched
 
       if (!targetMatch) {
-        const partToMove = prev.unmatched.find(p => p.id === participationId)
+        const partToMove = prev.unmatched.find((p) => p.id === participationId)
         if (!partToMove) return prev
         targetMatch = { participation: partToMove, totalValue: 0, rows: [] }
-        newUnmatched = prev.unmatched.filter(p => p.id !== participationId)
+        newUnmatched = prev.unmatched.filter((p) => p.id !== participationId)
       }
 
       const updatedMatch = {
@@ -86,7 +101,7 @@ const useStatementValidation = (participations: ParticipationResponse[], quotaPr
         }]
       }
 
-      const newMatched = [...prev.matched.filter(m => m.participation.id !== participationId), updatedMatch]
+      const newMatched = [...prev.matched.filter((m) => m.participation.id !== participationId), updatedMatch]
         .sort((a, b) => a.participation.userName.localeCompare(b.participation.userName))
 
       return {
@@ -104,11 +119,11 @@ const useStatementValidation = (participations: ParticipationResponse[], quotaPr
       const matchGroup = prev.matched.find((m) => m.participation.id === participationId)
       if (!matchGroup) return prev
 
-      const rowToUndo = matchGroup.rows.find(r => r.originalRowIndex === originalRowIndex)
+      const rowToUndo = matchGroup.rows.find((r) => r.originalRowIndex === originalRowIndex)
       if (!rowToUndo || !rowToUndo.isManual) return prev
 
-      const updatedRows = matchGroup.rows.filter(r => r.originalRowIndex !== originalRowIndex)
-      let newMatched = prev.matched.filter(m => m.participation.id !== participationId)
+      const updatedRows = matchGroup.rows.filter((r) => r.originalRowIndex !== originalRowIndex)
+      const newMatched = prev.matched.filter((m) => m.participation.id !== participationId)
       let newUnmatched = prev.unmatched
 
       if (updatedRows.length > 0) {
@@ -139,6 +154,10 @@ const useStatementValidation = (participations: ParticipationResponse[], quotaPr
 
   return {
     estimatedQuotaPrice,
+    setSelectedReceipt,
+    selectedReceipt,
+    filteredResult,
+    setSearchQuery,
     csvRowCount: csvRows.length,
     handleFileUpload,
     handleManualLink,
@@ -146,6 +165,7 @@ const useStatementValidation = (participations: ParticipationResponse[], quotaPr
     handleValidate,
     setValueColumn,
     setNameColumn,
+    searchQuery,
     valueColumn,
     handleReset,
     csvHeaders,

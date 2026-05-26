@@ -32,6 +32,13 @@ export const ColumnSelectorsGrid = styled(Box)(({ theme }) => ({
 export const ResultsContent = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   display: 'flex',
+  height: '100%',
+  gap: theme.spacing(2)
+}))
+
+export const SearchContainer = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  display: 'flex',
   gap: theme.spacing(2)
 }))
 
@@ -43,8 +50,8 @@ export const SummaryChips = styled(Box)(({ theme }) => ({
 
 export const ResultsScrollContainer = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
-  maxHeight: '55vh',
   overflowY: 'auto',
   display: 'flex',
+  flex: 1,
   gap: theme.spacing(2)
 }))

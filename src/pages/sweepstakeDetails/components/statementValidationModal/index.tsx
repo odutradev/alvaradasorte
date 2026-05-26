@@ -1,21 +1,25 @@
+import InputAdornment from '@mui/material/InputAdornment'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import FormControl from '@mui/material/FormControl'
 import DialogTitle from '@mui/material/DialogTitle'
-import InputLabel from '@mui/material/InputLabel'
+import SearchIcon from '@mui/icons-material/Search'
 import Typography from '@mui/material/Typography'
+import InputLabel from '@mui/material/InputLabel'
+import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import Chip from '@mui/material/Chip'
+import Box from '@mui/material/Box'
 import { useRef } from 'react'
 
+import { UploadArea, ColumnSelectorsContent, ColumnSelectorsGrid, ResultsContent, SearchContainer, SummaryChips, ResultsScrollContainer } from './styles'
 import UnidentifiedSection from './subcomponents/unidentifiedSection'
 import UnmatchedSection from './subcomponents/unmatchedSection'
 import NegativeSection from './subcomponents/negativeSection'
 import MatchedSection from './subcomponents/matchedSection'
-import { UploadArea, ColumnSelectorsContent, ColumnSelectorsGrid, ResultsContent, SummaryChips, ResultsScrollContainer } from './styles'
 import useStatementValidation from './hook'
 
 import type { StatementValidationModalProps } from './types'
@@ -26,18 +30,22 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
   const inputRef = useRef<HTMLInputElement>(null)
   const {
     estimatedQuotaPrice,
+    setSelectedReceipt,
+    selectedReceipt,
     handleManualLink,
     handleFileUpload,
+    filteredResult,
     handleUndoLink,
     handleValidate,
+    setSearchQuery,
     setValueColumn,
     setNameColumn,
+    searchQuery,
     csvRowCount,
     valueColumn,
     handleReset,
     csvHeaders,
     nameColumn,
-    result,
     step
   } = useStatementValidation(participations, quotaPrice)
 
@@ -51,10 +59,14 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
     if (file) handleFileUpload(file)
   }
 
+  const handleViewReceipt = (url: string, name: string) => {
+    setSelectedReceipt({ url, name })
+  }
+
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={handleClose} fullScreen>
       <DialogTitle>Validar Extrato</DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {step === 'upload' && (
           <UploadArea onClick={() => inputRef.current?.click()}>
             <input ref={inputRef} type="file" accept=".csv" hidden onChange={handleFileChange} />
@@ -103,33 +115,54 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
             </ColumnSelectorsGrid>
           </ColumnSelectorsContent>
         )}
-        {step === 'results' && result && (
+        {step === 'results' && filteredResult && (
           <ResultsContent>
-            <SummaryChips>
-              <Chip label={`${result.matched.length} confirmados`} color="success" size="small" />
-              <Chip label={`${result.unmatched.length} pendentes`} color="error" size="small" />
-              <Chip label={`${result.unidentified.length} não identificados`} color="warning" size="small" />
-              {result.negatives.length > 0 && (
-                <Chip label={`${result.negatives.length} saídas`} color="default" size="small" />
-              )}
-            </SummaryChips>
+            <SearchContainer>
+              <TextField
+                placeholder="Pesquisar participante ou descrição..."
+                variant="outlined"
+                size="small"
+                fullWidth
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" />
+                    </InputAdornment>
+                  )
+                }}
+              />
+              <SummaryChips>
+                <Chip label={`${filteredResult.matched.length} confirmados`} color="success" size="small" />
+                <Chip label={`${filteredResult.unmatched.length} pendentes`} color="error" size="small" />
+                <Chip label={`${filteredResult.unidentified.length} não identificados`} color="warning" size="small" />
+                {filteredResult.negatives.length > 0 && (
+                  <Chip label={`${filteredResult.negatives.length} saídas`} color="default" size="small" />
+                )}
+              </SummaryChips>
+            </SearchContainer>
             <ResultsScrollContainer>
               <MatchedSection
-                matched={result.matched}
+                matched={filteredResult.matched}
                 valueColumn={valueColumn}
                 onUndo={handleUndoLink}
                 expectedValue={estimatedQuotaPrice}
+                onViewReceipt={handleViewReceipt}
               />
-              <UnmatchedSection unmatched={result.unmatched} />
+              <UnmatchedSection
+                unmatched={filteredResult.unmatched}
+                onViewReceipt={handleViewReceipt}
+              />
               <UnidentifiedSection
-                unidentified={result.unidentified}
-                unmatched={result.unmatched}
+                unidentified={filteredResult.unidentified}
+                unmatched={filteredResult.unmatched}
                 nameColumn={nameColumn}
                 valueColumn={valueColumn}
                 onLink={handleManualLink}
               />
               <NegativeSection
-                negatives={result.negatives}
+                negatives={filteredResult.negatives}
                 nameColumn={nameColumn}
                 valueColumn={valueColumn}
               />
@@ -152,6 +185,23 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
           Fechar
         </Button>
       </DialogActions>
+      <Dialog open={!!selectedReceipt} onClose={() => setSelectedReceipt(null)} fullWidth maxWidth="sm">
+        <DialogTitle>Comprovante - {selectedReceipt?.name}</DialogTitle>
+        <DialogContent dividers sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+          <Box
+            component="img"
+            src={selectedReceipt?.url ?? ''}
+            alt="Comprovante"
+            sx={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain', borderRadius: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button href={selectedReceipt?.url ?? ''} target="_blank" rel="noreferrer" color="secondary">
+            Abrir em nova aba
+          </Button>
+          <Button onClick={() => setSelectedReceipt(null)} color="primary">Fechar</Button>
+        </DialogActions>
+      </Dialog>
     </Dialog>
   )
 }

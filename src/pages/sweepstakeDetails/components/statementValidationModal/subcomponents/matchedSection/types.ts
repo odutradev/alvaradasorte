@@ -5,4 +5,5 @@ export interface MatchedSectionProps {
   matched: MatchedParticipant[]
   valueColumn: string
   onUndo: (id: string, rowIndex: number) => void
+  onViewReceipt: (url: string, name: string) => void
 }
