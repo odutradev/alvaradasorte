@@ -1,6 +1,8 @@
-import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import { styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
+import Button from '@mui/material/Button'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 
@@ -27,13 +29,13 @@ export const StyledToolbar = styled(Toolbar)({
   display: 'flex'
 })
 
-export const LogoText = styled(Typography)(({ theme }) => ({
+export const LogoText = styled(Typography)({
   transition: 'opacity 0.2s ease',
   cursor: 'pointer',
   '&:hover': {
     opacity: 0.8
   }
-}))
+})
 
 export const NavContainer = styled(Box)(({ theme }) => ({
   alignItems: 'center',
@@ -50,4 +52,21 @@ export const AdminNav = styled(Box)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
     display: 'none'
   }
+}))
+
+export const DesktopLogout = styled(Button)(({ theme }) => ({
+  [theme.breakpoints.down('md')]: {
+    display: 'none'
+  }
+}))
+
+export const MobileMenuButton = styled(IconButton)(({ theme }) => ({
+  [theme.breakpoints.up('md')]: {
+    display: 'none'
+  }
+}))
+
+export const DrawerContent = styled(Box)(({ theme }) => ({
+  paddingTop: theme.spacing(2),
+  minWidth: 220
 }))
