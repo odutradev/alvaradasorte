@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import Typography from '@mui/material/Typography'
 
-import useSweepstakeDetails from './hooks/useSweepstakeDetails'
+import useSweepstakeDetails from './hooks'
 import { PageWrapper, ContentContainer, GridContainer } from './styles'
 import ParticipantsTable from './components/participantsTable'
 import GridBackground from '@components/gridBackground'
