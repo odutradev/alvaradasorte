@@ -1,6 +1,7 @@
-import type { CreateSweepstakeRequest } from '@services/sweepstakes/types'
+import type { CreateSweepstakeRequest, SweepstakeResponse } from '@services/sweepstakes/types'
 
 export interface SweepstakeFormModalProps {
+  initialData?: SweepstakeResponse | null
   onSuccess: () => void
   onClose: () => void
   open: boolean

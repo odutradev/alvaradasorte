@@ -1,15 +1,17 @@
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import dayjs from 'dayjs'
 
-import { CardContainer, InfoWrapper, InfoGrid } from './styles'
+import { CardContainer, InfoWrapper, InfoGrid, ActionsWrapper } from './styles'
 import { QuotaProgress } from '@components/quotaProgress'
 import { formatCurrency } from '@utils/string'
 
 import type { SweepstakeCardProps } from './types'
 
-const SweepstakeCard = ({ sweepstake, onViewDetails }: SweepstakeCardProps) => (
+const SweepstakeCard = ({ sweepstake, onViewDetails, onEdit, onDelete }: SweepstakeCardProps) => (
   <CardContainer elevation={2}>
     <InfoWrapper>
       <Typography variant="h6" fontWeight={600}>
@@ -36,9 +38,17 @@ const SweepstakeCard = ({ sweepstake, onViewDetails }: SweepstakeCardProps) => (
         </Typography>
       </InfoGrid>
     </InfoWrapper>
-    <IconButton color="primary" onClick={() => onViewDetails(sweepstake.id)} size="large">
-      <VisibilityIcon />
-    </IconButton>
+    <ActionsWrapper>
+      <IconButton color="primary" onClick={() => onEdit(sweepstake)} size="small">
+        <EditIcon />
+      </IconButton>
+      <IconButton color="error" onClick={() => onDelete(sweepstake)} size="small">
+        <DeleteIcon />
+      </IconButton>
+      <IconButton color="info" onClick={() => onViewDetails(sweepstake.id)} size="small">
+        <VisibilityIcon />
+      </IconButton>
+    </ActionsWrapper>
   </CardContainer>
 )
 

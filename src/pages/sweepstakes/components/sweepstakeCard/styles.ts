@@ -26,3 +26,10 @@ export const InfoGrid = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1),
   marginTop: theme.spacing(1)
 }))
+
+export const ActionsWrapper = styled(Box)(({ theme }) => ({
+  flexDirection: 'row',
+  alignItems: 'center',
+  display: 'flex',
+  gap: theme.spacing(1)
+}))

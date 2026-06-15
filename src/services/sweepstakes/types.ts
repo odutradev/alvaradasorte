@@ -35,6 +35,17 @@ export interface CreateSweepstakeRequest {
   title: string
 }
 
+export interface UpdateSweepstakeRequest {
+  purchaseLimitDate?: string
+  availableQuotas?: number
+  description?: string
+  prizeValue?: number
+  quotaPrice?: number
+  presetId?: string
+  drawDate?: string
+  title?: string
+}
+
 export interface SetGamesRequest {
   games: number[][]
 }

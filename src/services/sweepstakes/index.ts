@@ -1,6 +1,6 @@
 import api from '@services/api'
 
-import type { ListSweepstakesResponse, SweepstakeDetailsResponse, CreateSweepstakeRequest, JoinSweepstakeRequest, SweepstakeResponse, SetGamesRequest, SetResultRequest } from './types'
+import type { ListSweepstakesResponse, SweepstakeDetailsResponse, CreateSweepstakeRequest, UpdateSweepstakeRequest, JoinSweepstakeRequest, SweepstakeResponse, SetGamesRequest, SetResultRequest } from './types'
 
 export const getSweepstakes = async (userId?: string): Promise<ListSweepstakesResponse> => {
   const response = await api.get<ListSweepstakesResponse>('/iam/v1/sweepstakes', {
@@ -12,6 +12,15 @@ export const getSweepstakes = async (userId?: string): Promise<ListSweepstakesRe
 export const createSweepstake = async (payload: CreateSweepstakeRequest): Promise<SweepstakeResponse> => {
   const response = await api.post<SweepstakeResponse>('/iam/v1/sweepstakes', payload)
   return response.data
+}
+
+export const updateSweepstake = async (id: string, payload: UpdateSweepstakeRequest): Promise<SweepstakeResponse> => {
+  const response = await api.patch<SweepstakeResponse>(`/iam/v1/sweepstakes/${id}`, payload)
+  return response.data
+}
+
+export const deleteSweepstake = async (id: string): Promise<void> => {
+  await api.delete(`/iam/v1/sweepstakes/${id}`)
 }
 
 export const getSweepstakeDetails = async (id: string): Promise<SweepstakeDetailsResponse> => {

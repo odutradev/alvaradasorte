@@ -1,8 +1,9 @@
-import { DialogActions, TextField, MenuItem, Button, Dialog, Box } from '@mui/material'
+import { DialogActions, TextField, MenuItem, Button, Dialog } from '@mui/material'
 import { useEffect, useState, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import dayjs from 'dayjs'
 
-import { createSweepstake } from '@services/sweepstakes'
+import { createSweepstake, updateSweepstake } from '@services/sweepstakes'
 import ValueSlider from '@components/valueSlider'
 import { getPresets } from '@services/presets'
 import useAction from '@hooks/useAction'
@@ -11,20 +12,22 @@ import { FormContainer, DateRow } from './styles'
 import type { SweepstakeFormModalProps, SweepstakeFormData } from './types'
 import type { PresetResponse } from '@services/presets/types'
 
-const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeFormModalProps) => {
+const DEFAULT_VALUES: SweepstakeFormData = {
+  title: '',
+  description: '',
+  quotaPrice: 10,
+  prizeValue: '',
+  availableQuotas: 100,
+  drawDate: '',
+  purchaseLimitDate: '',
+  presetId: ''
+}
+
+const SweepstakeFormModal = ({ onSuccess, onClose, open, initialData }: SweepstakeFormModalProps) => {
   const [presets, setPresets] = useState<PresetResponse[]>([])
 
   const { handleSubmit, register, control, reset } = useForm<SweepstakeFormData>({
-    defaultValues: {
-      title: '',
-      description: '',
-      quotaPrice: 10,
-      prizeValue: '',
-      availableQuotas: 100,
-      drawDate: '',
-      purchaseLimitDate: '',
-      presetId: ''
-    }
+    defaultValues: DEFAULT_VALUES
   })
 
   const loadPresets = useCallback(async () => {
@@ -36,8 +39,24 @@ const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeFormModalPr
   }, [])
 
   useEffect(() => {
-    if (open) loadPresets()
-  }, [open, loadPresets])
+    if (open) {
+      loadPresets()
+      if (initialData) {
+        reset({
+          title: initialData.title,
+          description: initialData.description,
+          quotaPrice: initialData.quotaPrice,
+          prizeValue: String(initialData.prizeValue),
+          availableQuotas: initialData.availableQuotas,
+          drawDate: dayjs(initialData.drawDate).format('YYYY-MM-DDTHH:mm'),
+          purchaseLimitDate: dayjs(initialData.purchaseLimitDate).format('YYYY-MM-DDTHH:mm'),
+          presetId: initialData.presetId
+        })
+      } else {
+        reset(DEFAULT_VALUES)
+      }
+    }
+  }, [open, initialData, loadPresets, reset])
 
   const onSubmit = async (data: SweepstakeFormData) => {
     const payload = {
@@ -48,14 +67,23 @@ const SweepstakeFormModal = ({ onSuccess, onClose, open }: SweepstakeFormModalPr
       prizeValue: Number(data.prizeValue),
       quotaPrice: Number(data.quotaPrice)
     }
+
     await useAction({
-      action: async () => await createSweepstake(payload),
+      action: async () => {
+        if (initialData) {
+          return await updateSweepstake(initialData.id, payload)
+        }
+        return await createSweepstake(payload)
+      },
       callback: () => {
         onSuccess()
         onClose()
-        reset()
       },
-      toastMessages: { success: 'Bolão criado!', pending: 'Salvando...', error: 'Erro ao criar' }
+      toastMessages: {
+        success: initialData ? 'Bolão atualizado!' : 'Bolão criado!',
+        pending: 'Salvando...',
+        error: 'Erro ao salvar'
+      }
     })
   }
 
