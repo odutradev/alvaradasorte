@@ -62,3 +62,29 @@ export const ConfirmButton = styled(Button)(({ theme }) => ({
 export const CancelButton = styled(Button)({
   fontWeight: 600
 })
+
+export const QuantityContainer = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  display: 'flex',
+  padding: theme.spacing(1.5, 2),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius * 1.5,
+  backgroundColor: theme.palette.background.paper
+}))
+
+export const QuantityControl = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  display: 'flex',
+  gap: theme.spacing(1)
+}))
+
+export const TotalSummaryBox = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  display: 'flex',
+  padding: theme.spacing(1.5, 2),
+  borderRadius: theme.shape.borderRadius * 1.5,
+  backgroundColor: theme.palette.primary.main + '12',
+  border: `1px solid ${theme.palette.primary.main + '30'}`
+}))

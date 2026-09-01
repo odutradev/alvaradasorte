@@ -35,13 +35,15 @@ const ROLE_LABEL_MAP: Record<string, string> = {
   'normal': 'Padrão'
 }
 
-const UserProfile = ({ onEditProfile, isProfileIncomplete, user }: UserProfileProps) => {
+const UserProfile = ({ onEditProfile, isProfileIncomplete, sweepstakes, user }: UserProfileProps) => {
   const displayName = user.fullName ?? user.name
   const initials = displayName?.substring(0, 2).toUpperCase() ?? 'UN'
   const providerIcon = PROVIDER_ICON_MAP[user.authProviderId] ?? <EmailOutlinedIcon fontSize="small" />
   const providerLabel = PROVIDER_LABEL_MAP[user.authProviderId] ?? user.authProviderId
   const roleLabel = ROLE_LABEL_MAP[user.role]
   const roleIcon = ROLE_ICON_MAP[user.role]
+
+  const totalUserQuotas = sweepstakes?.reduce((sum, s) => sum + (s.userParticipation?.quotaCount ?? 0), 0) ?? 0
 
   return (
     <ProfileCard elevation={3}>
@@ -59,6 +61,12 @@ const UserProfile = ({ onEditProfile, isProfileIncomplete, user }: UserProfilePr
         </IncompleteAlert>
       )}
       <InfoContainer>
+        <InfoRow>
+          <Typography variant="body2" color="text.secondary">Minhas Cotas</Typography>
+          <ValueText variant="body1" fontWeight={700} color="primary.main">
+            {totalUserQuotas} {totalUserQuotas === 1 ? 'cota' : 'cotas'}
+          </ValueText>
+        </InfoRow>
         <InfoRow>
           <Typography variant="body2" color="text.secondary">E-mail</Typography>
           <ValueText variant="body1" fontWeight={500}>{user.email.toLocaleLowerCase()}</ValueText>

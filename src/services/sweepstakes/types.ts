@@ -18,6 +18,7 @@ export interface SweepstakeResponse {
   }
   userParticipation?: {
     isParticipant: boolean
+    quotaCount: number
     joinedAt: string | null
   }
 }
@@ -63,6 +64,7 @@ export interface ParticipationResponse {
   userName: string
   userId: string
   id: string
+  quotaCount?: number
 }
 
 export interface SweepstakeDetailsResponse extends SweepstakeResponse {
@@ -71,4 +73,5 @@ export interface SweepstakeDetailsResponse extends SweepstakeResponse {
 
 export interface JoinSweepstakeRequest {
   receipt: File
+  quotaCount?: number
 }

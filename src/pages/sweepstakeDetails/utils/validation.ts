@@ -30,8 +30,9 @@ export const parseBrCurrency = (val: string): number => {
 
 export const runValidation = (participations: ParticipationResponse[], rows: CsvRow[], nameColumn: string, valueColumn: string): ValidationResult => {
   const groupedMap = participations.reduce<Record<string, GroupedParticipation>>((acc, p) => {
-    if (!acc[p.userId]) acc[p.userId] = { ...p, count: 1 }
-    else acc[p.userId].count += 1
+    const pCount = p.quotaCount ?? 1
+    if (!acc[p.userId]) acc[p.userId] = { ...p, count: pCount }
+    else acc[p.userId].count += pCount
     return acc
   }, {})
   const groupedParticipations = Object.values(groupedMap)

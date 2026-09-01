@@ -15,7 +15,8 @@ const DetailsCard = ({ data, preset, onUpdate }: DetailsCardProps) => {
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false)
   const [isGamesModalOpen, setIsGamesModalOpen] = useState(false)
 
-  const collectedValue = (data.participations?.length ?? 0) * data.quotaPrice
+  const filledQuotasCount = data.participations?.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0) ?? 0
+  const collectedValue = filledQuotasCount * data.quotaPrice
 
   return (
     <CardContainer elevation={2}>
@@ -35,7 +36,7 @@ const DetailsCard = ({ data, preset, onUpdate }: DetailsCardProps) => {
       <DividerLine />
       <QuotaProgress
         availableQuotas={data.availableQuotas}
-        filledQuotas={data.participations?.length ?? 0}
+        filledQuotas={filledQuotasCount}
       />
       <DividerLine />
       <InfoRow

@@ -10,9 +10,11 @@ import Header from '@components/header'
 import useHome from './hook'
 
 const Home = () => {
-  const { setIsProfileModalOpen, isProfileModalOpen, isProfileIncomplete, fetchSweepstakes, setSelectedId,  sweepstakes, selectedId, user } = useHome()
+  const { setIsProfileModalOpen, isProfileModalOpen, isProfileIncomplete, fetchSweepstakes, setSelectedId, sweepstakes, selectedId, user } = useHome()
 
   if (!user) return <Navigate to="/login" replace />
+
+  const selectedSweepstake = sweepstakes.find((s) => s.id === selectedId)
 
   return (
     <GridBackground>
@@ -22,6 +24,7 @@ const Home = () => {
           <GridContainer>
             <UserProfile
               user={user}
+              sweepstakes={sweepstakes}
               isProfileIncomplete={isProfileIncomplete}
               onEditProfile={() => setIsProfileModalOpen(true)}
             />
@@ -38,6 +41,7 @@ const Home = () => {
           onClose={() => setSelectedId(null)}
           onSuccess={fetchSweepstakes}
           sweepstakeId={selectedId ?? ''}
+          sweepstake={selectedSweepstake}
         />
       </PageWrapper>
     </GridBackground>

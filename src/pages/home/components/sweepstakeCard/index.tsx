@@ -12,6 +12,7 @@ import type { SweepstakeCardProps } from './types'
 const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
   const isAvailable = data.availableQuotas > data.metadata.filledQuotas && dayjs().isBefore(dayjs(data.purchaseLimitDate))
   const isParticipant = data.userParticipation?.isParticipant ?? false
+  const userQuotaCount = data.userParticipation?.quotaCount ?? 0
 
   return (
     <CardContainer elevation={2}>
@@ -22,7 +23,7 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
           </Typography>
           {isParticipant && (
             <Chip
-              label={data.userParticipation?.joinedAt ? `Inscrito ${dayjs(data.userParticipation.joinedAt).format('DD/MM')}` : 'Inscrito'}
+              label={userQuotaCount > 0 ? `${userQuotaCount} ${userQuotaCount === 1 ? 'cota' : 'cotas'}` : 'Inscrito'}
               color="success"
               size="small"
             />
@@ -58,11 +59,11 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
       </InfoRow>
       <Button
         variant="contained"
-        disabled={!isAvailable || isParticipant}
+        disabled={!isAvailable}
         onClick={() => onJoin(data.id)}
         fullWidth
       >
-        {isParticipant ? 'Já Inscrito' : isAvailable ? 'Participar' : 'Esgotado / Fechado'}
+        {isParticipant && isAvailable ? 'Comprar mais cotas' : isAvailable ? 'Participar' : 'Esgotado / Fechado'}
       </Button>
     </CardContainer>
   )
