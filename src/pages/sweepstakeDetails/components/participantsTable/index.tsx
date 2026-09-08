@@ -3,6 +3,8 @@ import TableContainer from '@mui/material/TableContainer'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
+import DeleteIcon from '@mui/icons-material/Delete'
+import IconButton from '@mui/material/IconButton'
 import SearchIcon from '@mui/icons-material/Search'
 import Typography from '@mui/material/Typography'
 import TableCell from '@mui/material/TableCell'
@@ -15,67 +17,37 @@ import Dialog from '@mui/material/Dialog'
 import Table from '@mui/material/Table'
 import Link from '@mui/material/Link'
 import Box from '@mui/material/Box'
-import { useState } from 'react'
 import dayjs from 'dayjs'
 
 import { TableContainerWrapper, TableHeader, ActionsContainer, EmptyBox } from './styles'
 import StatementValidationModal from '../statementValidationModal'
+import AddParticipantModal from '../addParticipantModal'
 import { capitalizeWords } from '@utils/string'
+import useParticipantsTable from './hook'
 
 import type { ParticipantsTableProps } from './types'
 
-const ParticipantsTable = ({ participations }: ParticipantsTableProps) => {
-  const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null)
-  const [selectedUser, setSelectedUser] = useState<string | null>(null)
-  const [isValidationOpen, setIsValidationOpen] = useState(false)
-  const [copiedList, setCopiedList] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const sortedParticipations = [...participations].sort((a, b) =>
-    a.userName.localeCompare(b.userName)
-  )
-
-  const filteredParticipations = sortedParticipations.filter((part) =>
-    part.userName.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
-  const handleOpenReceipt = (url: string, name: string) => {
-    setSelectedReceipt(url)
-    setSelectedUser(name)
-  }
-
-  const handleCloseReceipt = () => {
-    setSelectedReceipt(null)
-    setSelectedUser(null)
-  }
-
-  const handleCopyList = () => {
-    const textToCopy = sortedParticipations
-      .map((part, index) => {
-        const sector = part.userDepartment || part.userSector || part.sector || ''
-        const sectorSuffix = sector ? ` - ${capitalizeWords(sector)}` : ''
-        return `${index + 1}. ${capitalizeWords(part.userName)}${sectorSuffix}`
-      })
-      .join('\n')
-
-    const textarea = document.createElement('textarea')
-    textarea.value = textToCopy
-    textarea.style.position = 'fixed'
-    textarea.style.left = '-9999px'
-    textarea.style.top = '0'
-    document.body.appendChild(textarea)
-    textarea.focus()
-    textarea.select()
-    
-    try {
-      document.execCommand('copy')
-      setCopiedList(true)
-      setTimeout(() => setCopiedList(false), 2000)
-    } catch {
-    }
-    
-    document.body.removeChild(textarea)
-  }
+const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: ParticipantsTableProps) => {
+  const {
+    deletingParticipation,
+    selectedReceipt,
+    selectedUser,
+    isValidationOpen,
+    isAddModalOpen,
+    isDeleting,
+    copiedList,
+    searchQuery,
+    filteredParticipations,
+    sortedParticipations,
+    setDeletingParticipation,
+    setIsValidationOpen,
+    setIsAddModalOpen,
+    setSearchQuery,
+    handleOpenReceipt,
+    handleCloseReceipt,
+    handleDeleteConfirm,
+    handleCopyList
+  } = useParticipantsTable({ participations, sweepstakeId, onUpdate })
 
   return (
     <TableContainerWrapper elevation={2}>
@@ -84,6 +56,16 @@ const ParticipantsTable = ({ participations }: ParticipantsTableProps) => {
           Participantes ({participations.length})
         </Typography>
         <ActionsContainer>
+          {sweepstakeId && (
+            <Button
+              size="small"
+              variant="contained"
+              color="primary"
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              Adicionar Participante
+            </Button>
+          )}
           <Button
             size="small"
             variant="outlined"
@@ -126,9 +108,11 @@ const ParticipantsTable = ({ participations }: ParticipantsTableProps) => {
               <TableRow>
                 <TableCell><strong>Nome</strong></TableCell>
                 <TableCell><strong>Setor</strong></TableCell>
+                <TableCell><strong>Cotas</strong></TableCell>
                 <TableCell><strong>Telefone</strong></TableCell>
                 <TableCell><strong>Data de Adesão</strong></TableCell>
                 <TableCell align="right"><strong>Comprovante</strong></TableCell>
+                {sweepstakeId && <TableCell align="center"><strong>Ações</strong></TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -138,18 +122,35 @@ const ParticipantsTable = ({ participations }: ParticipantsTableProps) => {
                   <TableCell>
                     {capitalizeWords(part.userDepartment || part.userSector || part.sector || '—')}
                   </TableCell>
+                  <TableCell>{part.quotaCount ?? 1}</TableCell>
                   <TableCell>{part.userPhone || '—'}</TableCell>
                   <TableCell>{dayjs(part.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
                   <TableCell align="right">
-                    <Link
-                      component="button"
-                      variant="body2"
-                      onClick={() => handleOpenReceipt(part.receiptUrl, part.userName)}
-                      underline="hover"
-                    >
-                      Visualizar
-                    </Link>
+                    {part.receiptUrl ? (
+                      <Link
+                        component="button"
+                        variant="body2"
+                        onClick={() => handleOpenReceipt(part.receiptUrl, part.userName)}
+                        underline="hover"
+                      >
+                        Visualizar
+                      </Link>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">Manual</Typography>
+                    )}
                   </TableCell>
+                  {sweepstakeId && (
+                    <TableCell align="center">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        title="Excluir participação"
+                        onClick={() => setDeletingParticipation(part)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
@@ -173,11 +174,35 @@ const ParticipantsTable = ({ participations }: ParticipantsTableProps) => {
           <Button onClick={handleCloseReceipt} color="primary">Fechar</Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={!!deletingParticipation} onClose={() => setDeletingParticipation(null)}>
+        <DialogTitle>Excluir Participação</DialogTitle>
+        <DialogContent dividers>
+          <Typography variant="body1">
+            Tem certeza de que deseja remover a participação de <strong>{deletingParticipation?.userName}</strong>?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeletingParticipation(null)} color="inherit" disabled={isDeleting}>
+            Cancelar
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={isDeleting}>
+            {isDeleting ? 'Excluindo...' : 'Excluir'}
+          </Button>
+        </DialogActions>
+      </Dialog>
       <StatementValidationModal
         participations={participations}
         open={isValidationOpen}
         onClose={() => setIsValidationOpen(false)}
       />
+      {sweepstakeId && (
+        <AddParticipantModal
+          open={isAddModalOpen}
+          sweepstakeId={sweepstakeId}
+          onClose={() => setIsAddModalOpen(false)}
+          onSuccess={() => onUpdate?.()}
+        />
+      )}
     </TableContainerWrapper>
   )
 }

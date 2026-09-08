@@ -75,3 +75,8 @@ export interface JoinSweepstakeRequest {
   receipt: File
   quotaCount?: number
 }
+
+export interface AddManualParticipationRequest {
+  email: string
+  quotaCount?: number
+}

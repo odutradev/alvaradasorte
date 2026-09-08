@@ -28,7 +28,11 @@ const SweepstakeDetailsPage = () => {
           {!isLoading && details && (
             <GridContainer>
               <DetailsCard data={details} preset={preset} onUpdate={fetchDetails} />
-              <ParticipantsTable participations={details.participations} />
+              <ParticipantsTable
+                participations={details.participations}
+                sweepstakeId={details.id}
+                onUpdate={fetchDetails}
+              />
             </GridContainer>
           )}
         </ContentContainer>
