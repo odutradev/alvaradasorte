@@ -10,6 +10,7 @@ import type { PresetResponse } from '@services/presets/types'
 
 const useSweepstakeDetails = (id?: string): UseSweepstakeDetailsReturn => {
   const [details, setDetails] = useState<SweepstakeDetailsResponse | null>(null)
+  const [presets, setPresets] = useState<PresetResponse[]>([])
   const [preset, setPreset] = useState<PresetResponse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -28,6 +29,7 @@ const useSweepstakeDetails = (id?: string): UseSweepstakeDetailsReturn => {
       },
       callback: ({ detailsRes, presetsRes }) => {
         setDetails(detailsRes)
+        setPresets(presetsRes)
         const found = presetsRes.find((p: PresetResponse) => p.id === detailsRes.presetId)
         if (found) setPreset(found)
       },
@@ -44,6 +46,7 @@ const useSweepstakeDetails = (id?: string): UseSweepstakeDetailsReturn => {
   return {
     details,
     preset,
+    presets,
     fetchDetails,
     isLoading
   }

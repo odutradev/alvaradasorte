@@ -20,3 +20,16 @@ export const StyledTextButton = styled(Button)({
   alignSelf: 'flex-start',
   padding: 0
 })
+
+export const HeaderRow = styled(Box)({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%'
+})
+
+export const ActionButtonsGroup = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: theme.spacing(1)
+}))

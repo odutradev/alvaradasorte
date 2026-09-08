@@ -5,4 +5,5 @@ export interface DetailsCardProps {
   onUpdate: () => Promise<void>
   data: SweepstakeDetailsResponse
   preset: PresetResponse | null
+  presets: PresetResponse[]
 }
