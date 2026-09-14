@@ -65,6 +65,14 @@ export interface ParticipationResponse {
   userId: string
   id: string
   quotaCount?: number
+  userPhotoUrl?: string
+}
+
+export interface UpdateParticipationRequest {
+  quotaCount?: number
+  userName?: string
+  userDepartment?: string
+  userPhone?: string
 }
 
 export interface SweepstakeDetailsResponse extends SweepstakeResponse {

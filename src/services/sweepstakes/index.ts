@@ -1,6 +1,6 @@
 import api from '@services/api'
 
-import type { AddManualParticipationRequest, ListSweepstakesResponse, SweepstakeDetailsResponse, CreateSweepstakeRequest, UpdateSweepstakeRequest, ParticipationResponse, JoinSweepstakeRequest, SweepstakeResponse, SetGamesRequest, SetResultRequest } from './types'
+import type { UpdateParticipationRequest, AddManualParticipationRequest, ListSweepstakesResponse, SweepstakeDetailsResponse, CreateSweepstakeRequest, UpdateSweepstakeRequest, ParticipationResponse, JoinSweepstakeRequest, SweepstakeResponse, SetGamesRequest, SetResultRequest } from './types'
 
 export const getSweepstakes = async (userId?: string): Promise<ListSweepstakesResponse> => {
   const response = await api.get<ListSweepstakesResponse>('/iam/v1/sweepstakes', {
@@ -39,6 +39,11 @@ export const joinSweepstake = async (id: string, payload: JoinSweepstakeRequest)
 
 export const addManualParticipation = async (id: string, payload: AddManualParticipationRequest): Promise<ParticipationResponse> => {
   const response = await api.post<ParticipationResponse>(`/iam/v1/sweepstakes/${id}/participations/manual`, payload)
+  return response.data
+}
+
+export const updateParticipation = async (sweepstakeId: string, participationId: string, payload: UpdateParticipationRequest): Promise<ParticipationResponse> => {
+  const response = await api.patch<ParticipationResponse>(`/iam/v1/sweepstakes/${sweepstakeId}/participations/${participationId}`, payload)
   return response.data
 }
 

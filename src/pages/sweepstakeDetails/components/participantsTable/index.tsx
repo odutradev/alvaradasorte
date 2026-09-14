@@ -7,11 +7,13 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import IconButton from '@mui/material/IconButton'
 import SearchIcon from '@mui/icons-material/Search'
 import Typography from '@mui/material/Typography'
+import EditIcon from '@mui/icons-material/Edit'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TextField from '@mui/material/TextField'
 import TableRow from '@mui/material/TableRow'
+import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import Table from '@mui/material/Table'
@@ -21,6 +23,7 @@ import dayjs from 'dayjs'
 
 import { TableContainerWrapper, TableHeader, ActionsContainer, EmptyBox } from './styles'
 import StatementValidationModal from '../statementValidationModal'
+import EditParticipantModal from '../editParticipantModal'
 import AddParticipantModal from '../addParticipantModal'
 import { capitalizeWords } from '@utils/string'
 import useParticipantsTable from './hook'
@@ -29,6 +32,7 @@ import type { ParticipantsTableProps } from './types'
 
 const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: ParticipantsTableProps) => {
   const {
+    editingParticipation,
     deletingParticipation,
     selectedReceipt,
     selectedUser,
@@ -39,6 +43,7 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
     searchQuery,
     filteredParticipations,
     sortedParticipations,
+    setEditingParticipation,
     setDeletingParticipation,
     setIsValidationOpen,
     setIsAddModalOpen,
@@ -118,7 +123,20 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
             <TableBody>
               {filteredParticipations.map((part) => (
                 <TableRow key={part.id} hover>
-                  <TableCell>{part.userName}</TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                      <Avatar
+                        src={part.userPhotoUrl}
+                        alt={part.userName}
+                        sx={{ width: 32, height: 32, fontSize: '0.875rem' }}
+                      >
+                        {part.userName ? part.userName.substring(0, 2).toUpperCase() : 'U'}
+                      </Avatar>
+                      <Typography variant="body2" fontWeight={500}>
+                        {part.userName}
+                      </Typography>
+                    </Box>
+                  </TableCell>
                   <TableCell>
                     {capitalizeWords(part.userDepartment || part.userSector || part.sector || '—')}
                   </TableCell>
@@ -141,6 +159,14 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
                   </TableCell>
                   {sweepstakeId && (
                     <TableCell align="center">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        title="Editar participante"
+                        onClick={() => setEditingParticipation(part)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
                       <IconButton
                         size="small"
                         color="error"
@@ -196,12 +222,21 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
         onClose={() => setIsValidationOpen(false)}
       />
       {sweepstakeId && (
-        <AddParticipantModal
-          open={isAddModalOpen}
-          sweepstakeId={sweepstakeId}
-          onClose={() => setIsAddModalOpen(false)}
-          onSuccess={() => onUpdate?.()}
-        />
+        <>
+          <AddParticipantModal
+            open={isAddModalOpen}
+            sweepstakeId={sweepstakeId}
+            onClose={() => setIsAddModalOpen(false)}
+            onSuccess={() => onUpdate?.()}
+          />
+          <EditParticipantModal
+            open={!!editingParticipation}
+            participation={editingParticipation}
+            sweepstakeId={sweepstakeId}
+            onClose={() => setEditingParticipation(null)}
+            onSuccess={() => onUpdate?.()}
+          />
+        </>
       )}
     </TableContainerWrapper>
   )

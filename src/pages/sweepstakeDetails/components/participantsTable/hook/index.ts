@@ -8,6 +8,7 @@ import type { UseParticipantsTableProps } from './types'
 import type { ExtendedParticipation } from '../types'
 
 const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UseParticipantsTableProps) => {
+  const [editingParticipation, setEditingParticipation] = useState<ExtendedParticipation | null>(null)
   const [deletingParticipation, setDeletingParticipation] = useState<ExtendedParticipation | null>(null)
   const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null)
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
@@ -81,6 +82,7 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
   }
 
   return {
+    editingParticipation,
     deletingParticipation,
     selectedReceipt,
     selectedUser,
@@ -91,6 +93,7 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
     searchQuery,
     filteredParticipations,
     sortedParticipations,
+    setEditingParticipation,
     setDeletingParticipation,
     setIsValidationOpen,
     setIsAddModalOpen,
