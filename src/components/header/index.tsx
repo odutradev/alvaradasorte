@@ -39,6 +39,9 @@ const Header = () => {
           <NavContainer>
             {user?.role === 'admin' && (
               <AdminNav>
+                <Button color="inherit" onClick={() => navigate('/users')}>
+                  Usuários
+                </Button>
                 <Button color="inherit" onClick={() => navigate('/presets')}>
                   Predefinições
                 </Button>
@@ -58,7 +61,7 @@ const Header = () => {
                 <MenuIcon />
               </MobileMenuButton>
             )}
-          </NavContainer>
+            </NavContainer>
         </StyledToolbar>
       </StyledAppBar>
       <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
@@ -66,6 +69,9 @@ const Header = () => {
           <List>
             {user?.role === 'admin' && (
               <>
+                <ListItemButton onClick={() => handleNavigate('/users')}>
+                  <ListItemText primary="Usuários" />
+                </ListItemButton>
                 <ListItemButton onClick={() => handleNavigate('/presets')}>
                   <ListItemText primary="Predefinições" />
                 </ListItemButton>

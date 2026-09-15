@@ -5,6 +5,7 @@ import SweepstakeDetailsPage from '@pages/sweepstakeDetails'
 import Sweepstakes from '@pages/sweepstakes'
 import NotFound from '@pages/notFound'
 import Presets from '@pages/presets'
+import Users from '@pages/users'
 import Login from '@pages/login'
 import Home from '@pages/home'
 
@@ -24,7 +25,8 @@ const appRouter = createBrowserRouter([
   ...processProtectedRoutes([
     { path: '/sweepstakes', element: createElement(Sweepstakes), auth: true },
     { path: '/sweepstakes/:id', element: createElement(SweepstakeDetailsPage), auth: true },
-    { path: '/presets', element: createElement(Presets), auth: true }
+    { path: '/presets', element: createElement(Presets), auth: true },
+    { path: '/users', element: createElement(Users), auth: true }
   ]),
   { path: '*', element: createElement(NotFound) }
 ])
