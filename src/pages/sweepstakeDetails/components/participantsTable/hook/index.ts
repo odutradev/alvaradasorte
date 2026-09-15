@@ -55,13 +55,15 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
   }
 
   const handleCopyList = () => {
-    const textToCopy = sortedParticipations
-      .map((part, index) => {
-        const sector = part.userDepartment || part.userSector || part.sector || ''
-        const sectorSuffix = sector ? ` - ${capitalizeWords(sector)}` : ''
-        return `${index + 1}. ${capitalizeWords(part.userName)}${sectorSuffix}`
-      })
-      .join('\n')
+    const totalQuotas = sortedParticipations.reduce((acc, part) => acc + (part.quotaCount ?? 1), 0)
+    const listLines = sortedParticipations.map((part, index) => {
+      const count = part.quotaCount ?? 1
+      const quotaText = `${count} ${count === 1 ? 'cota' : 'cotas'}`
+      const sector = part.userDepartment || part.userSector || part.sector || ''
+      const sectorSuffix = sector ? ` - ${capitalizeWords(sector)}` : ''
+      return `${index + 1}. ${capitalizeWords(part.userName)} (${quotaText})${sectorSuffix}`
+    })
+    const textToCopy = [`Total de cotas: ${totalQuotas}`, '', ...listLines].join('\n')
 
     const textarea = document.createElement('textarea')
     textarea.value = textToCopy
