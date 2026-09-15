@@ -14,6 +14,10 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
   const isParticipant = data.userParticipation?.isParticipant ?? false
   const userQuotaCount = data.userParticipation?.quotaCount ?? 0
 
+  const filledQuotas = data.metadata.filledQuotas ?? 0
+  const currentPrizePerPerson = filledQuotas > 0 ? data.prizeValue / filledQuotas : 0
+  const minPrizePerPerson = data.availableQuotas > 0 ? data.prizeValue / data.availableQuotas : 0
+
   return (
     <CardContainer elevation={2}>
       <CardBody>
@@ -45,6 +49,18 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
         <Typography variant="body2" color="text.secondary">Prêmio Total:</Typography>
         <Typography variant="body1" fontWeight={500}>
           {formatCurrency(data.prizeValue)}
+        </Typography>
+      </InfoRow>
+      <InfoRow>
+        <Typography variant="body2" color="text.secondary">Prêmio Atual por Pessoa:</Typography>
+        <Typography variant="body1" fontWeight={500}>
+          {formatCurrency(currentPrizePerPerson)}
+        </Typography>
+      </InfoRow>
+      <InfoRow>
+        <Typography variant="body2" color="text.secondary">Prêmio Mínimo por Pessoa:</Typography>
+        <Typography variant="body1" fontWeight={500}>
+          {formatCurrency(minPrizePerPerson)}
         </Typography>
       </InfoRow>
       <QuotaProgress
