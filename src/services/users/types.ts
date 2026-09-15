@@ -20,11 +20,13 @@ export type GetUsersParams = {
 }
 
 export type GetUsersResponse = {
-  rows: User[]
-  count: number
-  page: number
-  limit: number
-  totalPages: number
+  data: User[]
+  meta: {
+    total: number
+    totalPages: number
+    limit: number
+    page: number
+  }
 }
 
 export type UpdateUserPayload = {

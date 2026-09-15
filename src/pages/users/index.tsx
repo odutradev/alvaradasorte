@@ -15,12 +15,17 @@ const Users = () => {
     actionLoading,
     search,
     role,
+    page,
+    limit,
+    total,
     currentUser,
     selectedUser,
     isEditOpen,
     isDeleteOpen,
-    setSearch,
-    setRole,
+    setPage,
+    setLimit,
+    handleSearchChange,
+    handleRoleChange,
     handleClearFilters,
     handleOpenEdit,
     handleCloseEdit,
@@ -41,14 +46,19 @@ const Users = () => {
           <UserFilters
             search={search}
             role={role}
-            onSearchChange={setSearch}
-            onRoleChange={setRole}
+            onSearchChange={handleSearchChange}
+            onRoleChange={handleRoleChange}
             onClearFilters={handleClearFilters}
           />
           <UserTable
             users={users}
             loading={loading}
             currentUserId={currentUser.id}
+            total={total}
+            page={page}
+            limit={limit}
+            onPageChange={setPage}
+            onLimitChange={setLimit}
             onEdit={handleOpenEdit}
             onDelete={handleOpenDelete}
           />

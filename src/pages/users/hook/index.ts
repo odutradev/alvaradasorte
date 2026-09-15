@@ -12,6 +12,10 @@ const useUsers = () => {
   const [actionLoading, setActionLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [role, setRole] = useState('')
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
@@ -21,23 +25,40 @@ const useUsers = () => {
     try {
       const response = await getUsers({
         search: search || undefined,
-        role: role || undefined
+        role: role || undefined,
+        page,
+        limit
       })
-      setUsers(response.rows || [])
+      setUsers(response.data || [])
+      setTotal(response.meta?.total ?? 0)
+      setTotalPages(response.meta?.totalPages ?? 1)
     } catch {
       setUsers([])
+      setTotal(0)
+      setTotalPages(1)
     } finally {
       setLoading(false)
     }
-  }, [search, role])
+  }, [search, role, page, limit])
 
   useEffect(() => {
     fetchUsers()
   }, [fetchUsers])
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value)
+    setPage(1)
+  }
+
+  const handleRoleChange = (value: string) => {
+    setRole(value)
+    setPage(1)
+  }
+
   const handleClearFilters = () => {
     setSearch('')
     setRole('')
+    setPage(1)
   }
 
   const handleOpenEdit = (user: User) => {
@@ -88,12 +109,18 @@ const useUsers = () => {
     actionLoading,
     search,
     role,
+    page,
+    limit,
+    total,
+    totalPages,
     currentUser,
     selectedUser,
     isEditOpen,
     isDeleteOpen,
-    setSearch,
-    setRole,
+    setPage,
+    setLimit,
+    handleSearchChange,
+    handleRoleChange,
     handleClearFilters,
     handleOpenEdit,
     handleCloseEdit,
