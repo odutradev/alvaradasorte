@@ -1,16 +1,5 @@
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
 import TextField from '@mui/material/TextField'
 import { styled } from '@mui/material/styles'
-
-export const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
-  padding: theme.spacing(3),
-  paddingBottom: theme.spacing(2)
-}))
-
-export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
-  padding: theme.spacing(0, 3, 3)
-}))
 
 export const StyledTextField = styled(TextField)(({ theme }) => ({
   '& .MuiInputBase-input': {

@@ -1,10 +1,7 @@
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
 import Alert from '@mui/material/Alert'
+import Modal from '@components/modal'
 import { useState, useEffect } from 'react'
 
 import { updateParticipation } from '@services/sweepstakes'
@@ -66,64 +63,68 @@ const EditParticipantModal = ({ participation, sweepstakeId, open, onClose, onSu
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
-      <DialogTitle>Editar Participante</DialogTitle>
-      <DialogContent dividers>
-        <FormContainer>
-          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-          <TextField
-            label="Nome Completo"
-            size="small"
-            fullWidth
-            required
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            disabled={isSubmitting}
-          />
-          <TextField
-            label="Setor / Departamento"
-            size="small"
-            fullWidth
-            required
-            value={userDepartment}
-            onChange={(e) => setUserDepartment(e.target.value)}
-            disabled={isSubmitting}
-          />
-          <TextField
-            label="Telefone / Contato"
-            size="small"
-            fullWidth
-            required
-            value={userPhone}
-            onChange={(e) => setUserPhone(e.target.value)}
-            disabled={isSubmitting}
-          />
-          <TextField
-            label="Quantidade de Cotas"
-            type="number"
-            size="small"
-            fullWidth
-            inputProps={{ min: 1 }}
-            value={quotaCount}
-            onChange={(e) => setQuotaCount(Math.max(1, Number(e.target.value)))}
-            disabled={isSubmitting}
-          />
-        </FormContainer>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="inherit" disabled={isSubmitting}>
-          Cancelar
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          color="primary"
-          disabled={!userName.trim() || isSubmitting}
-        >
-          {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      maxWidth="xs"
+      title="Editar Participante"
+      actions={
+        <>
+          <Button onClick={handleClose} color="inherit" disabled={isSubmitting}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            color="primary"
+            disabled={!userName.trim() || isSubmitting}
+          >
+            {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
+          </Button>
+        </>
+      }
+    >
+      <FormContainer>
+        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+        <TextField
+          label="Nome Completo"
+          size="small"
+          fullWidth
+          required
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+          disabled={isSubmitting}
+        />
+        <TextField
+          label="Setor / Departamento"
+          size="small"
+          fullWidth
+          required
+          value={userDepartment}
+          onChange={(e) => setUserDepartment(e.target.value)}
+          disabled={isSubmitting}
+        />
+        <TextField
+          label="Telefone / Contato"
+          size="small"
+          fullWidth
+          required
+          value={userPhone}
+          onChange={(e) => setUserPhone(e.target.value)}
+          disabled={isSubmitting}
+        />
+        <TextField
+          label="Quantidade de Cotas"
+          type="number"
+          size="small"
+          fullWidth
+          inputProps={{ min: 1 }}
+          value={quotaCount}
+          onChange={(e) => setQuotaCount(Math.max(1, Number(e.target.value)))}
+          disabled={isSubmitting}
+        />
+      </FormContainer>
+    </Modal>
   )
 }
 

@@ -3,9 +3,7 @@ import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import InputAdornment from '@mui/material/InputAdornment'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
+import Modal from '@components/modal'
 import DeleteIcon from '@mui/icons-material/Delete'
 import IconButton from '@mui/material/IconButton'
 import SearchIcon from '@mui/icons-material/Search'
@@ -16,7 +14,6 @@ import EditIcon from '@mui/icons-material/Edit'
 import TextField from '@mui/material/TextField'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
@@ -262,39 +259,51 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
           />
         }
       />
-      <Dialog open={!!selectedReceipt} onClose={handleCloseReceipt} fullWidth maxWidth="sm">
-        <DialogTitle>Comprovante - {selectedUser}</DialogTitle>
-        <DialogContent dividers sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+      <Modal
+        open={!!selectedReceipt}
+        onClose={handleCloseReceipt}
+        maxWidth="sm"
+        title={`Comprovante - ${selectedUser}`}
+        actions={
+          <>
+            <Button href={selectedReceipt ?? ''} target="_blank" rel="noreferrer" color="secondary">
+              Abrir em nova aba
+            </Button>
+            <Button onClick={handleCloseReceipt} color="primary">Fechar</Button>
+          </>
+        }
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 1 }}>
           <Box
             component="img"
             src={selectedReceipt ?? ''}
             alt="Comprovante"
             sx={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain', borderRadius: 1 }}
           />
-        </DialogContent>
-        <DialogActions>
-          <Button href={selectedReceipt ?? ''} target="_blank" rel="noreferrer" color="secondary">
-            Abrir em nova aba
-          </Button>
-          <Button onClick={handleCloseReceipt} color="primary">Fechar</Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={!!deletingParticipation} onClose={() => setDeletingParticipation(null)}>
-        <DialogTitle>Excluir Participação</DialogTitle>
-        <DialogContent dividers>
-          <Typography variant="body1">
-            Tem certeza de que deseja remover a participação de <strong>{deletingParticipation?.userName}</strong>?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeletingParticipation(null)} color="inherit" disabled={isDeleting}>
-            Cancelar
-          </Button>
-          <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={isDeleting}>
-            {isDeleting ? 'Excluindo...' : 'Excluir'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      </Modal>
+
+      <Modal
+        open={!!deletingParticipation}
+        onClose={() => setDeletingParticipation(null)}
+        maxWidth="xs"
+        title="Excluir Participação"
+        subtitle="Confirmação de exclusão"
+        actions={
+          <>
+            <Button onClick={() => setDeletingParticipation(null)} color="inherit" disabled={isDeleting}>
+              Cancelar
+            </Button>
+            <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={isDeleting}>
+              {isDeleting ? 'Excluindo...' : 'Excluir'}
+            </Button>
+          </>
+        }
+      >
+        <Typography variant="body1">
+          Tem certeza de que deseja remover a participação de <strong>{deletingParticipation?.userName}</strong>? Esta ação é irreversível.
+        </Typography>
+      </Modal>
       <StatementValidationModal
         participations={participations}
         open={isValidationOpen}

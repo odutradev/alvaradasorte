@@ -1,12 +1,9 @@
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
 import DeleteIcon from '@mui/icons-material/Delete'
-import DialogTitle from '@mui/material/DialogTitle'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
+import Modal from '@components/modal'
 
 import { GamesSection, ResultSection, SectionDivider, GameRow, NumbersContainer, NumberChip, InputRow, SaveButton } from './styles'
 import useGamesModal from './hook'
@@ -28,9 +25,13 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
   } = useGamesModal(sweepstake.id, sweepstake.games ?? [], sweepstake.result ?? [], open, onUpdate)
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>Configurar Jogos e Resultado</DialogTitle>
-      <DialogContent dividers>
+    <Modal
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      title="Configurar Jogos e Resultado"
+      actions={<Button onClick={onClose} color="inherit">Fechar</Button>}
+    >
         <GamesSection>
           <Typography variant="subtitle1" fontWeight={700}>Jogos do Bolão</Typography>
           {games.length === 0 && (
@@ -93,11 +94,7 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
             Os números acertados em cada jogo são destacados em verde acima.
           </Typography>
         </ResultSection>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="inherit">Fechar</Button>
-      </DialogActions>
-    </Dialog>
+      </Modal>
   )
 }
 

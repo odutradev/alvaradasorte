@@ -1,8 +1,6 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import InputAdornment from '@mui/material/InputAdornment'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import DialogTitle from '@mui/material/DialogTitle'
+import Modal from '@components/modal'
 import FormControl from '@mui/material/FormControl'
 import SearchIcon from '@mui/icons-material/Search'
 import CheckIcon from '@mui/icons-material/Check'
@@ -13,7 +11,6 @@ import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
 import Select from '@mui/material/Select'
 import { useRef, useState } from 'react'
 import Chip from '@mui/material/Chip'
@@ -103,9 +100,40 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} fullScreen>
-      <DialogTitle>Validar Extrato</DialogTitle>
-      <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        fullScreen
+        title="Validar Extrato"
+        bodySx={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+        actions={
+          <>
+            {step === 'results' && result && (
+              <Box sx={{ mr: 'auto' }}>
+                <Tooltip title={isCopied ? 'Copiado!' : 'Copiar lista completa'}>
+                  <IconButton size="small" onClick={handleCopy}>
+                    {isCopied ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            )}
+            {step === 'results' && (
+              <Button onClick={handleReset} color="inherit" size="small">
+                Nova Validação
+              </Button>
+            )}
+            {step === 'columns' && (
+              <Button onClick={handleValidate} variant="contained" color="primary">
+                Validar
+              </Button>
+            )}
+            <Button onClick={handleClose} color="inherit">
+              Fechar
+            </Button>
+          </>
+        }
+      >
         {step === 'upload' && (
           <UploadArea onClick={() => inputRef.current?.click()}>
             <input ref={inputRef} type="file" accept=".csv" hidden onChange={handleFileChange} />
@@ -205,49 +233,34 @@ const StatementValidationModal = ({ participations, quotaPrice, open, onClose }:
             </ResultsScrollContainer>
           </ResultsContent>
         )}
-      </DialogContent>
-      <DialogActions>
-        {step === 'results' && result && (
-          <Box sx={{ mr: 'auto' }}>
-            <Tooltip title={isCopied ? 'Copiado!' : 'Copiar lista completa'}>
-              <IconButton size="small" onClick={handleCopy}>
-                {isCopied ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
-              </IconButton>
-            </Tooltip>
-          </Box>
-        )}
-        {step === 'results' && (
-          <Button onClick={handleReset} color="inherit" size="small">
-            Nova Validação
-          </Button>
-        )}
-        {step === 'columns' && (
-          <Button onClick={handleValidate} variant="contained" color="primary">
-            Validar
-          </Button>
-        )}
-        <Button onClick={handleClose} color="inherit">
-          Fechar
-        </Button>
-      </DialogActions>
-      <Dialog open={!!selectedReceipt} onClose={() => setSelectedReceipt(null)} fullWidth maxWidth="sm">
-        <DialogTitle>Comprovante - {selectedReceipt?.name}</DialogTitle>
-        <DialogContent dividers sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+      </Modal>
+
+      <Modal
+        open={!!selectedReceipt}
+        onClose={() => setSelectedReceipt(null)}
+        maxWidth="sm"
+        title={`Comprovante - ${selectedReceipt?.name}`}
+        actions={
+          <>
+            <Button href={selectedReceipt?.url ?? ''} target="_blank" rel="noreferrer" color="secondary">
+              Abrir em nova aba
+            </Button>
+            <Button onClick={() => setSelectedReceipt(null)} color="primary">
+              Fechar
+            </Button>
+          </>
+        }
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'center', p: 1 }}>
           <Box
             component="img"
             src={selectedReceipt?.url ?? ''}
             alt="Comprovante"
             sx={{ maxWidth: '100%', maxHeight: '70vh', objectFit: 'contain', borderRadius: 1 }}
           />
-        </DialogContent>
-        <DialogActions>
-          <Button href={selectedReceipt?.url ?? ''} target="_blank" rel="noreferrer" color="secondary">
-            Abrir em nova aba
-          </Button>
-          <Button onClick={() => setSelectedReceipt(null)} color="primary">Fechar</Button>
-        </DialogActions>
-      </Dialog>
-    </Dialog>
+        </Box>
+      </Modal>
+    </>
   )
 }
 

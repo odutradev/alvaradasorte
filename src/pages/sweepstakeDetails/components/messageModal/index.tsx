@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
 
-import { StyledDialogContent, StyledDialogActions, StyledTextField } from './styles'
+import { StyledTextField } from './styles'
 import { generateSweepstakeMessage } from './utils'
+import Modal from '@components/modal'
 
 import type { MessageModalProps } from './types'
 import type { ChangeEvent } from 'react'
@@ -46,26 +46,33 @@ const MessageModal = ({ open, onClose, data, preset }: MessageModalProps) => {
   }, [open, data, preset])
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" disableEnforceFocus>
-      <StyledDialogContent>
-        <StyledTextField
-          multiline
-          fullWidth
-          rows={12}
-          variant="outlined"
-          value={messageText}
-          onChange={handleTextChange}
-        />
-      </StyledDialogContent>
-      <StyledDialogActions>
-        <Button onClick={handleCopyMessage} variant="contained" color={copied ? 'success' : 'primary'}>
-          {copied ? 'Copiado!' : 'Copiar Mensagem'}
-        </Button>
-        <Button onClick={handleClose} color="inherit">
-          Fechar
-        </Button>
-      </StyledDialogActions>
-    </Dialog>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      maxWidth="md"
+      title="Mensagem do Bolão"
+      subtitle="Copie o texto formatado para compartilhar com os participantes"
+      disableEnforceFocus
+      actions={
+        <>
+          <Button onClick={handleCopyMessage} variant="contained" color={copied ? 'success' : 'primary'}>
+            {copied ? 'Copiado!' : 'Copiar Mensagem'}
+          </Button>
+          <Button onClick={handleClose} color="inherit">
+            Fechar
+          </Button>
+        </>
+      }
+    >
+      <StyledTextField
+        multiline
+        fullWidth
+        rows={12}
+        variant="outlined"
+        value={messageText}
+        onChange={handleTextChange}
+      />
+    </Modal>
   )
 }
 
