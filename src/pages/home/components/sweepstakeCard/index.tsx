@@ -11,6 +11,8 @@ import {
   CardBody,
   HeaderRow,
   InfoRow,
+  PrizeCardsContainer,
+  PrizeCard,
   ActionButtonsRow,
   ActionButton,
   EditButton
@@ -64,18 +66,25 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
             {formatCurrency(data.prizeValue)}
           </Typography>
         </InfoRow>
-        <InfoRow>
-          <Typography variant="body2" color="text.secondary">Prêmio Atual por Pessoa:</Typography>
-          <Typography variant="body1" fontWeight={600}>
-            {formatCurrency(currentPrizePerPerson)}
-          </Typography>
-        </InfoRow>
-        <InfoRow>
-          <Typography variant="body2" color="text.secondary">Prêmio Mínimo por Pessoa:</Typography>
-          <Typography variant="body1" fontWeight={600}>
-            {formatCurrency(minPrizePerPerson)}
-          </Typography>
-        </InfoRow>
+        <PrizeCardsContainer>
+          <PrizeCard isPrimary>
+            <Typography variant="caption" color="primary.main" fontWeight={600}>
+              Prêmio Atual por Pessoa
+            </Typography>
+            <Typography variant="body1" color="primary.main" fontWeight={700}>
+              {formatCurrency(currentPrizePerPerson)}
+            </Typography>
+          </PrizeCard>
+
+          <PrizeCard>
+            <Typography variant="caption" color="text.secondary" fontWeight={500}>
+              Prêmio Mínimo por Pessoa
+            </Typography>
+            <Typography variant="body1" color="text.primary" fontWeight={700}>
+              {formatCurrency(minPrizePerPerson)}
+            </Typography>
+          </PrizeCard>
+        </PrizeCardsContainer>
 
         <QuotaProgress
           availableQuotas={data.availableQuotas}

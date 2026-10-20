@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material/styles'
+import { styled, alpha } from '@mui/material/styles'
 import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
@@ -45,6 +45,27 @@ export const InfoRow = styled(Box)({
   alignItems: 'center',
   display: 'flex'
 })
+
+export const PrizeCardsContainer = styled(Box)(({ theme }) => ({
+  gridTemplateColumns: '1fr 1fr',
+  gap: theme.spacing(1.5),
+  display: 'grid',
+  width: '100%'
+}))
+
+export const PrizeCard = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isPrimary'
+})<{ isPrimary?: boolean }>(({ theme, isPrimary }) => ({
+  backgroundColor: isPrimary
+    ? alpha(theme.palette.primary.main, theme.palette.mode === 'light' ? 0.08 : 0.12)
+    : theme.palette.action.hover,
+  border: `1px solid ${isPrimary ? alpha(theme.palette.primary.main, 0.3) : theme.palette.divider}`,
+  padding: theme.spacing(1.2, 1.5),
+  flexDirection: 'column',
+  gap: theme.spacing(0.25),
+  borderRadius: 12,
+  display: 'flex'
+}))
 
 export const ActionButtonsRow = styled(Box)(({ theme }) => ({
   alignItems: 'center',
