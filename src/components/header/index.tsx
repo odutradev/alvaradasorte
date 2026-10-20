@@ -5,8 +5,6 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import LightModeIcon from '@mui/icons-material/LightMode'
-import DarkModeIcon from '@mui/icons-material/DarkMode'
 import { useNavigate, useLocation } from 'react-router-dom'
 import CloseIcon from '@mui/icons-material/Close'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -29,20 +27,17 @@ import {
   MenuButton,
   DrawerContent,
   DrawerHeader,
-  ThemeSection
+  DrawerFooter
 } from './styles'
 import type { HeaderProps } from './types'
 import ThemeToggle from '@components/themeToggle'
-import useSystemStore from '@stores/system'
 import useAuth from '@hooks/useAuth'
 
 const Header = ({ showBackButton = false, onBack, backLabel = 'Voltar' }: HeaderProps = {}) => {
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
-  const { system } = useSystemStore()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const isDark = system.themeMode === 'dark'
 
   const handleNavigate = (path: string) => {
     navigate(path)
@@ -166,17 +161,10 @@ const Header = ({ showBackButton = false, onBack, backLabel = 'Voltar' }: Header
                 />
               </ListItemButton>
             </List>
-            <ThemeSection>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                <Box sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center' }}>
-                  {isDark ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
-                </Box>
-                <Typography variant="body2" fontWeight={500}>
-                  {isDark ? 'Modo Escuro' : 'Modo Claro'}
-                </Typography>
-              </Box>
+            <Divider sx={{ my: 1 }} />
+            <DrawerFooter>
               <ThemeToggle />
-            </ThemeSection>
+            </DrawerFooter>
           </DrawerContent>
         </Drawer>
       )}
