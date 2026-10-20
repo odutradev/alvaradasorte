@@ -15,6 +15,7 @@ import {
   DividerLine,
   ActionButton
 } from './styles'
+import SweepstakeTimeline from '@components/sweepstakeTimeline'
 import { QuotaProgress } from '@components/quotaProgress'
 import { formatCurrency } from '@utils/string'
 import useAuth from '@hooks/useAuth'
@@ -109,12 +110,11 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
 
         <DividerLine />
 
-        <InfoRow>
-          <Typography variant="body2" color="text.secondary">Limite de Compra:</Typography>
-          <Typography variant="body1" fontWeight={600}>
-            {dayjs(data.purchaseLimitDate).format('DD/MM/YYYY HH:mm')}
-          </Typography>
-        </InfoRow>
+        <SweepstakeTimeline
+          createdAt={data.createdAt}
+          purchaseLimitDate={data.purchaseLimitDate}
+          drawDate={data.drawDate}
+        />
       </CardBody>
 
       <ActionButton
