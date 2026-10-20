@@ -46,16 +46,6 @@ export const InfoRow = styled(Box)({
   display: 'flex'
 })
 
-export const DescriptionText = styled(Typography)(({ theme }) => ({
-  marginTop: theme.spacing(0.5)
-}))
-
-export const DividerLine = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.divider,
-  height: 1,
-  width: '100%'
-}))
-
 export const ActionButton = styled(Button)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 1.5,
   textTransform: 'none',

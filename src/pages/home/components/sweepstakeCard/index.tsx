@@ -11,8 +11,6 @@ import {
   CardBody,
   HeaderRow,
   InfoRow,
-  DescriptionText,
-  DividerLine,
   ActionButton
 } from './styles'
 import SweepstakeTimeline from '@components/sweepstakeTimeline'
@@ -68,14 +66,6 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
           )}
         </HeaderRow>
 
-        {data.description && (
-          <DescriptionText variant="body2" color="text.secondary">
-            {data.description}
-          </DescriptionText>
-        )}
-
-        <DividerLine />
-
         <InfoRow>
           <Typography variant="body2" color="text.secondary">Valor da Cota:</Typography>
           <Typography variant="body1" fontWeight={600}>
@@ -101,14 +91,10 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
           </Typography>
         </InfoRow>
 
-        <DividerLine />
-
         <QuotaProgress
           availableQuotas={data.availableQuotas}
           filledQuotas={data.metadata.filledQuotas}
         />
-
-        <DividerLine />
 
         <SweepstakeTimeline
           createdAt={data.createdAt}
