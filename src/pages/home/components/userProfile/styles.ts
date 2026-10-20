@@ -60,19 +60,41 @@ export const ValueText = styled(Typography)({
 })
 
 export const EditProfileButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(1),
   width: '100%',
   borderRadius: theme.shape.borderRadius * 1.5,
   textTransform: 'none',
   fontWeight: 500
 }))
 
+export const LogoutButton = styled(Button)(({ theme }) => ({
+  width: '100%',
+  borderRadius: theme.shape.borderRadius * 1.5,
+  textTransform: 'none',
+  fontWeight: 500,
+  color: theme.palette.text.secondary,
+  '&:hover': {
+    color: theme.palette.error.main,
+    backgroundColor: theme.palette.mode === 'light' ? 'rgba(211, 47, 47, 0.08)' : 'rgba(244, 67, 54, 0.12)'
+  }
+}))
+
+export const ActionsContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  gap: theme.spacing(1),
+  marginTop: 'auto',
+  paddingTop: theme.spacing(1)
+}))
+
 export const ProviderRow = styled(Box)(({ theme }) => ({
   justifyContent: 'center',
-  paddingTop: theme.spacing(1.5),
   alignItems: 'center',
   display: 'flex',
-  width: '100%'
+  width: '100%',
+  gap: theme.spacing(1),
+  marginTop: theme.spacing(-1),
+  marginBottom: theme.spacing(-0.5)
 }))
 
 export const IconWrapper = styled(Box)(({ theme }) => ({
@@ -82,8 +104,7 @@ export const IconWrapper = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0.75),
   alignItems: 'center',
   display: 'flex',
-  cursor: 'default',
-  margin: `0 ${theme.spacing(0.75)}`
+  cursor: 'default'
 }))
 
 export const IncompleteAlert = styled(Alert)({

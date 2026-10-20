@@ -2,13 +2,27 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
 import PersonPinIcon from '@mui/icons-material/PersonPin'
 import GoogleIcon from '@mui/icons-material/Google'
+import LogoutIcon from '@mui/icons-material/Logout'
 import AppleIcon from '@mui/icons-material/Apple'
 import Typography from '@mui/material/Typography'
 import EditIcon from '@mui/icons-material/Edit'
 import Tooltip from '@mui/material/Tooltip'
 
-import { ProfileCard, StyledAvatar, InfoContainer, InfoRow, ValueText, EditProfileButton, ProviderRow, IconWrapper, IncompleteAlert } from './styles'
+import {
+  ProfileCard,
+  StyledAvatar,
+  InfoContainer,
+  InfoRow,
+  ValueText,
+  ActionsContainer,
+  EditProfileButton,
+  LogoutButton,
+  ProviderRow,
+  IconWrapper,
+  IncompleteAlert
+} from './styles'
 import { capitalizeWords } from '@utils/string'
+import useAuth from '@hooks/useAuth'
 
 import type { UserProfileProps } from './types'
 import type { JSX } from 'react'
@@ -36,6 +50,7 @@ const ROLE_LABEL_MAP: Record<string, string> = {
 }
 
 const UserProfile = ({ onEditProfile, isProfileIncomplete, sweepstakes, user }: UserProfileProps) => {
+  const { logout } = useAuth()
   const displayName = user.fullName ?? user.name
   const initials = displayName?.substring(0, 2).toUpperCase() ?? 'UN'
   const providerIcon = PROVIDER_ICON_MAP[user.authProviderId] ?? <EmailOutlinedIcon fontSize="small" />
@@ -50,6 +65,18 @@ const UserProfile = ({ onEditProfile, isProfileIncomplete, sweepstakes, user }: 
       <StyledAvatar src={user.photoUrl}>
         {initials}
       </StyledAvatar>
+      <ProviderRow>
+        <Tooltip title={`Login via ${providerLabel}`}>
+          <IconWrapper>
+            {providerIcon}
+          </IconWrapper>
+        </Tooltip>
+        <Tooltip title={`Usuário ${roleLabel}`}>
+          <IconWrapper>
+            {roleIcon}
+          </IconWrapper>
+        </Tooltip>
+      </ProviderRow>
       {displayName && (
         <Typography variant="subtitle1" fontWeight={600} align="center">
           {capitalizeWords(displayName)}
@@ -80,26 +107,23 @@ const UserProfile = ({ onEditProfile, isProfileIncomplete, sweepstakes, user }: 
           <ValueText variant="body1" fontWeight={500}>{capitalizeWords(user.department ?? 'Não informado')}</ValueText>
         </InfoRow>
       </InfoContainer>
-      <EditProfileButton
-        variant="outlined"
-        color="primary"
-        startIcon={<EditIcon />}
-        onClick={onEditProfile}
-      >
-        Editar Perfil
-      </EditProfileButton>
-      <ProviderRow>
-        <Tooltip title={`Login via ${providerLabel}`}>
-          <IconWrapper>
-            {providerIcon}
-          </IconWrapper>
-        </Tooltip>
-        <Tooltip title={`Usuário ${roleLabel}`}>
-          <IconWrapper>
-            {roleIcon}
-          </IconWrapper>
-        </Tooltip>
-      </ProviderRow>
+      <ActionsContainer>
+        <EditProfileButton
+          variant="outlined"
+          color="primary"
+          startIcon={<EditIcon />}
+          onClick={onEditProfile}
+        >
+          Editar Perfil
+        </EditProfileButton>
+        <LogoutButton
+          variant="text"
+          startIcon={<LogoutIcon />}
+          onClick={logout}
+        >
+          Sair
+        </LogoutButton>
+      </ActionsContainer>
     </ProfileCard>
   )
 }
