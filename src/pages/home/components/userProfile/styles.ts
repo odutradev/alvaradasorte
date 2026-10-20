@@ -8,12 +8,24 @@ import Box from '@mui/material/Box'
 
 export const ProfileCard = styled(Paper)(({ theme }) => ({
   flexDirection: 'column',
-  padding: theme.spacing(4),
+  padding: theme.spacing(3),
   alignItems: 'center',
-  maxWidth: 600,
   display: 'flex',
   width: '100%',
-  gap: theme.spacing(2)
+  height: '100%',
+  minHeight: 0,
+  overflowY: 'auto',
+  gap: theme.spacing(2),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: 16,
+  boxSizing: 'border-box',
+  '&::-webkit-scrollbar': {
+    width: 6
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.divider,
+    borderRadius: 3
+  }
 }))
 
 export const StyledAvatar = styled(Avatar)(({ theme }) => ({
@@ -49,7 +61,10 @@ export const ValueText = styled(Typography)({
 
 export const EditProfileButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(1),
-  width: '100%'
+  width: '100%',
+  borderRadius: theme.shape.borderRadius * 1.5,
+  textTransform: 'none',
+  fontWeight: 500
 }))
 
 export const ProviderRow = styled(Box)(({ theme }) => ({

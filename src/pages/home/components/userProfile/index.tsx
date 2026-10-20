@@ -46,7 +46,7 @@ const UserProfile = ({ onEditProfile, isProfileIncomplete, sweepstakes, user }: 
   const totalUserQuotas = sweepstakes?.reduce((sum, s) => sum + (s.userParticipation?.quotaCount ?? 0), 0) ?? 0
 
   return (
-    <ProfileCard elevation={3}>
+    <ProfileCard elevation={0}>
       <StyledAvatar src={user.photoUrl}>
         {initials}
       </StyledAvatar>

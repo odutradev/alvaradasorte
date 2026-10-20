@@ -16,7 +16,7 @@ const Home = () => {
   const selectedSweepstake = sweepstakes.find((s) => s.id === selectedId)
 
   return (
-    <PageContainer contentSx={{ alignItems: 'center', justifyContent: 'center' }}>
+    <PageContainer fullHeight>
       <GridContainer>
         <UserProfile
           user={user}

@@ -2,9 +2,11 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
+import Chip from '@mui/material/Chip'
+import Box from '@mui/material/Box'
 import { useState } from 'react'
 
-import { CarouselWrapper, CarouselHeader, NavigationRow, CounterText } from './styles'
+import { CarouselContainer, CarouselHeader, CarouselContent, NavigationRow, CounterText } from './styles'
 import EmptyState from '@components/emptyState'
 import SweepstakeCard from '../sweepstakeCard'
 
@@ -15,12 +17,24 @@ const SweepstakesCarousel = ({ sweepstakes, onJoin }: SweepstakesCarouselProps) 
 
   if (sweepstakes.length === 0) {
     return (
-      <CarouselWrapper>
-        <Typography variant="h5" fontWeight={700} gutterBottom>
-          Bolões Disponíveis
-        </Typography>
-        <EmptyState description="Nenhum bolão aberto no momento. Fique de olho!" />
-      </CarouselWrapper>
+      <CarouselContainer elevation={0}>
+        <CarouselHeader>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Typography variant="h6" fontWeight={600}>
+              Bolões Disponíveis
+            </Typography>
+            <Chip
+              label={0}
+              size="small"
+              color="default"
+              sx={{ fontWeight: 600, height: 24, fontSize: '0.75rem', borderRadius: 1 }}
+            />
+          </Box>
+        </CarouselHeader>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: 200 }}>
+          <EmptyState description="Nenhum bolão aberto no momento. Fique de olho!" />
+        </Box>
+      </CarouselContainer>
     )
   }
 
@@ -28,25 +42,54 @@ const SweepstakesCarousel = ({ sweepstakes, onJoin }: SweepstakesCarouselProps) 
   const goToNext = () => setCurrentIndex((prev) => Math.min(sweepstakes.length - 1, prev + 1))
 
   return (
-    <CarouselWrapper>
+    <CarouselContainer elevation={0}>
       <CarouselHeader>
-        <Typography variant="h5" fontWeight={700}>
-          Bolões Disponíveis
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Typography variant="h6" fontWeight={600}>
+            Bolões Disponíveis
+          </Typography>
+          <Chip
+            label={`${currentIndex + 1} de ${sweepstakes.length}`}
+            size="small"
+            color="default"
+            sx={{ fontWeight: 600, height: 24, fontSize: '0.75rem', borderRadius: 1 }}
+          />
+        </Box>
         <NavigationRow>
-          <CounterText variant="body2">
-            {currentIndex + 1} / {sweepstakes.length}
-          </CounterText>
-          <IconButton onClick={goToPrev} disabled={currentIndex === 0} size="small" aria-label="Bolão anterior">
-            <ChevronLeftIcon />
+          <IconButton
+            onClick={goToPrev}
+            disabled={currentIndex === 0}
+            size="small"
+            aria-label="Bolão anterior"
+            sx={{
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 2,
+              '&:hover': { backgroundColor: 'action.hover' }
+            }}
+          >
+            <ChevronLeftIcon fontSize="small" />
           </IconButton>
-          <IconButton onClick={goToNext} disabled={currentIndex === sweepstakes.length - 1} size="small" aria-label="Próximo bolão">
-            <ChevronRightIcon />
+          <IconButton
+            onClick={goToNext}
+            disabled={currentIndex === sweepstakes.length - 1}
+            size="small"
+            aria-label="Próximo bolão"
+            sx={{
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 2,
+              '&:hover': { backgroundColor: 'action.hover' }
+            }}
+          >
+            <ChevronRightIcon fontSize="small" />
           </IconButton>
         </NavigationRow>
       </CarouselHeader>
-      <SweepstakeCard data={sweepstakes[currentIndex]} onJoin={onJoin} />
-    </CarouselWrapper>
+      <CarouselContent>
+        <SweepstakeCard data={sweepstakes[currentIndex]} onJoin={onJoin} />
+      </CarouselContent>
+    </CarouselContainer>
   )
 }
 
