@@ -51,6 +51,11 @@ export const SweepstakeTimeline = ({ createdAt, purchaseLimitDate, drawDate }: S
     }
   })
 
+  const lastFilledIndex = items.reduce(
+    (acc, item, index) => (item.status === 'completed' || item.status === 'current' ? index : acc),
+    -1
+  )
+
   return (
     <Container>
       <TimelineTrack>
@@ -58,22 +63,23 @@ export const SweepstakeTimeline = ({ createdAt, purchaseLimitDate, drawDate }: S
           const align = index === 0 ? 'start' : index === items.length - 1 ? 'end' : 'center'
           const isLast = index === items.length - 1
           const isConnectorCompleted = index < nowIndex
+          const isPulsing = index === lastFilledIndex
 
           return (
             <React.Fragment key={item.id}>
-              <NodeAnchor>
+              <NodeAnchor index={index}>
                 <StepLabel align={align} isCurrent={item.status === 'current'}>
                   {item.label}
                 </StepLabel>
 
-                <Dot status={item.status} />
+                <Dot status={item.status} isPulsing={isPulsing} />
 
                 <DateTimeText align={align} isCurrent={item.status === 'current'}>
                   {item.formattedDate} - {item.formattedTime}
                 </DateTimeText>
               </NodeAnchor>
 
-              {!isLast && <Connector isCompleted={isConnectorCompleted} />}
+              {!isLast && <Connector index={index} isCompleted={isConnectorCompleted} />}
             </React.Fragment>
           )
         })}

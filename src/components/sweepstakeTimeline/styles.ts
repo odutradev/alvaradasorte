@@ -22,32 +22,88 @@ export const TimelineTrack = styled(Box)(({ theme }) => ({
 
 interface ConnectorProps {
   isCompleted: boolean
+  index?: number
 }
 
 export const Connector = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'isCompleted'
-})<ConnectorProps>(({ theme, isCompleted }) => ({
-  backgroundColor: isCompleted ? theme.palette.primary.main : theme.palette.divider,
-  transition: 'background-color 0.3s ease',
+  shouldForwardProp: (prop) => prop !== 'isCompleted' && prop !== 'index'
+})<ConnectorProps>(({ theme, isCompleted, index = 0 }) => ({
+  position: 'relative',
+  backgroundColor: theme.palette.divider,
   height: 2,
-  flex: 1
+  flex: 1,
+  overflow: 'hidden',
+  ...(isCompleted && {
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      width: '100%',
+      backgroundColor: theme.palette.primary.main,
+      transformOrigin: 'left center',
+      animation: 'connectorFill 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+      animationDelay: `${index * 140}ms`
+    }
+  }),
+  '@keyframes connectorFill': {
+    from: {
+      transform: 'scaleX(0)'
+    },
+    to: {
+      transform: 'scaleX(1)'
+    }
+  }
 }))
 
-export const NodeAnchor = styled(Box)({
+export const NodeAnchor = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'index'
+})<{ index?: number }>(({ index = 0 }) => ({
   justifyContent: 'center',
   alignItems: 'center',
   position: 'relative',
   display: 'flex',
-  flexShrink: 0
-})
+  flexShrink: 0,
+  animation: 'nodeAnchorFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards',
+  animationDelay: `${index * 140}ms`,
+  '@keyframes nodeAnchorFade': {
+    from: {
+      opacity: 0,
+      transform: 'scale(0.85)'
+    },
+    to: {
+      opacity: 1,
+      transform: 'scale(1)'
+    }
+  }
+}))
 
 interface DotProps {
   status: TimelineNodeStatus
+  isPulsing?: boolean
 }
 
 export const Dot = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'status'
-})<DotProps>(({ theme, status }) => {
+  shouldForwardProp: (prop) => prop !== 'status' && prop !== 'isPulsing'
+})<DotProps>(({ theme, status, isPulsing }) => {
+  const pulseStyle = isPulsing
+    ? {
+        animation: 'dotPulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        '@keyframes dotPulse': {
+          '0%': {
+            boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.4)}`
+          },
+          '50%': {
+            boxShadow: `0 0 0 8px ${alpha(theme.palette.primary.main, 0.08)}`
+          },
+          '100%': {
+            boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.4)}`
+          }
+        }
+      }
+    : {}
+
   if (status === 'current') {
     return {
       backgroundColor: theme.palette.primary.main,
@@ -56,7 +112,8 @@ export const Dot = styled(Box, {
       borderRadius: '50%',
       height: 14,
       width: 14,
-      zIndex: 2
+      zIndex: 2,
+      ...pulseStyle
     }
   }
 
@@ -66,7 +123,8 @@ export const Dot = styled(Box, {
       borderRadius: '50%',
       height: 10,
       width: 10,
-      zIndex: 1
+      zIndex: 1,
+      ...pulseStyle
     }
   }
 
