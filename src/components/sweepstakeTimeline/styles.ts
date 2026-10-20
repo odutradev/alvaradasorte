@@ -91,7 +91,7 @@ export const Dot = styled(Box, {
   const pulseStyle = isPulsing
     ? {
         animation: 'dotPulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        animationDelay: '1400ms',
+        animationDelay: '2400ms',
         '@keyframes dotPulse': {
           '0%': {
             boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.4)}`
