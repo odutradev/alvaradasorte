@@ -11,6 +11,49 @@ export const formatCurrency = (value: number): string =>
     style: 'currency'
   }).format(value)
 
+export const formatCompactCurrency = (value: number, includePrefix = true): string => {
+  const prefix = includePrefix ? 'R$ ' : ''
+
+  if (!value || isNaN(value)) {
+    return `${prefix}0`
+  }
+
+  const absValue = Math.abs(value)
+  const sign = value < 0 ? '-' : ''
+
+  if (absValue >= 1_000_000_000) {
+    const formatted = (absValue / 1_000_000_000).toLocaleString('pt-BR', {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 0
+    })
+    const unit = absValue < 2_000_000_000 ? 'bilhão' : 'bilhões'
+    return `${sign}${prefix}${formatted} ${unit}`
+  }
+
+  if (absValue >= 1_000_000) {
+    const formatted = (absValue / 1_000_000).toLocaleString('pt-BR', {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 0
+    })
+    const unit = absValue < 2_000_000 ? 'milhão' : 'milhões'
+    return `${sign}${prefix}${formatted} ${unit}`
+  }
+
+  if (absValue >= 10_000) {
+    const formatted = (absValue / 1_000).toLocaleString('pt-BR', {
+      maximumFractionDigits: 1,
+      minimumFractionDigits: 0
+    })
+    return `${sign}${prefix}${formatted} mil`
+  }
+
+  const formatted = absValue.toLocaleString('pt-BR', {
+    maximumFractionDigits: 0
+  })
+
+  return `${sign}${prefix}${formatted}`
+}
+
 export const normalizeString = (text: string): string =>
   text
     .toLowerCase()
