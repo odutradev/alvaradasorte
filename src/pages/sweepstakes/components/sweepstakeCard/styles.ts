@@ -5,10 +5,16 @@ import Box from '@mui/material/Box'
 export const CardContainer = styled(Paper)(({ theme }) => ({
   justifyContent: 'space-between',
   alignItems: 'center',
-  borderRadius: 8,
-  padding: theme.spacing(3),
+  borderRadius: 12,
+  border: `1px solid ${theme.palette.divider}`,
+  padding: theme.spacing(2.5),
   display: 'flex',
-  gap: theme.spacing(2)
+  gap: theme.spacing(2),
+  transition: 'border-color 0.2s ease, background-color 0.2s ease',
+  '&:hover': {
+    borderColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.action.hover
+  }
 }))
 
 export const InfoWrapper = styled(Box)(({ theme }) => ({

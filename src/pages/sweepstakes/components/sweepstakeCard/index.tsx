@@ -1,8 +1,9 @@
-import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import DeleteIcon from '@mui/icons-material/Delete'
-import EditIcon from '@mui/icons-material/Edit'
+import Tooltip from '@mui/material/Tooltip'
 import dayjs from 'dayjs'
 
 import { CardContainer, InfoWrapper, InfoGrid, ActionsWrapper } from './styles'
@@ -12,7 +13,7 @@ import { formatCurrency } from '@utils/string'
 import type { SweepstakeCardProps } from './types'
 
 const SweepstakeCard = ({ sweepstake, onViewDetails, onEdit, onDelete }: SweepstakeCardProps) => (
-  <CardContainer elevation={2}>
+  <CardContainer elevation={0}>
     <InfoWrapper>
       <Typography variant="h6" fontWeight={600}>
         {sweepstake.title}
@@ -39,15 +40,21 @@ const SweepstakeCard = ({ sweepstake, onViewDetails, onEdit, onDelete }: Sweepst
       </InfoGrid>
     </InfoWrapper>
     <ActionsWrapper>
-      <IconButton color="primary" onClick={() => onEdit(sweepstake)} size="small">
-        <EditIcon />
-      </IconButton>
-      <IconButton color="error" onClick={() => onDelete(sweepstake)} size="small">
-        <DeleteIcon />
-      </IconButton>
-      <IconButton color="info" onClick={() => onViewDetails(sweepstake.id)} size="small">
-        <VisibilityIcon />
-      </IconButton>
+      <Tooltip title="Editar bolão">
+        <IconButton color="primary" onClick={() => onEdit(sweepstake)} size="small">
+          <EditOutlinedIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Excluir bolão">
+        <IconButton color="error" onClick={() => onDelete(sweepstake)} size="small">
+          <DeleteOutlineIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Ver detalhes">
+        <IconButton color="info" onClick={() => onViewDetails(sweepstake.id)} size="small">
+          <VisibilityOutlinedIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
     </ActionsWrapper>
   </CardContainer>
 )

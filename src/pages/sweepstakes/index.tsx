@@ -5,11 +5,16 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 
+import AddIcon from '@mui/icons-material/Add'
+import Typography from '@mui/material/Typography'
+import Chip from '@mui/material/Chip'
+import Box from '@mui/material/Box'
+
+import { ContainerWrapper, TableHeader, ActionsContainer } from './styles'
 import SweepstakeFormModal from './components/sweepstakeFormModal'
 import SweepstakeList from './components/sweepstakeList'
 import PageContainer from '@components/pageContainer'
 import useSweepstakesAdmin from './hook'
-import Subheader from '@components/subheader'
 
 const Sweepstakes = () => {
   const {
@@ -31,18 +36,40 @@ const Sweepstakes = () => {
   if (!user) return null
 
   return (
-    <PageContainer>
-      <Subheader
-        title="Gerenciamento de Bolões"
-        buttonLabel="Novo Bolão"
-        onButtonClick={handleCreateNew}
-      />
-      <SweepstakeList
-        sweepstakes={sweepstakes}
-        onViewDetails={viewDetails}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+    <PageContainer fullHeight>
+      <ContainerWrapper elevation={0}>
+        <TableHeader>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Typography variant="h6" fontWeight={600}>
+              Gerenciamento de Bolões
+            </Typography>
+            <Chip
+              label={sweepstakes.length}
+              size="small"
+              color="default"
+              sx={{ fontWeight: 600, height: 24, fontSize: '0.75rem', borderRadius: 1 }}
+            />
+          </Box>
+          <ActionsContainer>
+            <Button
+              size="small"
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon fontSize="small" />}
+              onClick={handleCreateNew}
+              sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 500 }}
+            >
+              Novo Bolão
+            </Button>
+          </ActionsContainer>
+        </TableHeader>
+        <SweepstakeList
+          sweepstakes={sweepstakes}
+          onViewDetails={viewDetails}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      </ContainerWrapper>
       <SweepstakeFormModal
         initialData={editingSweepstake}
         open={modalOpen}
