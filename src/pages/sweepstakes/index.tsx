@@ -6,12 +6,10 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 
 import SweepstakeFormModal from './components/sweepstakeFormModal'
-import { PageWrapper, ContentContainer } from './styles'
 import SweepstakeList from './components/sweepstakeList'
-import GridBackground from '@components/gridBackground'
+import PageContainer from '@components/pageContainer'
 import useSweepstakesAdmin from './hook'
 import Subheader from '@components/subheader'
-import Header from '@components/header'
 
 const Sweepstakes = () => {
   const {
@@ -33,30 +31,26 @@ const Sweepstakes = () => {
   if (!user) return null
 
   return (
-    <GridBackground>
-      <PageWrapper>
-        <Header />
-        <ContentContainer>
-          <Subheader
-            title="Gerenciamento de Bolões"
-            buttonLabel="Novo Bolão"
-            onButtonClick={handleCreateNew}
-          />
-          <SweepstakeList
-            sweepstakes={sweepstakes}
-            onViewDetails={viewDetails}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        </ContentContainer>
-        <SweepstakeFormModal
-          initialData={editingSweepstake}
-          open={modalOpen}
-          onClose={handleCloseModal}
-          onSuccess={loadSweepstakes}
-        />
-        <Dialog open={!!deletingSweepstake} onClose={() => setDeletingSweepstake(null)}>
-          <DialogTitle>Excluir Bolão</DialogTitle>
+    <PageContainer>
+      <Subheader
+        title="Gerenciamento de Bolões"
+        buttonLabel="Novo Bolão"
+        onButtonClick={handleCreateNew}
+      />
+      <SweepstakeList
+        sweepstakes={sweepstakes}
+        onViewDetails={viewDetails}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+      <SweepstakeFormModal
+        initialData={editingSweepstake}
+        open={modalOpen}
+        onClose={handleCloseModal}
+        onSuccess={loadSweepstakes}
+      />
+      <Dialog open={!!deletingSweepstake} onClose={() => setDeletingSweepstake(null)}>
+        <DialogTitle>Excluir Bolão</DialogTitle>
           <DialogContent>
             <DialogContentText>
               Tem certeza que deseja excluir o bolão <strong>{deletingSweepstake?.title}</strong>?
@@ -72,8 +66,7 @@ const Sweepstakes = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      </PageWrapper>
-    </GridBackground>
+    </PageContainer>
   )
 }
 

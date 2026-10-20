@@ -1,11 +1,9 @@
 import DeleteUserDialog from './components/deleteUserDialog'
-import { PageWrapper, ContentContainer } from './styles'
 import EditUserModal from './components/editUserModal'
-import GridBackground from '@components/gridBackground'
+import PageContainer from '@components/pageContainer'
 import UserFilters from './components/userFilters'
 import UserTable from './components/userTable'
 import Subheader from '@components/subheader'
-import Header from '@components/header'
 import useUsers from './hook'
 
 const Users = () => {
@@ -38,47 +36,42 @@ const Users = () => {
   if (!currentUser) return null
 
   return (
-    <GridBackground>
-      <PageWrapper>
-        <Header />
-        <ContentContainer>
-          <Subheader title="Gestão de Usuários" />
-          <UserFilters
-            search={search}
-            role={role}
-            onSearchChange={handleSearchChange}
-            onRoleChange={handleRoleChange}
-            onClearFilters={handleClearFilters}
-          />
-          <UserTable
-            users={users}
-            loading={loading}
-            currentUserId={currentUser.id}
-            total={total}
-            page={page}
-            limit={limit}
-            onPageChange={setPage}
-            onLimitChange={setLimit}
-            onEdit={handleOpenEdit}
-            onDelete={handleOpenDelete}
-          />
-        </ContentContainer>
-        <EditUserModal
-          open={isEditOpen}
-          user={selectedUser}
-          loading={actionLoading}
-          onClose={handleCloseEdit}
-          onSubmit={handleUpdateUser}
-        />
-        <DeleteUserDialog
-          open={isDeleteOpen}
-          user={selectedUser}
-          loading={actionLoading}
-          onClose={handleCloseDelete}
-          onConfirm={handleDeleteUser}
-        />
-      </PageWrapper>
-    </GridBackground>
+    <PageContainer>
+      <Subheader title="Gestão de Usuários" />
+      <UserFilters
+        search={search}
+        role={role}
+        onSearchChange={handleSearchChange}
+        onRoleChange={handleRoleChange}
+        onClearFilters={handleClearFilters}
+      />
+      <UserTable
+        users={users}
+        loading={loading}
+        currentUserId={currentUser.id}
+        total={total}
+        page={page}
+        limit={limit}
+        onPageChange={setPage}
+        onLimitChange={setLimit}
+        onEdit={handleOpenEdit}
+        onDelete={handleOpenDelete}
+      />
+      <EditUserModal
+        open={isEditOpen}
+        user={selectedUser}
+        loading={actionLoading}
+        onClose={handleCloseEdit}
+        onSubmit={handleUpdateUser}
+      />
+      <DeleteUserDialog
+        open={isDeleteOpen}
+        user={selectedUser}
+        loading={actionLoading}
+        onClose={handleCloseDelete}
+        onConfirm={handleDeleteUser}
+      />
+    </PageContainer>
   )
 }
 
