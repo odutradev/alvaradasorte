@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import CircularProgress from '@mui/material/CircularProgress'
 import Box from '@mui/material/Box'
 
@@ -10,15 +10,10 @@ import { GridContainer } from './styles'
 
 const SweepstakeDetailsPage = () => {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const { details, preset, presets, fetchDetails, isLoading } = useSweepstakeDetails(id)
 
-  const handleGoBack = () => {
-    navigate(-1)
-  }
-
   return (
-    <PageContainer showBackButton onBack={handleGoBack} fullHeight>
+    <PageContainer fullHeight>
       {isLoading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: 200 }}>
           <CircularProgress size={32} />

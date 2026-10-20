@@ -2,7 +2,6 @@ import CasinoOutlinedIcon from '@mui/icons-material/CasinoOutlined'
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import ListItemButton from '@mui/material/ListItemButton'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -13,7 +12,6 @@ import IconButton from '@mui/material/IconButton'
 import TuneIcon from '@mui/icons-material/Tune'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
-import Button from '@mui/material/Button'
 import List from '@mui/material/List'
 import Box from '@mui/material/Box'
 import { useState } from 'react'
@@ -33,7 +31,7 @@ import type { HeaderProps } from './types'
 import ThemeToggle from '@components/themeToggle'
 import useAuth from '@hooks/useAuth'
 
-const Header = ({ showBackButton = false, onBack, backLabel = 'Voltar' }: HeaderProps = {}) => {
+const Header = (_props: HeaderProps = {}) => {
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
@@ -44,42 +42,11 @@ const Header = ({ showBackButton = false, onBack, backLabel = 'Voltar' }: Header
     setDrawerOpen(false)
   }
 
-  const handleBack = () => {
-    if (onBack) {
-      onBack()
-    } else {
-      navigate(-1)
-    }
-  }
-
   return (
     <HeaderWrapper>
       <StyledAppBar position="static" elevation={0}>
         <StyledToolbar>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            {showBackButton && (
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<ArrowBackIcon fontSize="small" />}
-                onClick={handleBack}
-                sx={{
-                  borderRadius: 2,
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  borderColor: 'divider',
-                  color: 'text.primary',
-                  py: 0.5,
-                  px: 1.5,
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    backgroundColor: 'action.hover'
-                  }
-                }}
-              >
-                {backLabel}
-              </Button>
-            )}
             <LogoText variant="h6" fontWeight={700} color="primary" onClick={() => navigate('/')}>
               AlvaraDaSorte
             </LogoText>

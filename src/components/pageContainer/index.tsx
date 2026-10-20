@@ -6,16 +6,13 @@ import type { PageContainerProps } from './types'
 
 const PageContainer = ({
   children,
-  showBackButton = false,
-  onBack,
-  backLabel,
   fullHeight = false,
   contentSx
 }: PageContainerProps) => {
   return (
     <GridBackground>
       <RootWrapper fullHeight={fullHeight}>
-        <Header showBackButton={showBackButton} onBack={onBack} backLabel={backLabel} />
+        <Header />
         <MainContent fullHeight={fullHeight} sx={contentSx}>
           {children}
         </MainContent>
