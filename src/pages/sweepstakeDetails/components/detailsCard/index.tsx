@@ -1,10 +1,12 @@
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'
+import CasinoOutlinedIcon from '@mui/icons-material/CasinoOutlined'
 import EditIcon from '@mui/icons-material/Edit'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import { useState } from 'react'
 import dayjs from 'dayjs'
 
-import { CardContainer, DividerLine, StyledTextButton, HeaderRow, ActionButtonsGroup } from './styles'
+import { CardContainer, DividerLine, HeaderRow, ActionButtonsGroup } from './styles'
 import { capitalizeWords, formatCurrency } from '@utils/string'
 import { QuotaProgress } from '@components/quotaProgress'
 import MessageModal from '../messageModal'
@@ -23,17 +25,18 @@ const DetailsCard = ({ data, preset, presets, onUpdate }: DetailsCardProps) => {
   const collectedValue = filledQuotasCount * data.quotaPrice
 
   return (
-    <CardContainer elevation={2}>
+    <CardContainer elevation={0}>
       <HeaderRow>
-        <Typography variant="h6" fontWeight={600} color="primary">
+        <Typography variant="h6" fontWeight={600} color="primary" noWrap>
           {capitalizeWords(data.title)}
         </Typography>
         {!isEditing && (
           <Button
             variant="outlined"
             size="small"
-            startIcon={<EditIcon />}
+            startIcon={<EditIcon fontSize="small" />}
             onClick={() => setIsEditing(true)}
+            sx={{ textTransform: 'none', borderRadius: 2, flexShrink: 0 }}
           >
             Editar Dados
           </Button>
@@ -56,12 +59,24 @@ const DetailsCard = ({ data, preset, presets, onUpdate }: DetailsCardProps) => {
           )}
 
           <ActionButtonsGroup>
-            <StyledTextButton variant="text" size="small" onClick={() => setIsMessageModalOpen(true)}>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<ChatBubbleOutlineIcon fontSize="small" />}
+              onClick={() => setIsMessageModalOpen(true)}
+              sx={{ textTransform: 'none', fontWeight: 500, borderRadius: 2 }}
+            >
               Ver Mensagem
-            </StyledTextButton>
-            <StyledTextButton variant="text" size="small" onClick={() => setIsGamesModalOpen(true)}>
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<CasinoOutlinedIcon fontSize="small" />}
+              onClick={() => setIsGamesModalOpen(true)}
+              sx={{ textTransform: 'none', fontWeight: 500, borderRadius: 2 }}
+            >
               Configurar Jogos
-            </StyledTextButton>
+            </Button>
           </ActionButtonsGroup>
 
           <DividerLine />

@@ -14,7 +14,7 @@ export const QuotaProgress = ({ availableQuotas, filledQuotas }: QuotaProgressPr
           Vagas Preenchidas
         </Typography>
         <Typography variant="body2" fontWeight={600} color="primary">
-          {filledQuotas} de {availableQuotas} preenchidas
+          {filledQuotas} de {availableQuotas} ({percentage}%)
         </Typography>
       </LabelRow>
       <StyledLinearProgress variant="determinate" value={percentage} />
