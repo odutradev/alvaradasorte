@@ -1,5 +1,6 @@
 import CasinoOutlinedIcon from '@mui/icons-material/CasinoOutlined'
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline'
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import ListItemButton from '@mui/material/ListItemButton'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ListItemIcon from '@mui/material/ListItemIcon'
@@ -107,6 +108,19 @@ const Header = ({ showBackButton = false, onBack, backLabel = 'Voltar' }: Header
           </DrawerHeader>
           <Divider sx={{ my: 1 }} />
           <List sx={{ px: 0, py: 1, flex: 1 }}>
+            <ListItemButton
+              selected={location.pathname === '/'}
+              onClick={() => handleNavigate('/')}
+              sx={{ borderRadius: 2, mb: 0.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                <HomeOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary="Início"
+                primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
+              />
+            </ListItemButton>
             {user?.role === 'admin' && (
               <>
                 <ListItemButton
