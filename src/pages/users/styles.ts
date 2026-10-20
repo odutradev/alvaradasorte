@@ -24,7 +24,7 @@ export const TableHeader = styled(Box)(({ theme }) => ({
   flexWrap: 'wrap',
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
-    alignItems: 'flex-start'
+    alignItems: 'stretch'
   }
 }))
 

@@ -43,8 +43,8 @@ const Users = () => {
     <PageContainer fullHeight>
       <ContainerWrapper elevation={0}>
         <TableHeader>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Typography variant="h6" fontWeight={600}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0 }}>
+            <Typography variant="h6" fontWeight={600} noWrap>
               Gestão de Usuários
             </Typography>
             <Chip
@@ -54,14 +54,13 @@ const Users = () => {
               sx={{ fontWeight: 600, height: 24, fontSize: '0.75rem', borderRadius: 1 }}
             />
           </Box>
+          <UserFilters
+            search={search}
+            role={role}
+            onSearchChange={handleSearchChange}
+            onRoleChange={handleRoleChange}
+          />
         </TableHeader>
-        <UserFilters
-          search={search}
-          role={role}
-          onSearchChange={handleSearchChange}
-          onRoleChange={handleRoleChange}
-          onClearFilters={handleClearFilters}
-        />
         <UserTable
           users={users}
           loading={loading}

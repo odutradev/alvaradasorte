@@ -3,5 +3,6 @@ export type UserFiltersProps = {
   role: string
   onSearchChange: (value: string) => void
   onRoleChange: (value: string) => void
-  onClearFilters: () => void
+  onClearFilters?: () => void
 }
+

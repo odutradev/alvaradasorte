@@ -8,15 +8,12 @@ import IconButton from '@mui/material/IconButton'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
-import Button from '@mui/material/Button'
 
 import { FiltersContainer, SearchWrapper } from './styles'
 
 import type { UserFiltersProps } from './types'
 
-const UserFilters = ({ search, role, onSearchChange, onRoleChange, onClearFilters }: UserFiltersProps) => {
-  const hasActiveFilters = Boolean(search || role)
-
+const UserFilters = ({ search, role, onSearchChange, onRoleChange }: UserFiltersProps) => {
   return (
     <FiltersContainer>
       <SearchWrapper>
@@ -34,11 +31,16 @@ const UserFilters = ({ search, role, onSearchChange, onRoleChange, onClearFilter
             ),
             endAdornment: search ? (
               <InputAdornment position="end">
-                <IconButton size="small" onClick={() => onSearchChange('')} edge="end">
+                <IconButton size="small" onClick={() => onSearchChange('')} edge="end" aria-label="Limpar pesquisa">
                   <ClearIcon fontSize="small" />
                 </IconButton>
               </InputAdornment>
             ) : null
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2
+            }
           }}
         />
       </SearchWrapper>
@@ -55,17 +57,44 @@ const UserFilters = ({ search, role, onSearchChange, onRoleChange, onClearFilter
               <FilterListIcon fontSize="small" color="action" />
             </InputAdornment>
           }
+          endAdornment={
+            role ? (
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onRoleChange('')
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation()
+                }}
+                edge="end"
+                aria-label="Limpar perfil"
+                sx={{
+                  position: 'absolute',
+                  right: 28,
+                  top: 'calc(50% - 14px)',
+                  p: 0.5,
+                  color: 'text.secondary',
+                  '&:hover': { color: 'text.primary' }
+                }}
+              >
+                <ClearIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            ) : null
+          }
+          sx={{
+            borderRadius: 2,
+            '& .MuiSelect-select': {
+              pr: role ? '56px !important' : undefined
+            }
+          }}
         >
           <MenuItem value="">Todos</MenuItem>
           <MenuItem value="admin">Administrador</MenuItem>
           <MenuItem value="user">Usuário</MenuItem>
         </Select>
       </FormControl>
-      {hasActiveFilters && (
-        <Button variant="outlined" color="secondary" size="small" onClick={onClearFilters} startIcon={<ClearIcon />}>
-          Limpar
-        </Button>
-      )}
     </FiltersContainer>
   )
 }
