@@ -43,25 +43,39 @@ export const NavContainer = styled(Box)(({ theme }) => ({
   display: 'flex'
 }))
 
-export const AdminNav = styled(Box)(({ theme }) => ({
-  borderRight: `1px solid ${theme.palette.divider}`,
-  paddingRight: theme.spacing(2),
-  alignItems: 'center',
-  gap: theme.spacing(1),
-  display: 'flex',
-  [theme.breakpoints.down('md')]: {
-    display: 'none'
-  }
-}))
-
-
-export const MobileMenuButton = styled(IconButton)(({ theme }) => ({
-  [theme.breakpoints.up('md')]: {
-    display: 'none'
+export const MenuButton = styled(IconButton)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius * 2,
+  border: `1px solid ${theme.palette.divider}`,
+  color: theme.palette.text.primary,
+  padding: theme.spacing(0.75),
+  transition: 'all 0.2s ease',
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+    borderColor: theme.palette.primary.main
   }
 }))
 
 export const DrawerContent = styled(Box)(({ theme }) => ({
-  paddingTop: theme.spacing(2),
-  minWidth: 220
+  width: 280,
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  padding: theme.spacing(2),
+  boxSizing: 'border-box'
+}))
+
+export const DrawerHeader = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between'
+})
+
+export const ThemeSection = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: theme.spacing(1, 1.5),
+  borderRadius: theme.shape.borderRadius * 1.5,
+  backgroundColor: theme.palette.action.hover,
+  marginTop: 'auto'
 }))
