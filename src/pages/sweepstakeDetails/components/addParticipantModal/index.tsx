@@ -9,7 +9,6 @@ import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import AddIcon from '@mui/icons-material/Add'
 import TextField from '@mui/material/TextField'
-import Dialog from '@mui/material/Dialog'
 import Button from '@mui/material/Button'
 import Avatar from '@mui/material/Avatar'
 import Alert from '@mui/material/Alert'
@@ -20,10 +19,8 @@ import { useState, useEffect } from 'react'
 import { addManualParticipation } from '@services/sweepstakes'
 import { getUsers } from '@services/users'
 import useAction from '@hooks/useAction'
+import Modal from '@components/modal'
 import {
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   UserListContainer,
   UserListItem,
   SelectedUserCard,
@@ -130,36 +127,30 @@ const AddParticipantModal = ({ open, sweepstakeId, onClose, onSuccess }: AddPart
   }
 
   return (
-    <Dialog
+    <Modal
       open={open}
       onClose={handleClose}
-      fullWidth
       maxWidth="md"
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          minHeight: 520,
-          maxHeight: '90vh',
-          display: 'flex',
-          flexDirection: 'column'
-        }
-      }}
+      paperSx={{ minHeight: 520 }}
+      title="Adicionar Participante"
+      subtitle="Busque pelo nome ou e-mail para selecionar um usuário cadastrado"
+      actions={
+        <>
+          <Button onClick={handleClose} color="inherit" disabled={isSubmitting}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            color="primary"
+            disabled={!selectedUser || isSubmitting}
+            sx={{ minWidth: 160 }}
+          >
+            {isSubmitting ? 'Adicionando...' : 'Adicionar ao Bolão'}
+          </Button>
+        </>
+      }
     >
-      <ModalHeader>
-        <Box>
-          <Typography variant="h6" fontWeight={700}>
-            Adicionar Participante
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Busque pelo nome ou e-mail para selecionar um usuário cadastrado
-          </Typography>
-        </Box>
-        <IconButton onClick={handleClose} size="small" disabled={isSubmitting}>
-          <CloseIcon fontSize="small" />
-        </IconButton>
-      </ModalHeader>
-
-      <ModalBody>
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
 
         {!selectedUser ? (
@@ -358,23 +349,7 @@ const AddParticipantModal = ({ open, sweepstakeId, onClose, onSuccess }: AddPart
             </QuotaSection>
           </>
         )}
-      </ModalBody>
-
-      <ModalFooter>
-        <Button onClick={handleClose} color="inherit" disabled={isSubmitting}>
-          Cancelar
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          color="primary"
-          disabled={!selectedUser || isSubmitting}
-          sx={{ minWidth: 160 }}
-        >
-          {isSubmitting ? 'Adicionando...' : 'Adicionar ao Bolão'}
-        </Button>
-      </ModalFooter>
-    </Dialog>
+    </Modal>
   )
 }
 
