@@ -9,14 +9,14 @@ import type { QuotaProgressProps } from './types'
 export const QuotaProgress = ({ availableQuotas, filledQuotas }: QuotaProgressProps) => {
   const percentage = Math.min(100, Math.round((filledQuotas / availableQuotas) * 100))
   const [currentProgress, setCurrentProgress] = useState(0)
-  const animatedFilled = useCountUp(filledQuotas, 1400)
+  const animatedFilled = useCountUp(filledQuotas, 2200, 200)
   const animatedPercentage = Math.min(100, Math.round((animatedFilled / availableQuotas) * 100))
 
   useEffect(() => {
     setCurrentProgress(0)
     const timer = setTimeout(() => {
       setCurrentProgress(percentage)
-    }, 40)
+    }, 200)
 
     return () => clearTimeout(timer)
   }, [percentage])

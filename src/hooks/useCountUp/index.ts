@@ -10,41 +10,47 @@ const getStep = (value: number): number => {
   return 1
 }
 
-export const useCountUp = (target: number, duration = 1400): number => {
+export const useCountUp = (target: number, duration = 2200, startDelay = 200): number => {
   const [current, setCurrent] = useState(0)
 
   useEffect(() => {
     setCurrent(0)
     if (!target || isNaN(target) || target <= 0) {
-      setCurrent(target || 0)
       return
     }
 
     const step = getStep(target)
     let animationFrameId: number
-    const startTime = performance.now()
+    let timeoutId: ReturnType<typeof setTimeout>
 
-    const animate = (now: number) => {
-      const elapsed = now - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const easeOut = 1 - Math.pow(1 - progress, 3)
-      const rawValue = target * easeOut
+    timeoutId = setTimeout(() => {
+      const startTime = performance.now()
 
-      if (progress < 1) {
-        const steppedValue = Math.round(rawValue / step) * step
-        setCurrent(steppedValue)
-        animationFrameId = requestAnimationFrame(animate)
-      } else {
-        setCurrent(target)
+      const animate = (now: number) => {
+        const elapsed = now - startTime
+        const progress = Math.min(elapsed / duration, 1)
+        const easeOut = 1 - Math.pow(1 - progress, 3)
+        const rawValue = target * easeOut
+
+        if (progress < 1) {
+          const steppedValue = Math.round(rawValue / step) * step
+          setCurrent(steppedValue)
+          animationFrameId = requestAnimationFrame(animate)
+        } else {
+          setCurrent(target)
+        }
       }
-    }
 
-    animationFrameId = requestAnimationFrame(animate)
+      animationFrameId = requestAnimationFrame(animate)
+    }, startDelay)
 
     return () => {
-      cancelAnimationFrame(animationFrameId)
+      clearTimeout(timeoutId)
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId)
+      }
     }
-  }, [target, duration])
+  }, [target, duration, startDelay])
 
   return current
 }
