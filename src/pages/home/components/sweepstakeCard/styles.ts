@@ -46,11 +46,27 @@ export const InfoRow = styled(Box)({
   display: 'flex'
 })
 
+export const ActionButtonsRow = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  display: 'flex',
+  width: '100%',
+  marginTop: theme.spacing(2),
+  gap: theme.spacing(1.5)
+}))
+
 export const ActionButton = styled(Button)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 1.5,
   textTransform: 'none',
   fontWeight: 600,
   padding: theme.spacing(1.2, 2)
+}))
+
+export const EditButton = styled(Button)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius * 1.5,
+  textTransform: 'none',
+  fontWeight: 600,
+  padding: theme.spacing(1.2, 2),
+  flexShrink: 0
 }))
 
 

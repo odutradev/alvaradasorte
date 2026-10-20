@@ -11,7 +11,9 @@ import {
   CardBody,
   HeaderRow,
   InfoRow,
-  ActionButton
+  ActionButtonsRow,
+  ActionButton,
+  EditButton
 } from './styles'
 import SweepstakeTimeline from '@components/sweepstakeTimeline'
 import { QuotaProgress } from '@components/quotaProgress'
@@ -35,7 +37,7 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
     <CardContainer elevation={0}>
       <CardBody>
         <HeaderRow>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0, mr: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
             <Typography variant="h6" fontWeight={600} color="primary.main">
               {data.title}
             </Typography>
@@ -48,22 +50,6 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
               />
             )}
           </Box>
-          {user?.role === 'admin' && (
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<EditOutlinedIcon fontSize="small" />}
-              onClick={() => navigate(`/sweepstakes/${data.id}`)}
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                fontWeight: 500,
-                flexShrink: 0
-              }}
-            >
-              Editar
-            </Button>
-          )}
         </HeaderRow>
 
         <InfoRow>
@@ -103,15 +89,25 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
         />
       </CardBody>
 
-      <ActionButton
-        variant="contained"
-        disabled={!isAvailable}
-        onClick={() => onJoin(data.id)}
-        fullWidth
-        sx={{ mt: 2 }}
-      >
-        {isParticipant && isAvailable ? 'Comprar mais cotas' : isAvailable ? 'Participar' : 'Esgotado / Fechado'}
-      </ActionButton>
+      <ActionButtonsRow>
+        <ActionButton
+          variant="contained"
+          disabled={!isAvailable}
+          onClick={() => onJoin(data.id)}
+          fullWidth
+        >
+          {isParticipant && isAvailable ? 'Comprar mais cotas' : isAvailable ? 'Participar' : 'Esgotado / Fechado'}
+        </ActionButton>
+        {user?.role === 'admin' && (
+          <EditButton
+            variant="outlined"
+            startIcon={<EditOutlinedIcon fontSize="small" />}
+            onClick={() => navigate(`/sweepstakes/${data.id}`)}
+          >
+            Editar
+          </EditButton>
+        )}
+      </ActionButtonsRow>
     </CardContainer>
   )
 }
