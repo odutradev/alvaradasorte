@@ -26,11 +26,12 @@ import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
-import { TableContainerWrapper, StyledTableContainer, TableHeader, ActionsContainer, EmptyBox } from './styles'
+import { TableContainerWrapper, StyledTableContainer, TableHeader, ActionsContainer } from './styles'
 import StatementValidationModal from '../statementValidationModal'
 import EditParticipantModal from '../editParticipantModal'
 import AddParticipantModal from '../addParticipantModal'
 import { capitalizeWords } from '@utils/string'
+import EmptyState from '@components/emptyState'
 import useParticipantsTable from './hook'
 
 import type { ParticipantsTableProps } from './types'
@@ -136,16 +137,21 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
         }}
       />
       {filteredParticipations.length === 0 ? (
-        <EmptyBox>
-          <Typography variant="body1" fontWeight={500} color="text.secondary">
-            {searchQuery ? 'Nenhum participante encontrado' : 'Nenhum participante cadastrado ainda'}
-          </Typography>
-          {searchQuery && (
-            <Button size="small" variant="text" onClick={() => setSearchQuery('')} sx={{ textTransform: 'none' }}>
-              Limpar filtro de pesquisa
-            </Button>
-          )}
-        </EmptyBox>
+        <EmptyState
+          title={searchQuery ? 'Nenhum participante encontrado' : 'Nenhum participante cadastrado'}
+          description={
+            searchQuery
+              ? `Nenhum resultado corresponde a "${searchQuery}". Verifique a digitação ou limpe o filtro.`
+              : 'Ainda não há nenhum participante cadastrado neste bolão.'
+          }
+          action={
+            searchQuery ? (
+              <Button size="small" variant="outlined" onClick={() => setSearchQuery('')} sx={{ textTransform: 'none', borderRadius: 2 }}>
+                Limpar filtro de pesquisa
+              </Button>
+            ) : undefined
+          }
+        />
       ) : (
         <StyledTableContainer>
           <Table size="small" stickyHeader>

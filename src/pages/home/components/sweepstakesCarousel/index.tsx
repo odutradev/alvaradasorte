@@ -31,8 +31,12 @@ const SweepstakesCarousel = ({ sweepstakes, onJoin }: SweepstakesCarouselProps) 
             />
           </Box>
         </CarouselHeader>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: 200 }}>
-          <EmptyState description="Nenhum bolão aberto no momento. Fique de olho!" />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: 220, height: '100%' }}>
+          <EmptyState
+            title="Nenhum bolão disponível"
+            description="Não há bolões abertos no momento. Fique de olho para novas oportunidades!"
+            sx={{ height: '100%', minHeight: 200 }}
+          />
         </Box>
       </CarouselWrapper>
     )

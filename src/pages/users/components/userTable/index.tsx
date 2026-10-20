@@ -1,3 +1,4 @@
+import PersonSearchIcon from '@mui/icons-material/PersonSearch'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import TablePagination from '@mui/material/TablePagination'
@@ -30,7 +31,11 @@ const UserTable = ({ users, loading, currentUserId, total, page, limit, onPageCh
   if (users.length === 0) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: 200 }}>
-        <EmptyState title="Nenhum usuário encontrado" description="Tente alterar os termos de pesquisa ou filtros aplicados." />
+        <EmptyState
+          icon={<PersonSearchIcon sx={{ fontSize: 32 }} />}
+          title="Nenhum usuário encontrado"
+          description="Tente alterar os termos de pesquisa ou filtros aplicados."
+        />
       </Box>
     )
   }

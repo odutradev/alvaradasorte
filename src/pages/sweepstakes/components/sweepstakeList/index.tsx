@@ -16,7 +16,10 @@ const SweepstakeList = ({ sweepstakes, onViewDetails, onEdit, onDelete }: Sweeps
       />
     ))}
     {sweepstakes.length === 0 && (
-      <EmptyState description="Nenhum bolão cadastrado no sistema." />
+      <EmptyState
+        title="Nenhum bolão cadastrado"
+        description="Ainda não existem bolões cadastrados no sistema."
+      />
     )}
   </ListContainer>
 )

@@ -9,7 +9,12 @@ const PresetList = ({ presets, onDelete, onEdit }: PresetListProps) => (
     {presets.map((preset) => (
       <PresetCard key={preset.id} preset={preset} onDelete={onDelete} onEdit={onEdit} />
     ))}
-    {presets.length === 0 && <EmptyState description="Nenhuma predefinição cadastrada no sistema." />}
+    {presets.length === 0 && (
+      <EmptyState
+        title="Nenhuma predefinição cadastrada"
+        description="Ainda não existem predefinições cadastradas no sistema."
+      />
+    )}
   </ListWrapper>
 )
 

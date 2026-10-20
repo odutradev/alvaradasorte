@@ -32,15 +32,7 @@ export const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   }
 }))
 
-export const EmptyBox = styled(Box)(({ theme }) => ({
-  justifyContent: 'center',
-  alignItems: 'center',
-  flexDirection: 'column',
-  padding: theme.spacing(6, 2),
-  display: 'flex',
-  flex: 1,
-  gap: theme.spacing(1.5)
-}))
+
 
 export const TableHeader = styled(Box)(({ theme }) => ({
   justifyContent: 'space-between',
