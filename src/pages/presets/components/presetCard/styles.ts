@@ -4,11 +4,17 @@ import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 
 export const CardWrapper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
+  padding: theme.spacing(2.5),
   justifyContent: 'space-between',
-  borderRadius: theme.shape.borderRadius * 2,
+  borderRadius: 12,
+  border: `1px solid ${theme.palette.divider}`,
   alignItems: 'center',
-  display: 'flex'
+  display: 'flex',
+  transition: 'border-color 0.2s ease, background-color 0.2s ease',
+  '&:hover': {
+    borderColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.action.hover
+  }
 }))
 
 export const CardInfo = styled(Box)({

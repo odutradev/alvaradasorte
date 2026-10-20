@@ -1,22 +1,43 @@
 import { styled } from '@mui/material/styles'
+import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
-export const PageWrapper = styled(Box)({
+export const ContainerWrapper = styled(Paper)(({ theme }) => ({
   flexDirection: 'column',
-  minHeight: '100vh',
+  padding: theme.spacing(3),
   display: 'flex',
-  width: '100%'
-})
+  gap: theme.spacing(2),
+  height: '100%',
+  minHeight: 0,
+  flex: 1,
+  overflow: 'hidden',
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: 16,
+  boxSizing: 'border-box'
+}))
 
-export const ContentContainer = styled(Box)(({ theme }) => ({
-  flexDirection: 'column',
-  padding: theme.spacing(2, 4, 8),
-  margin: '0 auto',
-  maxWidth: 1200,
+export const TableHeader = styled(Box)(({ theme }) => ({
+  justifyContent: 'space-between',
+  alignItems: 'center',
   display: 'flex',
-  width: '100%',
-  gap: theme.spacing(4),
+  gap: theme.spacing(2),
+  flexWrap: 'wrap',
   [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(2)
+    flexDirection: 'column',
+    alignItems: 'flex-start'
   }
 }))
+
+export const ActionsContainer = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  display: 'flex',
+  gap: theme.spacing(1),
+  flexWrap: 'wrap',
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
+    '& > *': {
+      flex: 1
+    }
+  }
+}))
+
