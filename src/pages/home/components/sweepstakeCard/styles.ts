@@ -62,7 +62,28 @@ export const PrizeCard = styled(Box, {
   justifyContent: 'center',
   gap: theme.spacing(0.25),
   borderRadius: 12,
-  display: 'flex'
+  display: 'flex',
+  animation: 'prizeCardFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) backwards',
+  transition: 'transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    borderColor: isPrimary ? alpha(theme.palette.primary.main, 0.6) : alpha(theme.palette.text.primary, 0.25),
+    boxShadow: `0 4px 12px ${alpha(isPrimary ? theme.palette.primary.main : '#000', 0.08)}`
+  },
+  '&:nth-of-type(1)': { animationDelay: '50ms' },
+  '&:nth-of-type(2)': { animationDelay: '100ms' },
+  '&:nth-of-type(3)': { animationDelay: '150ms' },
+  '&:nth-of-type(4)': { animationDelay: '200ms' },
+  '@keyframes prizeCardFadeIn': {
+    from: {
+      opacity: 0,
+      transform: 'translateY(6px)'
+    },
+    to: {
+      opacity: 1,
+      transform: 'translateY(0)'
+    }
+  }
 }))
 
 export const ActionButtonsRow = styled(Box)(({ theme }) => ({
