@@ -54,11 +54,6 @@ export const AdminNav = styled(Box)(({ theme }) => ({
   }
 }))
 
-export const DesktopLogout = styled(Button)(({ theme }) => ({
-  [theme.breakpoints.down('md')]: {
-    display: 'none'
-  }
-}))
 
 export const MobileMenuButton = styled(IconButton)(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
