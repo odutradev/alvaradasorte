@@ -19,6 +19,7 @@ import {
 import SweepstakeTimeline from '@components/sweepstakeTimeline'
 import { QuotaProgress } from '@components/quotaProgress'
 import { formatCompactCurrency } from '@utils/string'
+import useCountUp from '@hooks/useCountUp'
 import useAuth from '@hooks/useAuth'
 
 import type { SweepstakeCardProps } from './types'
@@ -33,6 +34,11 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
   const filledQuotas = data.metadata.filledQuotas ?? 0
   const currentPrizePerPerson = filledQuotas > 0 ? data.prizeValue / filledQuotas : 0
   const minPrizePerPerson = data.availableQuotas > 0 ? data.prizeValue / data.availableQuotas : 0
+
+  const animatedQuotaPrice = useCountUp(data.quotaPrice)
+  const animatedPrizeValue = useCountUp(data.prizeValue)
+  const animatedCurrentPrize = useCountUp(currentPrizePerPerson)
+  const animatedMinPrize = useCountUp(minPrizePerPerson)
 
   return (
     <CardContainer elevation={0}>
@@ -59,7 +65,7 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
               Valor da Cota
             </Typography>
             <Typography variant="body1" fontWeight={700}>
-              {formatCompactCurrency(data.quotaPrice)}
+              {formatCompactCurrency(animatedQuotaPrice)}
             </Typography>
           </PrizeCard>
 
@@ -68,7 +74,7 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
               Prêmio Total
             </Typography>
             <Typography variant="body1" fontWeight={700}>
-              {formatCompactCurrency(data.prizeValue)}
+              {formatCompactCurrency(animatedPrizeValue)}
             </Typography>
           </PrizeCard>
 
@@ -77,7 +83,7 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
               Prêmio Atual por Pessoa
             </Typography>
             <Typography variant="body1" color="primary.main" fontWeight={700}>
-              {formatCompactCurrency(currentPrizePerPerson)}
+              {formatCompactCurrency(animatedCurrentPrize)}
             </Typography>
           </PrizeCard>
 
@@ -86,7 +92,7 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
               Prêmio Mínimo por Pessoa
             </Typography>
             <Typography variant="body1" color="text.primary" fontWeight={700}>
-              {formatCompactCurrency(minPrizePerPerson)}
+              {formatCompactCurrency(animatedMinPrize)}
             </Typography>
           </PrizeCard>
         </PrizeCardsContainer>
