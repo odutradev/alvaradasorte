@@ -2,14 +2,13 @@ import { styled } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
 
 export const ToggleButton = styled(IconButton)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius * 2,
+  border: `1px solid ${theme.palette.divider}`,
   color: theme.palette.text.primary,
-  boxShadow: theme.shadows[1],
-  transition: 'all 0.3s ease',
-  height: 48,
-  width: 48,
+  padding: theme.spacing(0.75),
+  transition: 'all 0.2s ease',
   '&:hover': {
     backgroundColor: theme.palette.action.hover,
-    transform: 'scale(1.05)'
+    borderColor: theme.palette.primary.main
   }
 }))
