@@ -18,11 +18,11 @@ export const CardContainer = styled(Paper)(({ theme }) => ({
   borderRadius: 16,
   boxSizing: 'border-box',
   overflowY: 'auto',
-  animation: 'cardSlideFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards',
+  animation: 'cardSlideFadeIn 0.2s ease-out backwards',
   '@keyframes cardSlideFadeIn': {
     from: {
-      opacity: 0,
-      transform: 'translateY(6px)'
+      opacity: 0.85,
+      transform: 'translateY(4px)'
     },
     to: {
       opacity: 1,
@@ -74,22 +74,11 @@ export const PrizeCard = styled(Box, {
   gap: theme.spacing(0.25),
   borderRadius: 12,
   display: 'flex',
-  animation: 'prizeCardFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards',
   transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
   '&:hover': {
     transform: 'translateY(-2px)',
     borderColor: isPrimary ? alpha(theme.palette.primary.main, 0.6) : alpha(theme.palette.text.primary, 0.25),
     boxShadow: `0 4px 12px ${alpha(isPrimary ? theme.palette.primary.main : '#000', 0.08)}`
-  },
-  '@keyframes prizeCardFadeIn': {
-    from: {
-      opacity: 0,
-      transform: 'translateY(6px)'
-    },
-    to: {
-      opacity: 1,
-      transform: 'translateY(0)'
-    }
   }
 }))
 
