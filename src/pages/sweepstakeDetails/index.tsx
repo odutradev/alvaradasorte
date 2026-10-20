@@ -14,7 +14,7 @@ const SweepstakeDetailsPage = () => {
   const { details, preset, presets, fetchDetails, isLoading } = useSweepstakeDetails(id)
 
   const handleGoBack = () => {
-    navigate('/sweepstakes')
+    navigate(-1)
   }
 
   return (

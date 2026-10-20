@@ -1,4 +1,7 @@
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import Typography from '@mui/material/Typography'
+import { useNavigate } from 'react-router-dom'
+import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
@@ -14,10 +17,13 @@ import {
 } from './styles'
 import { QuotaProgress } from '@components/quotaProgress'
 import { formatCurrency } from '@utils/string'
+import useAuth from '@hooks/useAuth'
 
 import type { SweepstakeCardProps } from './types'
 
 const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const isAvailable = data.availableQuotas > data.metadata.filledQuotas && dayjs().isBefore(dayjs(data.purchaseLimitDate))
   const isParticipant = data.userParticipation?.isParticipant ?? false
   const userQuotaCount = data.userParticipation?.quotaCount ?? 0
@@ -30,7 +36,7 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
     <CardContainer elevation={0}>
       <CardBody>
         <HeaderRow>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0, mr: 1 }}>
             <Typography variant="h6" fontWeight={600} color="primary.main">
               {data.title}
             </Typography>
@@ -43,6 +49,22 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
               />
             )}
           </Box>
+          {user?.role === 'admin' && (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<EditOutlinedIcon fontSize="small" />}
+              onClick={() => navigate(`/sweepstakes/${data.id}`)}
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 500,
+                flexShrink: 0
+              }}
+            >
+              Editar
+            </Button>
+          )}
         </HeaderRow>
 
         {data.description && (
