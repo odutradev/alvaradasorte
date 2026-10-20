@@ -27,28 +27,18 @@ export const CardContainer = styled(Paper)(({ theme }) => ({
   }
 }))
 
-export const CardContent = styled(Box)(({ theme }) => ({
+export const CardBody = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   display: 'flex',
-  gap: theme.spacing(2),
-  flex: 1
+  gap: theme.spacing(2)
 }))
 
-export const HeaderRow = styled(Box)(({ theme }) => ({
+export const HeaderRow = styled(Box)({
   justifyContent: 'space-between',
   alignItems: 'center',
   display: 'flex',
-  width: '100%',
-  gap: theme.spacing(1.5),
-  flexWrap: 'wrap'
-}))
-
-export const NavigationControls = styled(Box)(({ theme }) => ({
-  alignItems: 'center',
-  display: 'flex',
-  gap: theme.spacing(1),
-  marginLeft: 'auto'
-}))
+  width: '100%'
+})
 
 export const InfoRow = styled(Box)({
   justifyContent: 'space-between',
@@ -72,5 +62,6 @@ export const ActionButton = styled(Button)(({ theme }) => ({
   fontWeight: 600,
   padding: theme.spacing(1.2, 2)
 }))
+
 
 

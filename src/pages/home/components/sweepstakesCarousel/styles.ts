@@ -1,16 +1,32 @@
 import { styled } from '@mui/material/styles'
-import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 
-export const EmptyCard = styled(Paper)(({ theme }) => ({
+export const CarouselWrapper = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
-  padding: theme.spacing(3),
-  alignItems: 'center',
-  justifyContent: 'center',
   display: 'flex',
-  width: '100%',
   height: '100%',
+  flex: 1,
   minHeight: 0,
-  border: `1px solid ${theme.palette.divider}`,
-  borderRadius: 16,
-  boxSizing: 'border-box'
+  gap: theme.spacing(2)
+}))
+
+export const CarouselHeader = styled(Box)(({ theme }) => ({
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  display: 'flex',
+  gap: theme.spacing(2),
+  flexWrap: 'wrap'
+}))
+
+export const NavigationRow = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  display: 'flex',
+  gap: theme.spacing(1)
+}))
+
+export const CounterText = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  fontSize: '0.875rem',
+  fontWeight: 500
 }))
