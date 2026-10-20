@@ -161,9 +161,8 @@ const Header = ({ showBackButton = false, onBack, backLabel = 'Voltar' }: Header
                 />
               </ListItemButton>
             </List>
-            <Divider sx={{ my: 1 }} />
             <DrawerFooter>
-              <ThemeToggle />
+              <ThemeToggle fullWidth />
             </DrawerFooter>
           </DrawerContent>
         </Drawer>

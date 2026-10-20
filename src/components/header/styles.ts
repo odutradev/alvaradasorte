@@ -70,10 +70,9 @@ export const DrawerHeader = styled(Box)({
   justifyContent: 'space-between'
 })
 
-export const DrawerFooter = styled(Box)(({ theme }) => ({
+export const DrawerFooter = styled(Box)({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-end',
-  marginTop: 'auto',
-  paddingTop: theme.spacing(1)
-}))
+  width: '100%',
+  marginTop: 'auto'
+})
