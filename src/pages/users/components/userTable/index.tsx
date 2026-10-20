@@ -11,10 +11,8 @@ import Tooltip from '@mui/material/Tooltip'
 import Avatar from '@mui/material/Avatar'
 import Table from '@mui/material/Table'
 import Stack from '@mui/material/Stack'
-import Paper from '@mui/material/Paper'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
-
 import { StyledTableContainer, StyledTableRow, HeaderCell } from './styles'
 import EmptyState from '@components/emptyState'
 
@@ -23,18 +21,22 @@ import type { UserTableProps } from './types'
 const UserTable = ({ users, loading, currentUserId, total, page, limit, onPageChange, onLimitChange, onEdit, onDelete }: UserTableProps) => {
   if (loading && users.length === 0) {
     return (
-      <Paper elevation={0} sx={{ p: 4, textAlign: 'center' }}>
-        <CircularProgress size={36} />
-      </Paper>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: 200 }}>
+        <CircularProgress size={32} />
+      </Box>
     )
   }
 
   if (users.length === 0) {
-    return <EmptyState title="Nenhum usuário encontrado" description="Tente alterar os termos de pesquisa ou filtros aplicados." />
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: 200 }}>
+        <EmptyState title="Nenhum usuário encontrado" description="Tente alterar os termos de pesquisa ou filtros aplicados." />
+      </Box>
+    )
   }
 
   return (
-    <Paper elevation={0} sx={{ borderRadius: 3, overflow: 'hidden' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
       <StyledTableContainer>
         <Table aria-label="Tabela de usuários">
           <TableHead>
@@ -120,7 +122,7 @@ const UserTable = ({ users, loading, currentUserId, total, page, limit, onPageCh
         labelRowsPerPage="Itens por página:"
         labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count}`}
       />
-    </Paper>
+    </Box>
   )
 }
 

@@ -18,7 +18,7 @@ const UserFilters = ({ search, role, onSearchChange, onRoleChange, onClearFilter
   const hasActiveFilters = Boolean(search || role)
 
   return (
-    <FiltersContainer elevation={0}>
+    <FiltersContainer>
       <SearchWrapper>
         <TextField
           fullWidth

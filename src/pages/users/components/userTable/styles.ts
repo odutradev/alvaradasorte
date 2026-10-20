@@ -4,9 +4,21 @@ import TableCell from '@mui/material/TableCell'
 import TableRow from '@mui/material/TableRow'
 
 export const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius * 1.5,
-  boxShadow: theme.shadows[2],
-  backgroundColor: theme.palette.background.paper
+  flex: 1,
+  minHeight: 0,
+  overflowY: 'auto',
+  overflowX: 'auto',
+  borderRadius: 8,
+  border: `1px solid ${theme.palette.divider}`,
+  backgroundColor: theme.palette.background.paper,
+  '&::-webkit-scrollbar': {
+    width: 6,
+    height: 6
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.divider,
+    borderRadius: 3
+  }
 }))
 
 export const HeaderCell = styled(TableCell)(({ theme }) => ({
