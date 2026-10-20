@@ -1,4 +1,5 @@
-import { DialogActions, TextField, MenuItem, Button, Dialog } from '@mui/material'
+import { TextField, MenuItem, Button } from '@mui/material'
+import Modal from '@components/modal'
 import { useEffect, useState, useCallback } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import dayjs from 'dayjs'
@@ -88,8 +89,24 @@ const SweepstakeFormModal = ({ onSuccess, onClose, open, initialData }: Sweepsta
   }
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <FormContainer component="form" id="sweepstake-form" onSubmit={handleSubmit(onSubmit)}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      title={initialData ? 'Editar Bolão' : 'Novo Bolão'}
+      subtitle={initialData ? 'Altere as informações do bolão cadastrado' : 'Preencha os dados para criar um novo bolão'}
+      formProps={{
+        id: 'sweepstake-form',
+        onSubmit: handleSubmit(onSubmit)
+      }}
+      actions={
+        <>
+          <Button onClick={onClose} color="inherit">Cancelar</Button>
+          <Button type="submit" variant="contained" color="primary">Salvar</Button>
+        </>
+      }
+    >
+      <FormContainer>
         <TextField {...register('title')} label="Título" required fullWidth />
         <TextField {...register('description')} label="Descrição" required fullWidth multiline rows={3} />
         <Controller
@@ -133,11 +150,7 @@ const SweepstakeFormModal = ({ onSuccess, onClose, open, initialData }: Sweepsta
           ))}
         </TextField>
       </FormContainer>
-      <DialogActions sx={{ px: 3, pb: 3, pt: 0 }}>
-        <Button onClick={onClose} color="inherit">Cancelar</Button>
-        <Button type="submit" form="sweepstake-form" variant="contained" color="primary">Salvar</Button>
-      </DialogActions>
-    </Dialog>
+    </Modal>
   )
 }
 
