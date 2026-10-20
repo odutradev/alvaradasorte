@@ -22,12 +22,13 @@ export const TimelineTrack = styled(Box)(({ theme }) => ({
 
 interface ConnectorProps {
   isCompleted: boolean
-  index?: number
+  durationMs?: number
+  delayMs?: number
 }
 
 export const Connector = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'isCompleted' && prop !== 'index'
-})<ConnectorProps>(({ theme, isCompleted, index = 0 }) => ({
+  shouldForwardProp: (prop) => prop !== 'isCompleted' && prop !== 'durationMs' && prop !== 'delayMs'
+})<ConnectorProps>(({ theme, isCompleted, durationMs = 700, delayMs = 0 }) => ({
   position: 'relative',
   backgroundColor: theme.palette.divider,
   height: 2,
@@ -43,8 +44,8 @@ export const Connector = styled(Box, {
       width: '100%',
       backgroundColor: theme.palette.primary.main,
       transformOrigin: 'left center',
-      animation: 'connectorFill 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-      animationDelay: `${index * 140}ms`
+      animation: `connectorFill ${durationMs}ms cubic-bezier(0.16, 1, 0.3, 1) forwards`,
+      animationDelay: `${delayMs}ms`
     }
   }),
   '@keyframes connectorFill': {
@@ -58,15 +59,15 @@ export const Connector = styled(Box, {
 }))
 
 export const NodeAnchor = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'index'
-})<{ index?: number }>(({ index = 0 }) => ({
+  shouldForwardProp: (prop) => prop !== 'delayMs'
+})<{ delayMs?: number }>(({ delayMs = 0 }) => ({
   justifyContent: 'center',
   alignItems: 'center',
   position: 'relative',
   display: 'flex',
   flexShrink: 0,
-  animation: 'nodeAnchorFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards',
-  animationDelay: `${index * 140}ms`,
+  animation: 'nodeAnchorFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards',
+  animationDelay: `${delayMs}ms`,
   '@keyframes nodeAnchorFade': {
     from: {
       opacity: 0,
@@ -89,7 +90,8 @@ export const Dot = styled(Box, {
 })<DotProps>(({ theme, status, isPulsing }) => {
   const pulseStyle = isPulsing
     ? {
-        animation: 'dotPulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        animation: 'dotPulse 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        animationDelay: '1400ms',
         '@keyframes dotPulse': {
           '0%': {
             boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.4)}`

@@ -56,6 +56,9 @@ export const SweepstakeTimeline = ({ createdAt, purchaseLimitDate, drawDate }: S
     -1
   )
 
+  const completedConnectorsCount = Math.max(1, nowIndex)
+  const durationPerConnector = Math.round(1400 / completedConnectorsCount)
+
   return (
     <Container>
       <TimelineTrack>
@@ -64,10 +67,12 @@ export const SweepstakeTimeline = ({ createdAt, purchaseLimitDate, drawDate }: S
           const isLast = index === items.length - 1
           const isConnectorCompleted = index < nowIndex
           const isPulsing = index === lastFilledIndex
+          const connectorDelay = index * durationPerConnector
+          const nodeDelay = Math.min(index * durationPerConnector, 1400)
 
           return (
             <React.Fragment key={item.id}>
-              <NodeAnchor index={index}>
+              <NodeAnchor delayMs={nodeDelay}>
                 <StepLabel align={align} isCurrent={item.status === 'current'}>
                   {item.label}
                 </StepLabel>
@@ -79,7 +84,13 @@ export const SweepstakeTimeline = ({ createdAt, purchaseLimitDate, drawDate }: S
                 </DateTimeText>
               </NodeAnchor>
 
-              {!isLast && <Connector index={index} isCompleted={isConnectorCompleted} />}
+              {!isLast && (
+                <Connector
+                  isCompleted={isConnectorCompleted}
+                  durationMs={durationPerConnector}
+                  delayMs={connectorDelay}
+                />
+              )}
             </React.Fragment>
           )
         })}

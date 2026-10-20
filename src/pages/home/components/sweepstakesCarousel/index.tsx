@@ -90,7 +90,11 @@ const SweepstakesCarousel = ({ sweepstakes, onJoin }: SweepstakesCarouselProps) 
           </IconButton>
         </NavigationRow>
       </CarouselHeader>
-      <SweepstakeCard data={sweepstakes[currentIndex]} onJoin={onJoin} />
+      <SweepstakeCard
+        key={sweepstakes[currentIndex].id}
+        data={sweepstakes[currentIndex]}
+        onJoin={onJoin}
+      />
     </CarouselWrapper>
   )
 }

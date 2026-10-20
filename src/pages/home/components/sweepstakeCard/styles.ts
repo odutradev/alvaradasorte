@@ -18,6 +18,17 @@ export const CardContainer = styled(Paper)(({ theme }) => ({
   borderRadius: 16,
   boxSizing: 'border-box',
   overflowY: 'auto',
+  animation: 'cardSlideFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards',
+  '@keyframes cardSlideFadeIn': {
+    from: {
+      opacity: 0,
+      transform: 'translateY(6px)'
+    },
+    to: {
+      opacity: 1,
+      transform: 'translateY(0)'
+    }
+  },
   '&::-webkit-scrollbar': {
     width: 6
   },
