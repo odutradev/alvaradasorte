@@ -9,23 +9,46 @@ export const CardContainer = styled(Paper)(({ theme }) => ({
   flexDirection: 'column',
   padding: theme.spacing(3),
   display: 'flex',
+  height: '100%',
+  width: '100%',
+  flex: 1,
+  minHeight: 0,
   gap: theme.spacing(2),
   border: `1px solid ${theme.palette.divider}`,
-  borderRadius: 12,
-  boxSizing: 'border-box'
+  borderRadius: 16,
+  boxSizing: 'border-box',
+  overflowY: 'auto',
+  '&::-webkit-scrollbar': {
+    width: 6
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.divider,
+    borderRadius: 3
+  }
 }))
 
-export const CardBody = styled(Box)({
+export const CardContent = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
-  display: 'flex'
-})
-
-export const HeaderRow = styled(Box)({
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
   display: 'flex',
-  width: '100%'
-})
+  gap: theme.spacing(2),
+  flex: 1
+}))
+
+export const HeaderRow = styled(Box)(({ theme }) => ({
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  display: 'flex',
+  width: '100%',
+  gap: theme.spacing(1.5),
+  flexWrap: 'wrap'
+}))
+
+export const NavigationControls = styled(Box)(({ theme }) => ({
+  alignItems: 'center',
+  display: 'flex',
+  gap: theme.spacing(1),
+  marginLeft: 'auto'
+}))
 
 export const InfoRow = styled(Box)({
   justifyContent: 'space-between',
@@ -34,8 +57,7 @@ export const InfoRow = styled(Box)({
 })
 
 export const DescriptionText = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(0.5),
-  marginTop: theme.spacing(1)
+  marginTop: theme.spacing(0.5)
 }))
 
 export const DividerLine = styled(Box)(({ theme }) => ({
@@ -50,4 +72,5 @@ export const ActionButton = styled(Button)(({ theme }) => ({
   fontWeight: 600,
   padding: theme.spacing(1.2, 2)
 }))
+
 
