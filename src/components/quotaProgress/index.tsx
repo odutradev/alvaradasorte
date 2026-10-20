@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import Typography from '@mui/material/Typography'
 
 import { ProgressWrapper, LabelRow, StyledLinearProgress } from './styles'
@@ -6,6 +7,15 @@ import type { QuotaProgressProps } from './types'
 
 export const QuotaProgress = ({ availableQuotas, filledQuotas }: QuotaProgressProps) => {
   const percentage = Math.min(100, Math.round((filledQuotas / availableQuotas) * 100))
+  const [currentProgress, setCurrentProgress] = useState(0)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentProgress(percentage)
+    }, 120)
+
+    return () => clearTimeout(timer)
+  }, [percentage])
 
   return (
     <ProgressWrapper>
@@ -17,7 +27,7 @@ export const QuotaProgress = ({ availableQuotas, filledQuotas }: QuotaProgressPr
           {filledQuotas} de {availableQuotas} ({percentage}%)
         </Typography>
       </LabelRow>
-      <StyledLinearProgress variant="determinate" value={percentage} />
+      <StyledLinearProgress variant="determinate" value={currentProgress} />
     </ProgressWrapper>
   )
 }

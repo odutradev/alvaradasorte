@@ -23,6 +23,7 @@ export const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
   [`& .MuiLinearProgress-bar`]: {
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.primary.main
+    backgroundColor: theme.palette.primary.main,
+    transition: 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)'
   }
 }))
