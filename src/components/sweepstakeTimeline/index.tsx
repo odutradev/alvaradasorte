@@ -1,5 +1,3 @@
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
 import {
@@ -11,8 +9,7 @@ import {
   DotWrapper,
   Dot,
   StepLabel,
-  DateText,
-  TimeText
+  DateTimeText
 } from './styles'
 
 import type { SweepstakeTimelineProps, TimelineItem } from './types'
@@ -55,38 +52,33 @@ export const SweepstakeTimeline = ({ createdAt, purchaseLimitDate, drawDate }: S
     }
   })
 
-  const progressPercentage = (nowIndex / (items.length - 1)) * 75
+  const progressPercentage = (nowIndex / (items.length - 1)) * 100
 
   return (
     <Container>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="body2" color="text.secondary" fontWeight={500}>
-          Cronograma do Bolão
-        </Typography>
-      </Box>
-
       <TimelineWrapper>
         <TrackBackground />
         <TrackProgress progressPercentage={progressPercentage} />
 
-        {items.map((item) => (
-          <StepNode key={item.id}>
-            <StepLabel isCurrent={item.status === 'current'}>
-              {item.label}
-            </StepLabel>
+        {items.map((item, index) => {
+          const align = index === 0 ? 'start' : index === items.length - 1 ? 'end' : 'center'
 
-            <DotWrapper>
-              <Dot status={item.status} />
-            </DotWrapper>
+          return (
+            <StepNode key={item.id} align={align}>
+              <StepLabel isCurrent={item.status === 'current'}>
+                {item.label}
+              </StepLabel>
 
-            <DateText color={item.status === 'current' ? 'primary.main' : 'text.primary'}>
-              {item.formattedDate}
-            </DateText>
-            <TimeText>
-              {item.formattedTime}
-            </TimeText>
-          </StepNode>
-        ))}
+              <DotWrapper>
+                <Dot status={item.status} />
+              </DotWrapper>
+
+              <DateTimeText isCurrent={item.status === 'current'}>
+                {item.formattedDate} - {item.formattedTime}
+              </DateTimeText>
+            </StepNode>
+          )
+        })}
       </TimelineWrapper>
     </Container>
   )

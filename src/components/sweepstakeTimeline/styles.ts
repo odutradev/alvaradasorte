@@ -8,8 +8,8 @@ export const Container = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   width: '100%',
   display: 'flex',
-  gap: theme.spacing(1.5),
-  padding: theme.spacing(1, 0)
+  gap: theme.spacing(1),
+  padding: theme.spacing(0.5, 0)
 }))
 
 export const TimelineWrapper = styled(Box)({
@@ -23,10 +23,10 @@ export const TimelineWrapper = styled(Box)({
 export const TrackBackground = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.divider,
   position: 'absolute',
-  left: '12.5%',
-  right: '12.5%',
+  left: 0,
+  right: 0,
   height: 2,
-  top: 26,
+  top: 24,
   zIndex: 0
 }))
 
@@ -41,22 +41,28 @@ export const TrackProgress = styled(Box, {
   transition: 'width 0.3s ease',
   width: `${progressPercentage}%`,
   position: 'absolute',
-  left: '12.5%',
+  left: 0,
   height: 2,
-  top: 26,
+  top: 24,
   zIndex: 0
 }))
 
-export const StepNode = styled(Box)({
+interface StepNodeProps {
+  align: 'start' | 'center' | 'end'
+}
+
+export const StepNode = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'align'
+})<StepNodeProps>(({ align }) => ({
   flexDirection: 'column',
-  alignItems: 'center',
-  textAlign: 'center',
+  alignItems: align === 'start' ? 'flex-start' : align === 'end' ? 'flex-end' : 'center',
+  textAlign: align === 'start' ? 'left' : align === 'end' ? 'right' : 'center',
   position: 'relative',
   display: 'flex',
   minWidth: 0,
   zIndex: 1,
   flex: 1
-})
+}))
 
 export const DotWrapper = styled(Box)({
   justifyContent: 'center',
@@ -111,14 +117,12 @@ export const StepLabel = styled(Typography, {
   lineHeight: 1.2
 }))
 
-export const DateText = styled(Typography)({
+export const DateTimeText = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'isCurrent'
+})<{ isCurrent?: boolean }>(({ theme, isCurrent }) => ({
+  color: isCurrent ? theme.palette.primary.main : theme.palette.text.secondary,
   fontSize: '0.7rem',
-  fontWeight: 500,
-  lineHeight: 1.2
-})
-
-export const TimeText = styled(Typography)(({ theme }) => ({
-  color: theme.palette.text.secondary,
-  fontSize: '0.65rem',
-  lineHeight: 1.2
+  fontWeight: isCurrent ? 600 : 500,
+  lineHeight: 1.2,
+  whiteSpace: 'nowrap'
 }))
