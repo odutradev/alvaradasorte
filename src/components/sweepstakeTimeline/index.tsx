@@ -1,12 +1,11 @@
+import React from 'react'
 import dayjs from 'dayjs'
 
 import {
   Container,
-  TimelineWrapper,
-  TrackBackground,
-  TrackProgress,
-  StepNode,
-  DotWrapper,
+  TimelineTrack,
+  Connector,
+  NodeAnchor,
   Dot,
   StepLabel,
   DateTimeText
@@ -52,34 +51,33 @@ export const SweepstakeTimeline = ({ createdAt, purchaseLimitDate, drawDate }: S
     }
   })
 
-  const progressPercentage = (nowIndex / (items.length - 1)) * 100
-
   return (
     <Container>
-      <TimelineWrapper>
-        <TrackBackground />
-        <TrackProgress progressPercentage={progressPercentage} />
-
+      <TimelineTrack>
         {items.map((item, index) => {
           const align = index === 0 ? 'start' : index === items.length - 1 ? 'end' : 'center'
+          const isLast = index === items.length - 1
+          const isConnectorCompleted = index < nowIndex
 
           return (
-            <StepNode key={item.id} align={align}>
-              <StepLabel isCurrent={item.status === 'current'}>
-                {item.label}
-              </StepLabel>
+            <React.Fragment key={item.id}>
+              <NodeAnchor>
+                <StepLabel align={align} isCurrent={item.status === 'current'}>
+                  {item.label}
+                </StepLabel>
 
-              <DotWrapper>
                 <Dot status={item.status} />
-              </DotWrapper>
 
-              <DateTimeText isCurrent={item.status === 'current'}>
-                {item.formattedDate} - {item.formattedTime}
-              </DateTimeText>
-            </StepNode>
+                <DateTimeText align={align} isCurrent={item.status === 'current'}>
+                  {item.formattedDate} - {item.formattedTime}
+                </DateTimeText>
+              </NodeAnchor>
+
+              {!isLast && <Connector isCompleted={isConnectorCompleted} />}
+            </React.Fragment>
           )
         })}
-      </TimelineWrapper>
+      </TimelineTrack>
     </Container>
   )
 }
