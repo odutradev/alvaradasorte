@@ -1,24 +1,28 @@
-import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied'
+import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
 
 import { Container, IconWrapper } from './styles'
 
 import type { EmptyStateProps } from './types'
 
-const EmptyState = ({ description, title, icon }: EmptyStateProps) => {
-  const renderedIcon = icon ?? <SentimentDissatisfiedIcon sx={{ fontSize: 48 }} />
+const EmptyState = ({ description, title, icon, action, sx }: EmptyStateProps) => {
+  const renderedIcon = icon ?? <InboxOutlinedIcon sx={{ fontSize: 32 }} />
 
   return (
-    <Container elevation={1}>
+    <Container elevation={0} sx={sx}>
       <IconWrapper>{renderedIcon}</IconWrapper>
       {title && (
-        <Typography variant="h6" fontWeight={600} align="center">
+        <Typography variant="subtitle1" fontWeight={600} color="text.primary" align="center">
           {title}
         </Typography>
       )}
-      <Typography variant="body1" color="text.secondary" align="center">
-        {description}
-      </Typography>
+      {description && (
+        <Typography variant="body2" color="text.secondary" align="center" sx={{ maxWidth: 440, lineHeight: 1.6 }}>
+          {description}
+        </Typography>
+      )}
+      {action && <Box sx={{ mt: 1 }}>{action}</Box>}
     </Container>
   )
 }
