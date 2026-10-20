@@ -10,10 +10,11 @@ const getStep = (value: number): number => {
   return 1
 }
 
-export const useCountUp = (target: number, duration = 1000): number => {
+export const useCountUp = (target: number, duration = 1400): number => {
   const [current, setCurrent] = useState(0)
 
   useEffect(() => {
+    setCurrent(0)
     if (!target || isNaN(target) || target <= 0) {
       setCurrent(target || 0)
       return
