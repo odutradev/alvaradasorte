@@ -1,5 +1,8 @@
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined'
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
+import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import InputAdornment from '@mui/material/InputAdornment'
-import TableContainer from '@mui/material/TableContainer'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -7,6 +10,8 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import IconButton from '@mui/material/IconButton'
 import SearchIcon from '@mui/icons-material/Search'
 import Typography from '@mui/material/Typography'
+import CheckIcon from '@mui/icons-material/Check'
+import ClearIcon from '@mui/icons-material/Clear'
 import EditIcon from '@mui/icons-material/Edit'
 import TableCell from '@mui/material/TableCell'
 import TableHead from '@mui/material/TableHead'
@@ -17,11 +22,11 @@ import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import Table from '@mui/material/Table'
-import Link from '@mui/material/Link'
+import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
-import { TableContainerWrapper, TableHeader, ActionsContainer, EmptyBox } from './styles'
+import { TableContainerWrapper, StyledTableContainer, TableHeader, ActionsContainer, EmptyBox } from './styles'
 import StatementValidationModal from '../statementValidationModal'
 import EditParticipantModal from '../editParticipantModal'
 import AddParticipantModal from '../addParticipantModal'
@@ -55,18 +60,28 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
   } = useParticipantsTable({ participations, sweepstakeId, onUpdate })
 
   return (
-    <TableContainerWrapper elevation={2}>
+    <TableContainerWrapper elevation={0}>
       <TableHeader>
-        <Typography variant="h6" fontWeight={600}>
-          Participantes ({participations.length})
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Typography variant="h6" fontWeight={600}>
+            Participantes
+          </Typography>
+          <Chip
+            label={searchQuery ? `${filteredParticipations.length} de ${participations.length}` : participations.length}
+            size="small"
+            color="default"
+            sx={{ fontWeight: 600, height: 24, fontSize: '0.75rem', borderRadius: 1 }}
+          />
+        </Box>
         <ActionsContainer>
           {sweepstakeId && (
             <Button
               size="small"
               variant="contained"
               color="primary"
+              startIcon={<PersonAddOutlinedIcon fontSize="small" />}
               onClick={() => setIsAddModalOpen(true)}
+              sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 500 }}
             >
               Adicionar Participante
             </Button>
@@ -75,12 +90,20 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
             size="small"
             variant="outlined"
             onClick={handleCopyList}
+            startIcon={copiedList ? <CheckIcon fontSize="small" /> : <ContentCopyOutlinedIcon fontSize="small" />}
             color={copiedList ? 'success' : 'primary'}
             disabled={sortedParticipations.length === 0}
+            sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 500 }}
           >
             {copiedList ? 'Copiado!' : 'Copiar Lista'}
           </Button>
-          <Button size="small" variant="outlined" onClick={() => setIsValidationOpen(true)}>
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<ReceiptLongOutlinedIcon fontSize="small" />}
+            onClick={() => setIsValidationOpen(true)}
+            sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 500 }}
+          >
             Validar Extrato
           </Button>
         </ActionsContainer>
@@ -95,29 +118,46 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon fontSize="small" />
+              <SearchIcon fontSize="small" sx={{ color: 'text.secondary' }} />
             </InputAdornment>
-          )
+          ),
+          endAdornment: searchQuery ? (
+            <InputAdornment position="end">
+              <IconButton size="small" onClick={() => setSearchQuery('')} edge="end" aria-label="Limpar pesquisa">
+                <ClearIcon fontSize="small" />
+              </IconButton>
+            </InputAdornment>
+          ) : null
+        }}
+        sx={{
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 2
+          }
         }}
       />
       {filteredParticipations.length === 0 ? (
         <EmptyBox>
-          <Typography variant="body2" color="text.secondary">
-            {searchQuery ? 'Nenhum participante encontrado.' : 'Nenhum participante ainda.'}
+          <Typography variant="body1" fontWeight={500} color="text.secondary">
+            {searchQuery ? 'Nenhum participante encontrado' : 'Nenhum participante cadastrado ainda'}
           </Typography>
+          {searchQuery && (
+            <Button size="small" variant="text" onClick={() => setSearchQuery('')} sx={{ textTransform: 'none' }}>
+              Limpar filtro de pesquisa
+            </Button>
+          )}
         </EmptyBox>
       ) : (
-        <TableContainer>
-          <Table size="medium">
+        <StyledTableContainer>
+          <Table size="small" stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell><strong>Nome</strong></TableCell>
-                <TableCell><strong>Setor</strong></TableCell>
-                <TableCell><strong>Cotas</strong></TableCell>
-                <TableCell><strong>Telefone</strong></TableCell>
-                <TableCell><strong>Data de Adesão</strong></TableCell>
-                <TableCell align="right"><strong>Comprovante</strong></TableCell>
-                {sweepstakeId && <TableCell align="center"><strong>Ações</strong></TableCell>}
+                <TableCell sx={{ backgroundColor: 'background.paper', fontWeight: 600 }}>Nome</TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper', fontWeight: 600 }}>Setor</TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper', fontWeight: 600 }}>Cotas</TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper', fontWeight: 600 }}>Telefone</TableCell>
+                <TableCell sx={{ backgroundColor: 'background.paper', fontWeight: 600 }}>Data de Adesão</TableCell>
+                <TableCell align="center" sx={{ backgroundColor: 'background.paper', fontWeight: 600 }}>Comprovante</TableCell>
+                {sweepstakeId && <TableCell align="center" sx={{ backgroundColor: 'background.paper', fontWeight: 600 }}>Ações</TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -143,45 +183,66 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
                   <TableCell>{part.quotaCount ?? 1}</TableCell>
                   <TableCell>{part.userPhone || '—'}</TableCell>
                   <TableCell>{dayjs(part.createdAt).format('DD/MM/YYYY HH:mm')}</TableCell>
-                  <TableCell align="right">
+                  <TableCell align="center">
                     {part.receiptUrl ? (
-                      <Link
-                        component="button"
-                        variant="body2"
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                        startIcon={<VisibilityOutlinedIcon sx={{ fontSize: 16 }} />}
                         onClick={() => handleOpenReceipt(part.receiptUrl, part.userName)}
-                        underline="hover"
+                        sx={{
+                          textTransform: 'none',
+                          fontSize: '0.75rem',
+                          py: 0.25,
+                          px: 1,
+                          borderRadius: 1.5,
+                          fontWeight: 500
+                        }}
                       >
                         Visualizar
-                      </Link>
+                      </Button>
                     ) : (
-                      <Typography variant="body2" color="text.secondary">Manual</Typography>
+                      <Chip
+                        size="small"
+                        label="Manual"
+                        variant="outlined"
+                        sx={{
+                          fontSize: '0.7rem',
+                          height: 22,
+                          borderColor: 'divider',
+                          color: 'text.secondary'
+                        }}
+                      />
                     )}
                   </TableCell>
                   {sweepstakeId && (
                     <TableCell align="center">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        title="Editar participante"
-                        onClick={() => setEditingParticipation(part)}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        title="Excluir participação"
-                        onClick={() => setDeletingParticipation(part)}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
+                      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          title="Editar participante"
+                          onClick={() => setEditingParticipation(part)}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          title="Excluir participação"
+                          onClick={() => setDeletingParticipation(part)}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
                     </TableCell>
                   )}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
+        </StyledTableContainer>
       )}
       <Dialog open={!!selectedReceipt} onClose={handleCloseReceipt} fullWidth maxWidth="sm">
         <DialogTitle>Comprovante - {selectedUser}</DialogTitle>
