@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles'
-import TableContainer from '@mui/material/TableContainer'
+
 import Paper from '@mui/material/Paper'
 import Box from '@mui/material/Box'
 
@@ -17,20 +17,7 @@ export const TableContainerWrapper = styled(Paper)(({ theme }) => ({
   boxSizing: 'border-box'
 }))
 
-export const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  flex: 1,
-  minHeight: 0,
-  overflowY: 'auto',
-  overflowX: 'auto',
-  '&::-webkit-scrollbar': {
-    width: 6,
-    height: 6
-  },
-  '&::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.palette.divider,
-    borderRadius: 3
-  }
-}))
+
 
 
 
