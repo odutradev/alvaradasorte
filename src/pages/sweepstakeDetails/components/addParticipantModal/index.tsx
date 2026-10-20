@@ -68,7 +68,7 @@ const AddParticipantModal = ({ open, sweepstakeId, onClose, onSuccess }: AddPart
       try {
         const response = await getUsers({
           search: searchQuery.trim() || undefined,
-          limit: 12
+          limit: 6
         })
         if (active) {
           setOptions(response.data || [])
@@ -159,7 +159,7 @@ const AddParticipantModal = ({ open, sweepstakeId, onClose, onSuccess }: AddPart
         </IconButton>
       </ModalHeader>
 
-      <ModalBody dividers>
+      <ModalBody>
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
 
         {!selectedUser ? (

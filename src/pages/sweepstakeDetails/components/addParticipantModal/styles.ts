@@ -17,7 +17,12 @@ export const ModalBody = styled(DialogContent)(({ theme }) => ({
   gap: theme.spacing(2.5),
   padding: theme.spacing(2.5, 3),
   flex: 1,
-  overflowY: 'auto'
+  overflowY: 'auto',
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none'
+  }
 }))
 
 export const ModalFooter = styled(DialogActions)(({ theme }) => ({
@@ -32,9 +37,13 @@ export const UserListContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(1),
-  maxHeight: 320,
+  maxHeight: 340,
   overflowY: 'auto',
-  paddingRight: theme.spacing(0.5)
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none'
+  }
 }))
 
 export const UserListItem = styled(Box)(({ theme }) => ({
