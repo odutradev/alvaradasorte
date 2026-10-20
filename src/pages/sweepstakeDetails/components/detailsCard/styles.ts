@@ -37,8 +37,24 @@ export const HeaderRow = styled(Box)({
 })
 
 export const ActionButtonsGroup = styled(Box)(({ theme }) => ({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gap: theme.spacing(1.5),
-  width: '100%'
+  display: 'flex',
+  gap: theme.spacing(1),
+  width: '100%',
+  '& .MuiButton-root': {
+    flex: 1,
+    height: 32,
+    minHeight: 32,
+    padding: theme.spacing(0, 1),
+    fontSize: '0.75rem',
+    whiteSpace: 'nowrap',
+    textTransform: 'none',
+    borderRadius: theme.shape.borderRadius,
+    fontWeight: 500,
+    borderColor: theme.palette.divider,
+    color: theme.palette.text.primary,
+    '&:hover': {
+      borderColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.action.hover
+    }
+  }
 }))

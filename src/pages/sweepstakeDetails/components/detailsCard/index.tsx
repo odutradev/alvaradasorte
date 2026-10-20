@@ -62,18 +62,16 @@ const DetailsCard = ({ data, preset, presets, onUpdate }: DetailsCardProps) => {
             <Button
               variant="outlined"
               size="small"
-              startIcon={<ChatBubbleOutlineIcon fontSize="small" />}
+              startIcon={<ChatBubbleOutlineIcon sx={{ fontSize: 16 }} />}
               onClick={() => setIsMessageModalOpen(true)}
-              sx={{ textTransform: 'none', fontWeight: 500, borderRadius: 2 }}
             >
               Ver Mensagem
             </Button>
             <Button
               variant="outlined"
               size="small"
-              startIcon={<CasinoOutlinedIcon fontSize="small" />}
+              startIcon={<CasinoOutlinedIcon sx={{ fontSize: 16 }} />}
               onClick={() => setIsGamesModalOpen(true)}
-              sx={{ textTransform: 'none', fontWeight: 500, borderRadius: 2 }}
             >
               Configurar Jogos
             </Button>
