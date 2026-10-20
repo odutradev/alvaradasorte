@@ -10,7 +10,6 @@ import {
   CardContainer,
   CardBody,
   HeaderRow,
-  InfoRow,
   PrizeCardsContainer,
   PrizeCard,
   ActionButtonsRow,
@@ -39,8 +38,8 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
     <CardContainer elevation={0}>
       <CardBody>
         <HeaderRow>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
-            <Typography variant="h6" fontWeight={600} color="primary.main">
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5, width: '100%' }}>
+            <Typography variant="h6" fontWeight={600} color="primary.main" textAlign="center">
               {data.title}
             </Typography>
             {isParticipant && (
@@ -54,19 +53,25 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
           </Box>
         </HeaderRow>
 
-        <InfoRow>
-          <Typography variant="body2" color="text.secondary">Valor da Cota:</Typography>
-          <Typography variant="body1" fontWeight={600}>
-            {formatCurrency(data.quotaPrice)}
-          </Typography>
-        </InfoRow>
-        <InfoRow>
-          <Typography variant="body2" color="text.secondary">Prêmio Total:</Typography>
-          <Typography variant="body1" fontWeight={600}>
-            {formatCurrency(data.prizeValue)}
-          </Typography>
-        </InfoRow>
         <PrizeCardsContainer>
+          <PrizeCard>
+            <Typography variant="caption" color="text.secondary" fontWeight={500}>
+              Valor da Cota
+            </Typography>
+            <Typography variant="body1" fontWeight={700}>
+              {formatCurrency(data.quotaPrice)}
+            </Typography>
+          </PrizeCard>
+
+          <PrizeCard>
+            <Typography variant="caption" color="text.secondary" fontWeight={500}>
+              Prêmio Total
+            </Typography>
+            <Typography variant="body1" fontWeight={700}>
+              {formatCurrency(data.prizeValue)}
+            </Typography>
+          </PrizeCard>
+
           <PrizeCard isPrimary>
             <Typography variant="caption" color="primary.main" fontWeight={600}>
               Prêmio Atual por Pessoa

@@ -34,16 +34,11 @@ export const CardBody = styled(Box)(({ theme }) => ({
 }))
 
 export const HeaderRow = styled(Box)({
-  justifyContent: 'space-between',
+  justifyContent: 'center',
   alignItems: 'center',
   display: 'flex',
-  width: '100%'
-})
-
-export const InfoRow = styled(Box)({
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  display: 'flex'
+  width: '100%',
+  textAlign: 'center'
 })
 
 export const PrizeCardsContainer = styled(Box)(({ theme }) => ({
@@ -62,6 +57,9 @@ export const PrizeCard = styled(Box, {
   border: `1px solid ${isPrimary ? alpha(theme.palette.primary.main, 0.3) : theme.palette.divider}`,
   padding: theme.spacing(1.2, 1.5),
   flexDirection: 'column',
+  alignItems: 'center',
+  textAlign: 'center',
+  justifyContent: 'center',
   gap: theme.spacing(0.25),
   borderRadius: 12,
   display: 'flex'
