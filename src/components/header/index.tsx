@@ -90,94 +90,96 @@ const Header = ({ showBackButton = false, onBack, backLabel = 'Voltar' }: Header
             </LogoText>
           </Box>
           <NavContainer>
-            <MenuButton onClick={() => setDrawerOpen(true)} aria-label="Abrir menu">
-              <MenuIcon />
-            </MenuButton>
+            {user?.role === 'admin' ? (
+              <MenuButton onClick={() => setDrawerOpen(true)} aria-label="Abrir menu">
+                <MenuIcon />
+              </MenuButton>
+            ) : (
+              <ThemeToggle />
+            )}
           </NavContainer>
         </StyledToolbar>
       </StyledAppBar>
-      <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <DrawerContent role="presentation">
-          <DrawerHeader>
-            <Typography variant="subtitle1" fontWeight={700}>
-              Menu
-            </Typography>
-            <IconButton size="small" onClick={() => setDrawerOpen(false)} aria-label="Fechar menu">
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </DrawerHeader>
-          <Divider sx={{ my: 1 }} />
-          <List sx={{ px: 0, py: 1, flex: 1 }}>
-            <ListItemButton
-              selected={location.pathname === '/'}
-              onClick={() => handleNavigate('/')}
-              sx={{ borderRadius: 2, mb: 0.5 }}
-            >
-              <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
-                <HomeOutlinedIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary="Início"
-                primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
-              />
-            </ListItemButton>
-            {user?.role === 'admin' && (
-              <>
-                <ListItemButton
-                  selected={location.pathname.startsWith('/users')}
-                  onClick={() => handleNavigate('/users')}
-                  sx={{ borderRadius: 2, mb: 0.5 }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
-                    <PeopleOutlineIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Usuários"
-                    primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
-                  />
-                </ListItemButton>
-                <ListItemButton
-                  selected={location.pathname.startsWith('/presets')}
-                  onClick={() => handleNavigate('/presets')}
-                  sx={{ borderRadius: 2, mb: 0.5 }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
-                    <TuneIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Predefinições"
-                    primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
-                  />
-                </ListItemButton>
-                <ListItemButton
-                  selected={location.pathname.startsWith('/sweepstakes')}
-                  onClick={() => handleNavigate('/sweepstakes')}
-                  sx={{ borderRadius: 2, mb: 0.5 }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
-                    <CasinoOutlinedIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Bolões"
-                    primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
-                  />
-                </ListItemButton>
-              </>
-            )}
-          </List>
-          <ThemeSection>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-              <Box sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center' }}>
-                {isDark ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
-              </Box>
-              <Typography variant="body2" fontWeight={500}>
-                {isDark ? 'Modo Escuro' : 'Modo Claro'}
+      {user?.role === 'admin' && (
+        <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+          <DrawerContent role="presentation">
+            <DrawerHeader>
+              <Typography variant="subtitle1" fontWeight={700}>
+                Menu
               </Typography>
-            </Box>
-            <ThemeToggle />
-          </ThemeSection>
-        </DrawerContent>
-      </Drawer>
+              <IconButton size="small" onClick={() => setDrawerOpen(false)} aria-label="Fechar menu">
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </DrawerHeader>
+            <Divider sx={{ my: 1 }} />
+            <List sx={{ px: 0, py: 1, flex: 1 }}>
+              <ListItemButton
+                selected={location.pathname === '/'}
+                onClick={() => handleNavigate('/')}
+                sx={{ borderRadius: 2, mb: 0.5 }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                  <HomeOutlinedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Início"
+                  primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
+                />
+              </ListItemButton>
+              <ListItemButton
+                selected={location.pathname.startsWith('/users')}
+                onClick={() => handleNavigate('/users')}
+                sx={{ borderRadius: 2, mb: 0.5 }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                  <PeopleOutlineIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Usuários"
+                  primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
+                />
+              </ListItemButton>
+              <ListItemButton
+                selected={location.pathname.startsWith('/presets')}
+                onClick={() => handleNavigate('/presets')}
+                sx={{ borderRadius: 2, mb: 0.5 }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                  <TuneIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Predefinições"
+                  primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
+                />
+              </ListItemButton>
+              <ListItemButton
+                selected={location.pathname.startsWith('/sweepstakes')}
+                onClick={() => handleNavigate('/sweepstakes')}
+                sx={{ borderRadius: 2, mb: 0.5 }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                  <CasinoOutlinedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Bolões"
+                  primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
+                />
+              </ListItemButton>
+            </List>
+            <ThemeSection>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center' }}>
+                  {isDark ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
+                </Box>
+                <Typography variant="body2" fontWeight={500}>
+                  {isDark ? 'Modo Escuro' : 'Modo Claro'}
+                </Typography>
+              </Box>
+              <ThemeToggle />
+            </ThemeSection>
+          </DrawerContent>
+        </Drawer>
+      )}
     </HeaderWrapper>
   )
 }
