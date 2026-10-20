@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import Box from '@mui/material/Box'
 
 import { PageWrapper, ContentContainer, GridContainer } from './styles'
 import ParticipantsTable from './components/participantsTable'
@@ -24,7 +25,11 @@ const SweepstakeDetailsPage = () => {
         <Header />
         <ContentContainer>
           <Subheader title="Detalhes do Bolão" buttonLabel="Voltar" onButtonClick={handleGoBack} />
-          {isLoading && <Typography variant="body1">Carregando...</Typography>}
+          {isLoading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, minHeight: 200 }}>
+              <CircularProgress size={32} />
+            </Box>
+          )}
           {!isLoading && details && (
             <GridContainer>
               <DetailsCard
