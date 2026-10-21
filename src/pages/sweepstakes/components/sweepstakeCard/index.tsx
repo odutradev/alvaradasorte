@@ -8,9 +8,7 @@ import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
-import { useState, useMemo } from 'react'
-
-import { CardContainer, InfoWrapper, InfoGrid, ActionsWrapper, GamesPreviewWrapper, MiniNumberChip } from './styles'
+import { CardContainer, InfoWrapper, InfoGrid, ActionsWrapper } from './styles'
 import { QuotaProgress } from '@components/quotaProgress'
 import { getLotteryMeta } from '@services/lotteries'
 import { formatCurrency } from '@utils/string'
@@ -18,12 +16,7 @@ import { formatCurrency } from '@utils/string'
 import type { SweepstakeCardProps } from './types'
 
 const SweepstakeCard = ({ sweepstake, onViewDetails, onEdit, onDelete }: SweepstakeCardProps) => {
-  const [isExpanded, setIsExpanded] = useState(false)
   const meta = getLotteryMeta(sweepstake.lotteryType)
-
-  const games = sweepstake.games ?? []
-  const resultSet = useMemo(() => new Set(sweepstake.result ?? []), [sweepstake.result])
-  const displayedGames = isExpanded ? games : games.slice(0, 2)
 
   return (
     <CardContainer elevation={0}>
@@ -74,49 +67,6 @@ const SweepstakeCard = ({ sweepstake, onViewDetails, onEdit, onDelete }: Sweepst
           <strong>Valor Arrecadado:</strong> {formatCurrency((sweepstake.metadata?.filledQuotas ?? 0) * sweepstake.quotaPrice)}
         </Typography>
       </InfoGrid>
-
-      {games.length > 0 && (
-        <GamesPreviewWrapper>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.25 }}>
-            <Typography variant="caption" fontWeight={700} color="text.secondary">
-              Jogos do Bolão ({games.length})
-            </Typography>
-            {games.length > 2 && (
-              <Typography
-                variant="caption"
-                color="primary"
-                onClick={() => setIsExpanded((prev) => !prev)}
-                sx={{
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  userSelect: 'none',
-                  '&:hover': { textDecoration: 'underline' }
-                }}
-              >
-                {isExpanded ? 'Recolher' : `+${games.length - 2} jogos`}
-              </Typography>
-            )}
-          </Box>
-
-          {displayedGames.map((game, idx) => (
-            <Box key={idx} sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-              <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ minWidth: 20 }}>
-                #{idx + 1}
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
-                {game.map((num, nIdx) => {
-                  const isMatched = resultSet.has(num)
-                  return (
-                    <MiniNumberChip key={nIdx} matched={isMatched}>
-                      {num < 10 ? `0${num}` : num}
-                    </MiniNumberChip>
-                  )
-                })}
-              </Box>
-            </Box>
-          ))}
-        </GamesPreviewWrapper>
-      )}
     </InfoWrapper>
     <ActionsWrapper>
       <Tooltip title="Editar bolão">

@@ -105,5 +105,61 @@ export const EditButton = styled(Button)(({ theme }) => ({
   flexShrink: 0
 }))
 
+export const MinimalGamesContainer = styled(Box)(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark'
+  return {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(0.75),
+    padding: theme.spacing(1, 1.25),
+    borderRadius: 10,
+    backgroundColor: isDark ? alpha(theme.palette.background.paper, 0.35) : alpha('#000', 0.02),
+    border: `1px solid ${isDark ? alpha(theme.palette.divider, 0.5) : alpha(theme.palette.divider, 0.8)}`
+  }
+})
+
+export const MinimalGameRow = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(0.75),
+  flexWrap: 'wrap'
+}))
+
+export const MinimalNumberBadge = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'matched'
+})<{ matched?: boolean }>(({ theme, matched }) => {
+  const isDark = theme.palette.mode === 'dark'
+  if (matched) {
+    return {
+      width: 22,
+      height: 22,
+      borderRadius: '50%',
+      backgroundColor: '#16a34a',
+      color: '#ffffff',
+      border: '1px solid #4ade80',
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: 800,
+      fontSize: '0.6875rem',
+      boxShadow: '0 0 6px rgba(74, 222, 128, 0.4)'
+    }
+  }
+
+  return {
+    width: 22,
+    height: 22,
+    borderRadius: '50%',
+    backgroundColor: isDark ? '#232635' : '#f1f5f9',
+    color: isDark ? '#f8fafc' : '#1e293b',
+    border: `1px solid ${isDark ? '#363a4d' : '#cbd5e1'}`,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 700,
+    fontSize: '0.6875rem'
+  }
+})
+
 
 
