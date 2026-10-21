@@ -4,25 +4,54 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
+import Chip from '@mui/material/Chip'
+import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
 
 import { CardContainer, InfoWrapper, InfoGrid, ActionsWrapper } from './styles'
 import { QuotaProgress } from '@components/quotaProgress'
+import { getLotteryMeta } from '@services/lotteries'
 import { formatCurrency } from '@utils/string'
 
 import type { SweepstakeCardProps } from './types'
 
-const SweepstakeCard = ({ sweepstake, onViewDetails, onEdit, onDelete }: SweepstakeCardProps) => (
-  <CardContainer elevation={0}>
-    <InfoWrapper>
-      <Typography variant="h6" fontWeight={600}>
-        {sweepstake.title}
-      </Typography>
-      {sweepstake.description && (
-        <Typography variant="body2" color="text.secondary" sx={{ mt: -1 }}>
-          {sweepstake.description}
-        </Typography>
-      )}
+const SweepstakeCard = ({ sweepstake, onViewDetails, onEdit, onDelete }: SweepstakeCardProps) => {
+  const meta = getLotteryMeta(sweepstake.lotteryType)
+
+  return (
+    <CardContainer elevation={0}>
+      <InfoWrapper>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+          <Typography variant="h6" fontWeight={600}>
+            {sweepstake.title}
+          </Typography>
+          {sweepstake.lotteryType && meta && (
+            <Chip
+              label={meta.name}
+              size="small"
+              sx={{
+                backgroundColor: meta.color,
+                color: '#fff',
+                fontWeight: 700,
+                height: 22,
+                fontSize: '0.75rem'
+              }}
+            />
+          )}
+          {sweepstake.contestNumber && (
+            <Chip
+              label={`Concurso nº ${sweepstake.contestNumber}`}
+              size="small"
+              variant="outlined"
+              sx={{ fontWeight: 600, height: 22, fontSize: '0.75rem' }}
+            />
+          )}
+        </Box>
+        {sweepstake.description && (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5 }}>
+            {sweepstake.description}
+          </Typography>
+        )}
       <QuotaProgress
         availableQuotas={sweepstake.availableQuotas}
         filledQuotas={sweepstake.metadata?.filledQuotas ?? 0}
@@ -57,6 +86,7 @@ const SweepstakeCard = ({ sweepstake, onViewDetails, onEdit, onDelete }: Sweepst
       </Tooltip>
     </ActionsWrapper>
   </CardContainer>
-)
+  )
+}
 
 export default SweepstakeCard

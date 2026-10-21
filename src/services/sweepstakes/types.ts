@@ -13,6 +13,8 @@ export interface SweepstakeResponse {
   adminId: string
   title: string
   id: string
+  contestNumber?: number
+  lotteryType?: string
   metadata: {
     filledQuotas: number
   }
@@ -34,6 +36,8 @@ export interface CreateSweepstakeRequest {
   presetId: string
   drawDate: string
   title: string
+  contestNumber?: number
+  lotteryType?: string
 }
 
 export interface UpdateSweepstakeRequest {
@@ -45,6 +49,8 @@ export interface UpdateSweepstakeRequest {
   presetId?: string
   drawDate?: string
   title?: string
+  contestNumber?: number
+  lotteryType?: string
 }
 
 export interface SetGamesRequest {
