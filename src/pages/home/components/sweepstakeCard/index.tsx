@@ -1,7 +1,7 @@
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import Typography from '@mui/material/Typography'
 import { useNavigate } from 'react-router-dom'
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
@@ -16,9 +16,9 @@ import {
   ActionButtonsRow,
   ActionButton,
   EditButton,
-  MinimalGamesContainer,
-  MinimalGameRow,
-  MinimalNumberBadge
+  GamesFlowContainer,
+  GameChip,
+  ChipNumber
 } from './styles'
 import SweepstakeTimeline from '@components/sweepstakeTimeline'
 import { QuotaProgress } from '@components/quotaProgress'
@@ -44,10 +44,8 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
   const animatedCurrentPrize = useCountUp(currentPrizePerPerson)
   const animatedMinPrize = useCountUp(minPrizePerPerson)
 
-  const [isExpanded, setIsExpanded] = useState(false)
   const games = data.games ?? []
   const resultSet = useMemo(() => new Set(data.result ?? []), [data.result])
-  const displayedGames = isExpanded ? games : games.slice(0, 1)
 
   return (
     <CardContainer elevation={0}>
@@ -118,49 +116,25 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
         />
 
         {games.length > 0 && (
-          <MinimalGamesContainer>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography variant="caption" fontWeight={700} color="text.secondary">
-                Jogos do Bolão ({games.length})
-              </Typography>
-              {games.length > 1 && (
+          <GamesFlowContainer>
+            {games.map((game, idx) => (
+              <GameChip key={idx}>
                 <Typography
-                  variant="caption"
-                  color="primary"
-                  onClick={() => setIsExpanded((prev) => !prev)}
-                  sx={{
-                    cursor: 'pointer',
-                    fontWeight: 600,
-                    userSelect: 'none',
-                    fontSize: '0.75rem',
-                    '&:hover': { textDecoration: 'underline' }
-                  }}
+                  component="span"
+                  sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary', mr: 0.25 }}
                 >
-                  {isExpanded ? 'Recolher' : `+${games.length - 1} ${games.length - 1 === 1 ? 'jogo' : 'jogos'}`}
+                  #{idx + 1}
                 </Typography>
-              )}
-            </Box>
-
-            {displayedGames.map((game, idx) => (
-              <MinimalGameRow key={idx}>
-                {games.length > 1 && (
-                  <Typography
-                    variant="caption"
-                    fontWeight={700}
-                    color="text.secondary"
-                    sx={{ minWidth: 18, fontSize: '0.7rem' }}
-                  >
-                    #{idx + 1}
-                  </Typography>
-                )}
-                {game.map((num, nIdx) => (
-                  <MinimalNumberBadge key={nIdx} matched={resultSet.has(num)}>
-                    {num < 10 ? `0${num}` : num}
-                  </MinimalNumberBadge>
-                ))}
-              </MinimalGameRow>
+                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.6 }}>
+                  {game.map((num, nIdx) => (
+                    <ChipNumber key={nIdx} matched={resultSet.has(num)}>
+                      {num < 10 ? `0${num}` : num}
+                    </ChipNumber>
+                  ))}
+                </Box>
+              </GameChip>
             ))}
-          </MinimalGamesContainer>
+          </GamesFlowContainer>
         )}
       </CardBody>
 
