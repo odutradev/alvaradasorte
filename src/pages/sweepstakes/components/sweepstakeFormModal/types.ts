@@ -9,8 +9,10 @@ export interface SweepstakeFormModalProps {
   open: boolean
 }
 
-export type SweepstakeFormData = Omit<CreateSweepstakeRequest, 'availableQuotas' | 'prizeValue' | 'quotaPrice'> & {
+export type SweepstakeFormData = Omit<CreateSweepstakeRequest, 'availableQuotas' | 'prizeValue' | 'quotaPrice' | 'contestNumber'> & {
   availableQuotas: number
   prizeValue: string
   quotaPrice: number
+  contestNumber?: number | string
+  lotteryType?: string
 }

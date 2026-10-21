@@ -26,7 +26,9 @@ const DEFAULT_VALUES: SweepstakeFormData = {
   availableQuotas: 100,
   drawDate: '',
   purchaseLimitDate: '',
-  presetId: ''
+  presetId: '',
+  lotteryType: '',
+  contestNumber: ''
 }
 
 const buildValuesFromLottery = (lottery: LotteryItemResponse, currentPresetId = ''): SweepstakeFormData => {
@@ -127,15 +129,19 @@ const SweepstakeFormModal = ({
   }
 
   const onSubmit = async (data: SweepstakeFormData) => {
+    const { contestNumber: rawContestNumber, lotteryType: rawLotteryType, ...restData } = data
+    const contestNumber = rawContestNumber ? Number(rawContestNumber) : undefined
+    const lotteryType = rawLotteryType ? String(rawLotteryType).trim() : undefined
+
     const payload = {
-      ...data,
+      ...restData,
       purchaseLimitDate: new Date(data.purchaseLimitDate).toISOString(),
       availableQuotas: Number(data.availableQuotas),
       drawDate: new Date(data.drawDate).toISOString(),
       prizeValue: Number(data.prizeValue),
       quotaPrice: Number(data.quotaPrice),
-      ...(data.contestNumber ? { contestNumber: Number(data.contestNumber) } : {}),
-      ...(data.lotteryType ? { lotteryType: data.lotteryType } : {})
+      ...(contestNumber ? { contestNumber } : {}),
+      ...(lotteryType ? { lotteryType } : {})
     }
 
     await useAction({
@@ -218,6 +224,47 @@ const SweepstakeFormModal = ({
               </Box>
             )
           })()}
+          <DateRow>
+            <Controller
+              name="lotteryType"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  value={field.value ?? ''}
+                  select
+                  label="Modalidade da Loteria"
+                  fullWidth
+                >
+                  <MenuItem value="">Nenhuma / Personalizado</MenuItem>
+                  <MenuItem value="megasena">Mega-Sena</MenuItem>
+                  <MenuItem value="lotofacil">Lotofácil</MenuItem>
+                  <MenuItem value="quina">Quina</MenuItem>
+                  <MenuItem value="lotomania">Lotomania</MenuItem>
+                  <MenuItem value="duplasena">Dupla Sena</MenuItem>
+                  <MenuItem value="timemania">Timemania</MenuItem>
+                  <MenuItem value="diadesorte">Dia de Sorte</MenuItem>
+                  <MenuItem value="maismilionaria">+Milionária</MenuItem>
+                  <MenuItem value="federal">Loteria Federal</MenuItem>
+                </TextField>
+              )}
+            />
+            <Controller
+              name="contestNumber"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  value={field.value ?? ''}
+                  label="Número do Concurso"
+                  type="number"
+                  placeholder="Ex: 3073"
+                  fullWidth
+                  InputLabelProps={{ shrink: true }}
+                />
+              )}
+            />
+          </DateRow>
 
           <TextField {...register('title')} label="Título" required fullWidth />
           <TextField {...register('description')} label="Descrição" required fullWidth multiline rows={3} />
