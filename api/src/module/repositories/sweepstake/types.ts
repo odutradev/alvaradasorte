@@ -11,6 +11,8 @@ export type SweepstakeType = {
   presetId: string
   games?: number[][]
   result?: number[]
+  contestNumber?: number
+  lotteryType?: string
   createdAt: string
   updatedAt: string
 }

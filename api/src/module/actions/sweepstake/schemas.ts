@@ -27,6 +27,8 @@ export const sweepstakeSchema = z.object({
   drawDate: z.string().openapi({ example: '2023-12-20T20:00:00.000Z' }),
   purchaseLimitDate: z.string().openapi({ example: '2023-12-19T23:59:59.000Z' }),
   presetId: z.string().openapi({ example: 'preset-id' }),
+  contestNumber: z.number().int().optional().openapi({ example: 3073 }),
+  lotteryType: z.string().optional().openapi({ example: 'megasena' }),
   games: z.array(z.array(z.number())).optional().openapi({ example: [[1, 2, 3, 4], [5, 6, 7, 8]] }),
   result: z.array(z.number()).optional().openapi({ example: [1, 2, 3, 4] }),
   createdAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' }),
@@ -60,7 +62,9 @@ export const createSweepstakeSchema = z.object({
   availableQuotas: z.number().min(1).openapi({ example: 20 }),
   drawDate: z.string().datetime().openapi({ example: '2023-12-20T20:00:00.000Z' }),
   purchaseLimitDate: z.string().datetime().openapi({ example: '2023-12-19T23:59:59.000Z' }),
-  presetId: z.string().min(1).openapi({ example: 'preset-id' })
+  presetId: z.string().min(1).openapi({ example: 'preset-id' }),
+  contestNumber: z.number().int().optional().openapi({ example: 3073 }),
+  lotteryType: z.string().optional().openapi({ example: 'megasena' })
 }).openapi('CreateSweepstakeRequest')
 
 export const updateSweepstakeSchema = z.object({
@@ -71,7 +75,9 @@ export const updateSweepstakeSchema = z.object({
   availableQuotas: z.number().min(1).optional().openapi({ example: 30 }),
   drawDate: z.string().datetime().optional().openapi({ example: '2023-12-25T20:00:00.000Z' }),
   purchaseLimitDate: z.string().datetime().optional().openapi({ example: '2023-12-24T23:59:59.000Z' }),
-  presetId: z.string().min(1).optional().openapi({ example: 'new-preset-id' })
+  presetId: z.string().min(1).optional().openapi({ example: 'new-preset-id' }),
+  contestNumber: z.number().int().optional().openapi({ example: 3073 }),
+  lotteryType: z.string().optional().openapi({ example: 'megasena' })
 }).openapi('UpdateSweepstakeRequest')
 
 export const addSweepstakeGamesSchema = z.object({
