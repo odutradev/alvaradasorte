@@ -38,7 +38,8 @@ const sweepstakeRepository = {
     if (!snapshot.exists()) return null
 
     const now = new Date().toISOString()
-    const merged = { ...snapshot.val(), ...data, updatedAt: now }
+    const cleanData = Object.fromEntries(Object.entries(data).filter(([_, v]) => v !== undefined))
+    const merged = { ...snapshot.val(), ...cleanData, updatedAt: now }
 
     await ref.set(merged)
 
