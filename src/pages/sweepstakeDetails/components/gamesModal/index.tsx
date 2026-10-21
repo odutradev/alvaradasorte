@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { alpha } from '@mui/material/styles'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import CasinoIcon from '@mui/icons-material/Casino'
@@ -245,9 +246,21 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
                       size="small"
                       clickable
                       onClick={() => setTargetCount(count)}
-                      color={isSelected ? 'primary' : 'default'}
-                      variant={isSelected ? 'filled' : 'outlined'}
-                      sx={{ fontWeight: isSelected ? 700 : 500 }}
+                      sx={{
+                        fontWeight: isSelected ? 800 : 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        backgroundColor: isSelected ? 'primary.main' : 'transparent',
+                        borderColor: isSelected ? 'primary.main' : 'divider',
+                        borderWidth: isSelected ? 1.5 : 1,
+                        borderStyle: 'solid',
+                        color: isSelected ? '#ffffff' : 'text.primary',
+                        '&:hover': {
+                          borderColor: 'primary.main',
+                          backgroundColor: isSelected ? 'primary.dark' : (theme) => alpha(theme.palette.primary.main, 0.15),
+                          transform: 'translateY(-1px)'
+                        }
+                      }}
                     />
                   )
                 })}
@@ -370,17 +383,23 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
                 const hits = getHitsCount(game)
                 return (
                   <GameRow key={index}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 120 }}>
-                      <Typography variant="caption" fontWeight={700} color="text.secondary">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 125 }}>
+                      <Typography variant="caption" fontWeight={800} color="text.secondary">
                         #{index + 1}
                       </Typography>
                       <Chip
                         size="small"
                         label={`${game.length} dezenas`}
                         variant="outlined"
-                        sx={{ fontSize: '0.75rem', height: 22 }}
+                        sx={{
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          height: 22,
+                          borderColor: 'divider',
+                          color: 'text.primary'
+                        }}
                       />
-                      <Typography variant="caption" color="text.secondary">
+                      <Typography variant="caption" fontWeight={700} color="text.primary">
                         {formatCurrency(gamePrice)}
                       </Typography>
                     </Box>
