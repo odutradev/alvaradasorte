@@ -123,13 +123,14 @@ const SweepstakeFormModal = ({
     setSelectedLottery(lottery)
     const currentPresetId = getValues('presetId')
     const filled = buildValuesFromLottery(lottery, currentPresetId)
-    setValue('title', filled.title)
-    setValue('description', filled.description)
-    setValue('prizeValue', filled.prizeValue)
-    if (filled.drawDate) setValue('drawDate', filled.drawDate)
-    if (filled.purchaseLimitDate) setValue('purchaseLimitDate', filled.purchaseLimitDate)
-    setValue('contestNumber', filled.contestNumber)
-    setValue('lotteryType', filled.lotteryType)
+    const setValueOptions = { shouldValidate: true, shouldDirty: true }
+    setValue('title', filled.title, setValueOptions)
+    setValue('description', filled.description, setValueOptions)
+    setValue('prizeValue', filled.prizeValue, setValueOptions)
+    if (filled.drawDate) setValue('drawDate', filled.drawDate, setValueOptions)
+    if (filled.purchaseLimitDate) setValue('purchaseLimitDate', filled.purchaseLimitDate, setValueOptions)
+    setValue('contestNumber', filled.contestNumber, setValueOptions)
+    setValue('lotteryType', filled.lotteryType, setValueOptions)
   }
 
   const onSubmit = async (data: SweepstakeFormData) => {
@@ -241,8 +242,8 @@ const SweepstakeFormModal = ({
             />
           </DateRow>
 
-          <TextField {...register('title')} label="Título" required fullWidth />
-          <TextField {...register('description')} label="Descrição" required fullWidth multiline rows={3} />
+          <TextField {...register('title')} label="Título" InputLabelProps={{ shrink: true }} required fullWidth />
+          <TextField {...register('description')} label="Descrição" InputLabelProps={{ shrink: true }} required fullWidth multiline rows={3} />
           <Controller
             name="quotaPrice"
             control={control}
@@ -258,7 +259,7 @@ const SweepstakeFormModal = ({
               />
             )}
           />
-          <TextField {...register('prizeValue')} label="Valor do Prêmio (R$)" type="number" required fullWidth />
+          <TextField {...register('prizeValue')} label="Valor do Prêmio (R$)" type="number" InputLabelProps={{ shrink: true }} required fullWidth />
           <Controller
             name="availableQuotas"
             control={control}
