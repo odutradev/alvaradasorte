@@ -29,6 +29,7 @@ import {
   NumberGrid,
   NumberBall,
   GamesSection,
+  GamesListContainer,
   GameRow,
   NumbersContainer,
   NumberChip,
@@ -377,7 +378,7 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
               Nenhum jogo cadastrado. Utilize o volante, a indicação automática ou a digitação para incluir jogos.
             </Typography>
           ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, maxHeight: 260, overflowY: 'auto', pr: 0.5 }}>
+            <GamesListContainer>
               {games.map((game, index) => {
                 const gamePrice = getGamePrice(lotteryType, game.length)
                 const hits = getHitsCount(game)
@@ -430,7 +431,7 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
                   </GameRow>
                 )
               })}
-            </Box>
+            </GamesListContainer>
           )}
 
           <Button

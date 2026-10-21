@@ -78,9 +78,27 @@ export const NumberGrid = styled(Box)(({ theme }) => {
     borderRadius: theme.shape.borderRadius * 1.5,
     border: `1px solid ${isDark ? '#2e3244' : '#e2e8f0'}`,
     maxHeight: 230,
-    overflowY: 'auto'
+    overflowY: 'auto',
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    }
   }
 })
+
+export const GamesListContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(1),
+  maxHeight: 270,
+  overflowY: 'auto',
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none'
+  }
+}))
 
 export const NumberBall = styled(Button, {
   shouldForwardProp: (prop) => prop !== 'selected' && prop !== 'badgeColor'
