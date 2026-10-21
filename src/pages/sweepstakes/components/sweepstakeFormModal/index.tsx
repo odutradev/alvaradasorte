@@ -64,12 +64,9 @@ const SweepstakeFormModal = ({
   const [lotteryModalOpen, setLotteryModalOpen] = useState(false)
   const [selectedLottery, setSelectedLottery] = useState<LotteryItemResponse | null>(null)
 
-  const { handleSubmit, register, control, reset, setValue, getValues, watch } = useForm<SweepstakeFormData>({
+  const { handleSubmit, register, control, reset, setValue, getValues } = useForm<SweepstakeFormData>({
     defaultValues: DEFAULT_VALUES
   })
-
-  const formLotteryType = watch('lotteryType')
-  const formContestNumber = watch('contestNumber')
 
   const loadPresets = useCallback(async () => {
     await useAction({
@@ -87,33 +84,40 @@ const SweepstakeFormModal = ({
   useEffect(() => {
     if (open) {
       loadPresets()
-      const defaultPresetId = presets[0]?.id || ''
-      if (initialData) {
-        setSelectedLottery(null)
-        reset({
-          title: initialData.title,
-          description: initialData.description,
-          quotaPrice: initialData.quotaPrice,
-          prizeValue: String(initialData.prizeValue),
-          availableQuotas: initialData.availableQuotas,
-          drawDate: dayjs(initialData.drawDate).format('YYYY-MM-DDTHH:mm'),
-          purchaseLimitDate: dayjs(initialData.purchaseLimitDate).format('YYYY-MM-DDTHH:mm'),
-          presetId: initialData.presetId,
-          contestNumber: initialData.contestNumber,
-          lotteryType: initialData.lotteryType
-        })
-      } else if (initialLottery) {
-        setSelectedLottery(initialLottery)
-        reset(buildValuesFromLottery(initialLottery, defaultPresetId))
-      } else {
-        setSelectedLottery(null)
-        reset({
-          ...DEFAULT_VALUES,
-          presetId: defaultPresetId
-        })
-      }
     }
-  }, [open, initialData, initialLottery, presets, loadPresets, reset])
+  }, [open, loadPresets])
+
+  useEffect(() => {
+    if (!open) {
+      setSelectedLottery(null)
+      return
+    }
+
+    if (initialData) {
+      setSelectedLottery(null)
+      reset({
+        title: initialData.title || '',
+        description: initialData.description || '',
+        quotaPrice: initialData.quotaPrice ?? 30,
+        prizeValue: initialData.prizeValue !== undefined ? String(initialData.prizeValue) : '',
+        availableQuotas: initialData.availableQuotas ?? 100,
+        drawDate: initialData.drawDate ? dayjs(initialData.drawDate).format('YYYY-MM-DDTHH:mm') : '',
+        purchaseLimitDate: initialData.purchaseLimitDate ? dayjs(initialData.purchaseLimitDate).format('YYYY-MM-DDTHH:mm') : '',
+        presetId: initialData.presetId || '',
+        contestNumber: initialData.contestNumber ? String(initialData.contestNumber) : '',
+        lotteryType: initialData.lotteryType || ''
+      })
+    } else if (initialLottery) {
+      setSelectedLottery(initialLottery)
+      reset(buildValuesFromLottery(initialLottery, getValues('presetId') || ''))
+    } else {
+      setSelectedLottery(null)
+      reset({
+        ...DEFAULT_VALUES,
+        presetId: getValues('presetId') || ''
+      })
+    }
+  }, [open, initialData?.id, initialLottery, reset])
 
   const handleApplyLottery = (lottery: LotteryItemResponse) => {
     setSelectedLottery(lottery)
@@ -183,47 +187,18 @@ const SweepstakeFormModal = ({
         }
       >
         <FormContainer>
-          {(() => {
-            const activeLotteryType = formLotteryType || selectedLottery?.type || initialData?.lotteryType
-            const activeContestNumber = formContestNumber || selectedLottery?.nextContestNumber || initialData?.contestNumber
-            const activeLotteryMeta = getLotteryMeta(activeLotteryType)
-
-            return (
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<CasinoIcon />}
-                  onClick={() => setLotteryModalOpen(true)}
-                  sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 600 }}
-                >
-                  {activeLotteryType ? 'Trocar Loteria da Caixa' : 'Buscar dados da Caixa Econômica'}
-                </Button>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                  {activeLotteryType && activeLotteryMeta && (
-                    <Chip
-                      label={activeLotteryMeta.name}
-                      size="small"
-                      sx={{
-                        backgroundColor: activeLotteryMeta.color,
-                        color: '#fff',
-                        fontWeight: 700
-                      }}
-                    />
-                  )}
-                  {activeContestNumber && (
-                    <Chip
-                      label={`Concurso nº ${activeContestNumber}`}
-                      size="small"
-                      variant="outlined"
-                      sx={{ fontWeight: 600 }}
-                    />
-                  )}
-                </Box>
-              </Box>
-            )
-          })()}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', mb: 0.5 }}>
+            <Button
+              size="small"
+              variant="outlined"
+              color="primary"
+              startIcon={<CasinoIcon />}
+              onClick={() => setLotteryModalOpen(true)}
+              sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 600 }}
+            >
+              Buscar dados da Caixa Econômica
+            </Button>
+          </Box>
           <DateRow>
             <Controller
               name="lotteryType"
