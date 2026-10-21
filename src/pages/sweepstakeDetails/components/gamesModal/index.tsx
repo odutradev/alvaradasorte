@@ -91,7 +91,14 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
     <Modal
       open={open}
       onClose={onClose}
-      maxWidth="md"
+      fullWidth
+      maxWidth={false}
+      paperSx={{
+        width: '95vw',
+        maxWidth: '95vw',
+        height: '95vh',
+        maxHeight: '95vh !important'
+      }}
       title={
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
           <Typography variant="h6" fontWeight={700}>
