@@ -7,7 +7,8 @@ interface DefaultConfig {
 }
 
 const production = import.meta.env.VITE_PRODUCTION == 'true'
-const baseURL = import.meta.env.VITE_BASEURL
+const rawBaseURL = import.meta.env.VITE_BASE_URL || import.meta.env.VITE_BASEURL || 'http://localhost:5000'
+const baseURL = rawBaseURL.replace(/\/+$/, '')
 
 const defaultConfig: DefaultConfig = production
   ? {

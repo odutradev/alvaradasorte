@@ -10,7 +10,8 @@ interface ImportMetaEnv {
   readonly VITE_FIREBASE_APP_ID: string
   readonly VITE_STORAGE_KEY?: string
   readonly VITE_PRODUCTION: string
-  readonly VITE_BASEURL: string
+  readonly VITE_BASEURL?: string
+  readonly VITE_BASE_URL?: string
 }
 
 interface ImportMeta {

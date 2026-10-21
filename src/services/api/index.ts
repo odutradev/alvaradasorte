@@ -5,6 +5,7 @@ import useAuthStore from '@stores/auth'
 
 import type { InternalAxiosRequestConfig, AxiosInstance } from 'axios'
 import type { SyncResponse } from '../auth/types'
+import defaultConfig from '@config/default'
 
 interface RetryConfig extends InternalAxiosRequestConfig {
   _retry?: boolean
@@ -16,7 +17,7 @@ interface QueueItem {
 }
 
 const api: AxiosInstance = axios.create({
-  baseURL: 'https://api.alvaradasorte.odutra.com',
+  baseURL: defaultConfig.baseURL,
   headers: {
     'Content-Type': 'application/json'
   }

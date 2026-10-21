@@ -24,7 +24,7 @@ const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
     if (!user) return
     await useAction({
       action: async () => await getSweepstakes(user.id),
-      callback: (data) => setSweepstakes(data),
+      callback: (data) => setSweepstakes(Array.isArray(data) ? data : []),
       silent: true
     })
   }, [user])
