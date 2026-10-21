@@ -8,6 +8,7 @@ import Box from '@mui/material/Box'
 
 import { ContainerWrapper, TableHeader, ActionsContainer } from './styles'
 import SweepstakeFormModal from './components/sweepstakeFormModal'
+import LotterySelectModal from './components/lotterySelectModal'
 import SweepstakeList from './components/sweepstakeList'
 import PageContainer from '@components/pageContainer'
 import useSweepstakesAdmin from './hook'
@@ -17,6 +18,11 @@ const Sweepstakes = () => {
     setDeletingSweepstake,
     deletingSweepstake,
     editingSweepstake,
+    selectedLottery,
+    lotteryModalOpen,
+    handleCloseLotteryModal,
+    handleSelectLottery,
+    handleCreateManual,
     handleCloseModal,
     handleCreateNew,
     loadSweepstakes,
@@ -66,8 +72,15 @@ const Sweepstakes = () => {
           onDelete={handleDelete}
         />
       </ContainerWrapper>
+      <LotterySelectModal
+        open={lotteryModalOpen}
+        onClose={handleCloseLotteryModal}
+        onSelect={handleSelectLottery}
+        onManual={handleCreateManual}
+      />
       <SweepstakeFormModal
         initialData={editingSweepstake}
+        initialLottery={selectedLottery}
         open={modalOpen}
         onClose={handleCloseModal}
         onSuccess={loadSweepstakes}

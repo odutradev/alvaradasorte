@@ -6,13 +6,16 @@ import useAction from '@hooks/useAction'
 import useAuth from '@hooks/useAuth'
 
 import type { SweepstakeResponse } from '@services/sweepstakes/types'
+import type { LotteryItemResponse } from '@services/lotteries/types'
 import type { UseSweepstakesAdminReturn } from './types'
 
 const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
   const [deletingSweepstake, setDeletingSweepstake] = useState<SweepstakeResponse | null>(null)
   const [editingSweepstake, setEditingSweepstake] = useState<SweepstakeResponse | null>(null)
+  const [selectedLottery, setSelectedLottery] = useState<LotteryItemResponse | null>(null)
   const [sweepstakes, setSweepstakes] = useState<SweepstakeResponse[]>([])
   const [modalOpen, setModalOpen] = useState(false)
+  const [lotteryModalOpen, setLotteryModalOpen] = useState(false)
 
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -32,11 +35,29 @@ const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
 
   const handleCreateNew = useCallback(() => {
     setEditingSweepstake(null)
+    setSelectedLottery(null)
+    setLotteryModalOpen(true)
+  }, [])
+
+  const handleSelectLottery = useCallback((lottery: LotteryItemResponse) => {
+    setSelectedLottery(lottery)
+    setLotteryModalOpen(false)
     setModalOpen(true)
+  }, [])
+
+  const handleCreateManual = useCallback(() => {
+    setSelectedLottery(null)
+    setLotteryModalOpen(false)
+    setModalOpen(true)
+  }, [])
+
+  const handleCloseLotteryModal = useCallback(() => {
+    setLotteryModalOpen(false)
   }, [])
 
   const handleEdit = useCallback((sweepstake: SweepstakeResponse) => {
     setEditingSweepstake(sweepstake)
+    setSelectedLottery(null)
     setModalOpen(true)
   }, [])
 
@@ -47,6 +68,7 @@ const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
   const handleCloseModal = useCallback(() => {
     setModalOpen(false)
     setEditingSweepstake(null)
+    setSelectedLottery(null)
   }, [])
 
   const confirmDelete = useCallback(async () => {
@@ -69,16 +91,21 @@ const useSweepstakesAdmin = (): UseSweepstakesAdminReturn => {
     setDeletingSweepstake,
     deletingSweepstake,
     editingSweepstake,
-    handleCloseModal,
-    handleCreateNew,
-    loadSweepstakes,
-    confirmDelete,
-    handleDelete,
-    viewDetails,
-    sweepstakes,
-    handleEdit,
+    selectedLottery,
+    lotteryModalOpen,
     modalOpen,
-    user
+    sweepstakes,
+    user,
+    handleDelete,
+    handleEdit,
+    handleCreateNew,
+    handleCloseModal,
+    handleCloseLotteryModal,
+    handleSelectLottery,
+    handleCreateManual,
+    confirmDelete,
+    loadSweepstakes,
+    viewDetails
   }
 }
 
