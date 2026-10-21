@@ -2,6 +2,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import Typography from '@mui/material/Typography'
 import { useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
+import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
@@ -21,8 +22,9 @@ import {
   ChipNumber
 } from './styles'
 import SweepstakeTimeline from '@components/sweepstakeTimeline'
+import { formatCompactCurrency, formatCurrency } from '@utils/string'
 import { QuotaProgress } from '@components/quotaProgress'
-import { formatCompactCurrency } from '@utils/string'
+import { getGamePrice } from '@utils/lotteryRules'
 import useCountUp from '@hooks/useCountUp'
 import useAuth from '@hooks/useAuth'
 
@@ -117,23 +119,33 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
 
         {games.length > 0 && (
           <GamesFlowContainer>
-            {games.map((game, idx) => (
-              <GameChip key={idx}>
-                <Typography
-                  component="span"
-                  sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary', mr: 0.25 }}
+            {games.map((game, idx) => {
+              const gamePrice = getGamePrice(data.lotteryType, game.length)
+              return (
+                <Tooltip
+                  key={idx}
+                  title={`Jogo de ${game.length} dezenas • Valor: ${formatCurrency(gamePrice)}`}
+                  arrow
+                  placement="top"
                 >
-                  #{idx + 1}
-                </Typography>
-                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.6 }}>
-                  {game.map((num, nIdx) => (
-                    <ChipNumber key={nIdx} matched={resultSet.has(num)}>
-                      {num < 10 ? `0${num}` : num}
-                    </ChipNumber>
-                  ))}
-                </Box>
-              </GameChip>
-            ))}
+                  <GameChip sx={{ cursor: 'pointer' }}>
+                    <Typography
+                      component="span"
+                      sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary', mr: 0.25 }}
+                    >
+                      #{idx + 1}
+                    </Typography>
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.6 }}>
+                      {game.map((num, nIdx) => (
+                        <ChipNumber key={nIdx} matched={resultSet.has(num)}>
+                          {num < 10 ? `0${num}` : num}
+                        </ChipNumber>
+                      ))}
+                    </Box>
+                  </GameChip>
+                </Tooltip>
+              )
+            })}
           </GamesFlowContainer>
         )}
       </CardBody>
