@@ -20,7 +20,7 @@ import type { LotteryItemResponse } from '@services/lotteries/types'
 const DEFAULT_VALUES: SweepstakeFormData = {
   title: '',
   description: '',
-  quotaPrice: 10,
+  quotaPrice: 30,
   prizeValue: '',
   availableQuotas: 100,
   drawDate: '',
@@ -33,13 +33,13 @@ const buildValuesFromLottery = (lottery: LotteryItemResponse, currentPresetId = 
   const prizeFormatted = formatCurrency(prize)
   const drawDateFormatted = lottery.drawDate ? dayjs(lottery.drawDate).format('YYYY-MM-DDTHH:mm') : ''
   const limitDateFormatted = lottery.drawDate
-    ? dayjs(lottery.drawDate).subtract(1, 'hour').format('YYYY-MM-DDTHH:mm')
+    ? dayjs(lottery.drawDate).subtract(24, 'hour').format('YYYY-MM-DDTHH:mm')
     : ''
 
   return {
     title: `${lottery.name} - Concurso ${lottery.nextContestNumber}`,
     description: `Bolão oficial da ${lottery.name}, Concurso ${lottery.nextContestNumber}. Prêmio estimado de ${prizeFormatted}${lottery.isAccumulated ? ' (Acumulado!)' : ''}.`,
-    quotaPrice: 10,
+    quotaPrice: 30,
     prizeValue: prize ? String(prize) : '',
     availableQuotas: 100,
     drawDate: drawDateFormatted,
@@ -66,14 +66,20 @@ const SweepstakeFormModal = ({
   const loadPresets = useCallback(async () => {
     await useAction({
       action: async () => await getPresets(),
-      callback: (data) => setPresets(data),
+      callback: (data) => {
+        setPresets(data)
+        if (!initialData && data.length > 0 && !getValues('presetId')) {
+          setValue('presetId', data[0].id)
+        }
+      },
       silent: true
     })
-  }, [])
+  }, [initialData, getValues, setValue])
 
   useEffect(() => {
     if (open) {
       loadPresets()
+      const defaultPresetId = presets[0]?.id || ''
       if (initialData) {
         setSelectedLottery(null)
         reset({
@@ -88,13 +94,16 @@ const SweepstakeFormModal = ({
         })
       } else if (initialLottery) {
         setSelectedLottery(initialLottery)
-        reset(buildValuesFromLottery(initialLottery))
+        reset(buildValuesFromLottery(initialLottery, defaultPresetId))
       } else {
         setSelectedLottery(null)
-        reset(DEFAULT_VALUES)
+        reset({
+          ...DEFAULT_VALUES,
+          presetId: defaultPresetId
+        })
       }
     }
-  }, [open, initialData, initialLottery, loadPresets, reset])
+  }, [open, initialData, initialLottery, presets, loadPresets, reset])
 
   const handleApplyLottery = (lottery: LotteryItemResponse) => {
     setSelectedLottery(lottery)
