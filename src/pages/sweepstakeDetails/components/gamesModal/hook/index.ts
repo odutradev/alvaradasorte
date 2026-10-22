@@ -200,50 +200,6 @@ const useGamesModal = (
     setActiveGameId(newGame.id)
   }, [])
 
-  // Gera surpresinha para o jogo ativo
-  const generateSurpresinhaForActive = useCallback(() => {
-    if (!activeGameId) return
-    setQueuedGames((prev) => {
-      const gameIndex = prev.findIndex((g) => g.id === activeGameId)
-      if (gameIndex === -1) return prev
-      const target = prev[gameIndex]
-      const random = generateRandomGame(lotteryType, target.targetCount)
-      const newQueue = [...prev]
-      newQueue[gameIndex] = { ...target, numbers: random }
-      return newQueue
-    })
-  }, [activeGameId, lotteryType])
-
-  // Gera surpresinha para um jogo específico
-  const generateSurpresinhaForGame = useCallback(
-    (gameId: string) => {
-      setQueuedGames((prev) => {
-        const gameIndex = prev.findIndex((g) => g.id === gameId)
-        if (gameIndex === -1) return prev
-        const target = prev[gameIndex]
-        const random = generateRandomGame(lotteryType, target.targetCount)
-        const newQueue = [...prev]
-        newQueue[gameIndex] = { ...target, numbers: random }
-        return newQueue
-      })
-    },
-    [lotteryType]
-  )
-
-  // Preenche todos os jogos pendentes da fila com surpresinha
-  const fillAllPendingWithSurpresinha = useCallback(() => {
-    setQueuedGames((prev) =>
-      prev.map((game) => {
-        if (game.numbers.length === game.targetCount) return game
-        return {
-          ...game,
-          numbers: generateRandomGame(lotteryType, game.targetCount)
-        }
-      })
-    )
-    toast.success('Todos os jogos pendentes foram preenchidos com surpresinha!')
-  }, [lotteryType])
-
   const fillRemainingWithRandom = useCallback(
     (currentNumbers: number[], targetCount: number, maxNumber: number): number[] => {
       const selected = new Set<number>(currentNumbers)
@@ -257,6 +213,63 @@ const useGamesModal = (
     },
     []
   )
+
+  // Gera surpresinha para o jogo ativo (ou completa vagas restantes mantendo os indicados/atuais)
+  const generateSurpresinhaForActive = useCallback(() => {
+    if (!activeGameId) return
+    setQueuedGames((prev) => {
+      const gameIndex = prev.findIndex((g) => g.id === activeGameId)
+      if (gameIndex === -1) return prev
+      const target = prev[gameIndex]
+      const current = target.numbers
+      const finalNumbers =
+        current.length > 0 && current.length < target.targetCount
+          ? fillRemainingWithRandom(current, target.targetCount, rule.totalNumbers)
+          : generateRandomGame(lotteryType, target.targetCount)
+      const newQueue = [...prev]
+      newQueue[gameIndex] = { ...target, numbers: finalNumbers }
+      return newQueue
+    })
+  }, [activeGameId, lotteryType, fillRemainingWithRandom, rule.totalNumbers])
+
+  // Gera surpresinha para um jogo específico (ou completa vagas restantes)
+  const generateSurpresinhaForGame = useCallback(
+    (gameId: string) => {
+      setQueuedGames((prev) => {
+        const gameIndex = prev.findIndex((g) => g.id === gameId)
+        if (gameIndex === -1) return prev
+        const target = prev[gameIndex]
+        const current = target.numbers
+        const finalNumbers =
+          current.length > 0 && current.length < target.targetCount
+            ? fillRemainingWithRandom(current, target.targetCount, rule.totalNumbers)
+            : generateRandomGame(lotteryType, target.targetCount)
+        const newQueue = [...prev]
+        newQueue[gameIndex] = { ...target, numbers: finalNumbers }
+        return newQueue
+      })
+    },
+    [lotteryType, fillRemainingWithRandom, rule.totalNumbers]
+  )
+
+  // Preenche todos os jogos pendentes da fila completando com surpresinha
+  const fillAllPendingWithSurpresinha = useCallback(() => {
+    setQueuedGames((prev) =>
+      prev.map((game) => {
+        if (game.numbers.length === game.targetCount) return game
+        const current = game.numbers
+        const finalNumbers =
+          current.length > 0 && current.length < game.targetCount
+            ? fillRemainingWithRandom(current, game.targetCount, rule.totalNumbers)
+            : generateRandomGame(lotteryType, game.targetCount)
+        return {
+          ...game,
+          numbers: finalNumbers
+        }
+      })
+    )
+    toast.success('Todos os jogos pendentes foram completados com surpresinha!')
+  }, [lotteryType, fillRemainingWithRandom, rule.totalNumbers])
 
   // Preenche um jogo individual com os números indicados
   const fillGameWithSuggested = useCallback(
@@ -282,14 +295,14 @@ const useGamesModal = (
 
       const candidates = unusedSuggested.length > 0 ? unusedSuggested : fallbackSuggested
 
+      if (candidates.length === 0) {
+        toast.info('Não há números indicados disponíveis para este jogo. Use a surpresinha para preencher.')
+        return
+      }
+
       const neededSlots = target.targetCount - target.numbers.length
       const toAdd = candidates.slice(0, neededSlots)
-      const combined = [...target.numbers, ...toAdd]
-
-      const finalNumbers =
-        combined.length < target.targetCount
-          ? fillRemainingWithRandom(combined, target.targetCount, rule.totalNumbers)
-          : combined.sort((a, b) => a - b)
+      const finalNumbers = [...target.numbers, ...toAdd].sort((a, b) => a - b)
 
       setQueuedGames((prev) => {
         const next = [...prev]
@@ -297,13 +310,15 @@ const useGamesModal = (
         return next
       })
 
-      toast.success(
-        toAdd.length > 0
-          ? `Jogo preenchido com ${toAdd.length} dezena(s) indicada(s)!`
-          : 'Jogo completado com surpresinha!'
-      )
+      if (finalNumbers.length < target.targetCount) {
+        toast.success(
+          `Adicionada(s) ${toAdd.length} dezena(s) indicada(s)! Faltam ${target.targetCount - finalNumbers.length} dezena(s) — clique na surpresinha para terminar de preencher.`
+        )
+      } else {
+        toast.success(`Jogo preenchido com ${toAdd.length} dezena(s) indicada(s)!`)
+      }
     },
-    [queuedGames, suggestedNumbersList, fillRemainingWithRandom, rule.totalNumbers]
+    [queuedGames, suggestedNumbersList]
   )
 
   // Preenche o jogo ativo com números indicados
@@ -315,7 +330,7 @@ const useGamesModal = (
     fillGameWithSuggested(activeGameId)
   }, [activeGameId, fillGameWithSuggested])
 
-  // Preenche todos os jogos pendentes com números indicados
+  // Preenche todos os jogos pendentes apenas com números indicados
   const fillAllPendingWithSuggested = useCallback(() => {
     const hasPending = queuedGames.some((g) => g.numbers.length < g.targetCount)
     if (!hasPending) {
@@ -324,10 +339,17 @@ const useGamesModal = (
     }
 
     let availablePool = suggestedNumbersList.filter((s) => !s.isUsed).map((s) => s.number)
+
+    if (availablePool.length === 0) {
+      toast.info('Não há números indicados livres disponíveis. Use a surpresinha para preencher.')
+      return
+    }
+
     let usedCountTotal = 0
 
     const updated = queuedGames.map((game) => {
       if (game.numbers.length >= game.targetCount) return game
+      if (availablePool.length === 0) return game
 
       const current = [...game.numbers]
       const needed = game.targetCount - current.length
@@ -345,11 +367,7 @@ const useGamesModal = (
         usedCountTotal += fromPool.length
       }
 
-      const combined = [...current, ...fromPool]
-      const finalNumbers =
-        combined.length < game.targetCount
-          ? fillRemainingWithRandom(combined, game.targetCount, rule.totalNumbers)
-          : combined.sort((a, b) => a - b)
+      const finalNumbers = [...current, ...fromPool].sort((a, b) => a - b)
 
       return {
         ...game,
@@ -358,12 +376,24 @@ const useGamesModal = (
     })
 
     setQueuedGames(updated)
-    toast.success(
-      usedCountTotal > 0
-        ? `Jogos pendentes preenchidos com ${usedCountTotal} dezena(s) indicada(s)!`
-        : 'Jogos pendentes completados com surpresinha!'
+
+    const remainingEmptySlots = updated.reduce(
+      (acc, g) => acc + (g.targetCount - g.numbers.length),
+      0
     )
-  }, [queuedGames, suggestedNumbersList, fillRemainingWithRandom, rule.totalNumbers])
+
+    if (usedCountTotal > 0) {
+      if (remainingEmptySlots > 0) {
+        toast.success(
+          `${usedCountTotal} dezena(s) indicada(s) distribuída(s)! Use a surpresinha nos jogos com vagas para terminar de preencher.`
+        )
+      } else {
+        toast.success(`Jogos pendentes preenchidos com ${usedCountTotal} dezena(s) indicada(s)!`)
+      }
+    } else {
+      toast.info('Nenhuma dezena indicada pôde ser adicionada.')
+    }
+  }, [queuedGames, suggestedNumbersList])
 
   // Limpa o jogo ativo
   const clearActiveGame = useCallback(() => {

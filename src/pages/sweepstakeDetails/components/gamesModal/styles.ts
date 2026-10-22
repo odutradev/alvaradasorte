@@ -101,10 +101,10 @@ export const GamesListContainer = styled(Box)(({ theme }) => ({
 }))
 
 export const NumberBall = styled(Button, {
-  shouldForwardProp: (prop) => prop !== 'selected' && prop !== 'badgeColor'
-})<{ selected?: boolean; badgeColor?: string }>(({ theme, selected, badgeColor }) => {
+  shouldForwardProp: (prop) => prop !== 'selected' && prop !== 'badgeColor' && prop !== 'isSuggested'
+})<{ selected?: boolean; badgeColor?: string; isSuggested?: boolean }>(({ theme, selected, badgeColor, isSuggested }) => {
   const isDark = theme.palette.mode === 'dark'
-  const highlightColor = badgeColor || theme.palette.primary.main
+  const highlightColor = isSuggested ? '#0284c7' : (badgeColor || theme.palette.primary.main)
 
   if (selected) {
     return {
@@ -117,7 +117,7 @@ export const NumberBall = styled(Button, {
       fontSize: '0.875rem',
       backgroundColor: highlightColor,
       color: '#ffffff',
-      border: '2px solid #ffffff',
+      border: isSuggested ? '2px solid #38bdf8' : '2px solid #ffffff',
       boxShadow: `0 2px 10px ${alpha(highlightColor, 0.7)}`,
       transition: 'all 0.15s ease-in-out',
       '&:hover': {
@@ -125,6 +125,30 @@ export const NumberBall = styled(Button, {
         filter: 'brightness(1.25)',
         transform: 'scale(1.15)',
         boxShadow: `0 4px 14px ${alpha(highlightColor, 0.9)}`,
+        zIndex: 2
+      }
+    }
+  }
+
+  if (isSuggested) {
+    return {
+      minWidth: 38,
+      width: 38,
+      height: 38,
+      padding: 0,
+      borderRadius: '50%',
+      fontWeight: 800,
+      fontSize: '0.85rem',
+      backgroundColor: isDark ? alpha('#0284c7', 0.22) : alpha('#0284c7', 0.12),
+      color: isDark ? '#38bdf8' : '#0284c7',
+      border: `2px solid #0284c7`,
+      boxShadow: `0 1px 4px ${alpha('#0284c7', 0.35)}`,
+      transition: 'all 0.15s ease-in-out',
+      '&:hover': {
+        backgroundColor: '#0284c7',
+        color: '#ffffff',
+        transform: 'scale(1.15)',
+        boxShadow: `0 4px 12px ${alpha('#0284c7', 0.6)}`,
         zIndex: 2
       }
     }
@@ -224,8 +248,8 @@ export const QueueItemRow = styled(Box, {
 })
 
 export const SlotBall = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'filled' && prop !== 'matched'
-})<{ filled?: boolean; matched?: boolean }>(({ theme, filled, matched }) => {
+  shouldForwardProp: (prop) => prop !== 'filled' && prop !== 'matched' && prop !== 'isSuggested'
+})<{ filled?: boolean; matched?: boolean; isSuggested?: boolean }>(({ theme, filled, matched, isSuggested }) => {
   const isDark = theme.palette.mode === 'dark'
 
   if (matched) {
@@ -242,6 +266,23 @@ export const SlotBall = styled(Box, {
       fontWeight: 800,
       fontSize: '0.75rem',
       boxShadow: '0 0 8px rgba(74, 222, 128, 0.4)'
+    }
+  }
+
+  if (isSuggested) {
+    return {
+      backgroundColor: '#0284c7',
+      color: '#ffffff',
+      border: '1.5px solid #38bdf8',
+      borderRadius: '50%',
+      width: 28,
+      height: 28,
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: 800,
+      fontSize: '0.75rem',
+      boxShadow: '0 0 8px rgba(56, 189, 248, 0.45)'
     }
   }
 
@@ -384,7 +425,7 @@ export const SuggestedBallButton = styled(Button, {
   shouldForwardProp: (prop) => prop !== 'isUsed' && prop !== 'badgeColor'
 })<{ isUsed?: boolean; badgeColor?: string }>(({ theme, isUsed, badgeColor }) => {
   const isDark = theme.palette.mode === 'dark'
-  const highlightColor = badgeColor || theme.palette.primary.main
+  const highlightColor = badgeColor || '#0284c7'
 
   if (isUsed) {
     return {
@@ -395,13 +436,13 @@ export const SuggestedBallButton = styled(Button, {
       borderRadius: '50%',
       fontWeight: 700,
       fontSize: '0.8rem',
-      backgroundColor: isDark ? 'rgba(34, 197, 94, 0.18)' : '#dcfce7',
-      color: isDark ? '#4ade80' : '#15803d',
-      border: `2px solid ${isDark ? '#22c55e' : '#16a34a'}`,
+      backgroundColor: isDark ? 'rgba(2, 132, 199, 0.2)' : '#e0f2fe',
+      color: isDark ? '#38bdf8' : '#0369a1',
+      border: `2px solid ${isDark ? '#0284c7' : '#0ea5e9'}`,
       position: 'relative',
       transition: 'all 0.15s ease',
       '&:hover': {
-        backgroundColor: isDark ? 'rgba(34, 197, 94, 0.3)' : '#bbf7d0',
+        backgroundColor: isDark ? 'rgba(2, 132, 199, 0.35)' : '#bae6fd',
         transform: 'scale(1.1)',
         zIndex: 2
       }

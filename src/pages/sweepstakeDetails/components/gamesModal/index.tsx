@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
@@ -98,6 +98,10 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
   const lotteryColor = lotteryMeta?.color || '#209869'
   const availableNumbers = Array.from({ length: rule.totalNumbers }, (_, i) => i + 1)
   const selectableTargetCounts = Object.keys(rule.prices).map(Number).sort((a, b) => a - b)
+  const suggestedNumbersSet = useMemo(
+    () => new Set(suggestedNumbersList.map((s) => s.number)),
+    [suggestedNumbersList]
+  )
 
   const activeIndex = queuedGames.findIndex((g) => g.id === activeGameId)
   const completedGamesCount = queuedGames.filter((g) => g.numbers.length === g.targetCount).length
@@ -367,7 +371,7 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                         >
                           <SuggestedBallButton
                             isUsed={item.isUsed}
-                            badgeColor={lotteryColor}
+                            badgeColor="#0284c7"
                             onClick={() => toggleNumber(item.number)}
                             sx={{
                               ...(isInActiveGame && {
@@ -487,10 +491,12 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                 <NumberGrid sx={{ maxHeight: 200, p: 1, gap: 0.5 }}>
                   {availableNumbers.map((num) => {
                     const isSelected = activeGame?.numbers.includes(num)
+                    const isSuggested = suggestedNumbersSet.has(num)
                     return (
                       <NumberBall
                         key={num}
                         selected={isSelected}
+                        isSuggested={isSuggested}
                         badgeColor={lotteryColor}
                         onClick={() => toggleNumber(num)}
                         sx={{ minWidth: 32, width: 32, height: 32, fontSize: '0.75rem' }}
@@ -716,11 +722,13 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                         <NumbersContainer sx={{ gap: 0.5 }}>
                           {slots.map((slot, sIdx) => {
                             const isMatched = slot.filled && sweepstake.result?.includes(slot.number)
+                            const isSuggested = slot.filled && suggestedNumbersSet.has(slot.number)
                             return (
                               <SlotBall
                                 key={sIdx}
                                 filled={slot.filled}
                                 matched={isMatched}
+                                isSuggested={isSuggested}
                               >
                                 {slot.filled ? (slot.number < 10 ? `0${slot.number}` : slot.number) : '—'}
                               </SlotBall>
