@@ -7,7 +7,7 @@ import useAction from '@hooks/useAction'
 import type { UseParticipantsTableProps } from './types'
 import type { ExtendedParticipation } from '../types'
 
-const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UseParticipantsTableProps) => {
+const useParticipantsTable = ({ participations = [], sweepstakeId, onUpdate }: UseParticipantsTableProps) => {
   const [editingParticipation, setEditingParticipation] = useState<ExtendedParticipation | null>(null)
   const [deletingParticipation, setDeletingParticipation] = useState<ExtendedParticipation | null>(null)
   const [selectedReceipt, setSelectedReceipt] = useState<string | null>(null)
@@ -20,7 +20,9 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
   const [copiedList, setCopiedList] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
-  const sortedParticipations = [...participations].sort((a, b) =>
+  const safeParticipations = participations || []
+
+  const sortedParticipations = [...safeParticipations].sort((a, b) =>
     a.userName.localeCompare(b.userName)
   )
 
@@ -107,7 +109,7 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
 
   const handleSendAllPendingEmails = async () => {
     if (!sweepstakeId) return
-    const pending = participations.filter((p) => !p.resultEmailSent)
+    const pending = safeParticipations.filter((p) => !p.resultEmailSent)
     if (pending.length === 0) return
 
     const seenUserKeys = new Set<string>()

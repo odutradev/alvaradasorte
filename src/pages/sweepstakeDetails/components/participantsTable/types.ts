@@ -6,7 +6,7 @@ export interface ExtendedParticipation extends ParticipationResponse {
 }
 
 export interface ParticipantsTableProps {
-  participations: ExtendedParticipation[]
+  participations?: ExtendedParticipation[]
   sweepstakeId?: string
   hasResult?: boolean
   onUpdate?: () => void

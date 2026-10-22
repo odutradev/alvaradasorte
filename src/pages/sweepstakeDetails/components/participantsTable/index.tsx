@@ -34,7 +34,7 @@ import useParticipantsTable from './hook'
 
 import type { ExtendedParticipation, ParticipantsTableProps } from './types'
 
-const ParticipantsTable = ({ participations, sweepstakeId, hasResult, onUpdate }: ParticipantsTableProps) => {
+const ParticipantsTable = ({ participations = [], sweepstakeId, hasResult, onUpdate }: ParticipantsTableProps) => {
   const {
     editingParticipation,
     deletingParticipation,
@@ -62,8 +62,9 @@ const ParticipantsTable = ({ participations, sweepstakeId, hasResult, onUpdate }
     handleSendAllPendingEmails
   } = useParticipantsTable({ participations, sweepstakeId, onUpdate })
 
+  const safeParticipations = participations || []
   const pendingUserKeys = new Set(
-    participations.filter((p) => !p.resultEmailSent).map((p) => p.userId || p.userName)
+    safeParticipations.filter((p) => !p.resultEmailSent).map((p) => p.userId || p.userName)
   )
   const pendingEmailsCount = pendingUserKeys.size
 
