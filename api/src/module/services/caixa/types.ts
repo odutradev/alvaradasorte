@@ -36,4 +36,17 @@ export interface CaixaUserContext {
 export interface FetchLotteryOptions {
   forceRefresh?: boolean
   userContext?: CaixaUserContext
+  preferredProvider?: LotteryProviderName
+}
+
+export type LotteryProviderName = 'loteriascaixa' | 'caixa' | 'guidi'
+
+export interface ParsedLotteryData {
+  contestNumber: number
+  nextContestNumber: number
+  drawDate: string | null
+  estimatedPrize: number
+  accumulatedPrize: number
+  isAccumulated: boolean
+  lastDrawnNumbers?: string[]
 }

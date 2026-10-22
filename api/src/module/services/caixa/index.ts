@@ -1,9 +1,22 @@
 import createLogger from '@core/utils/logger'
 import logRepository from '@module/repositories/log'
-import { createCaixaClient } from './client'
-import type { CaixaLotteryRawResponse, LotteryModalityInfo, FetchLotteryOptions, CaixaUserContext } from './types'
+import {
+  fetchFromLoteriasCaixaApi,
+  fetchFromCaixaOfficial,
+  fetchFromGuidiApi,
+  parseDateToIso
+} from './providers'
+import type {
+  LotteryModalityInfo,
+  FetchLotteryOptions,
+  CaixaUserContext,
+  LotteryProviderName,
+  ParsedLotteryData
+} from './types'
 
-const logger = createLogger('caixa')
+export { parseDateToIso }
+
+const logger = createLogger('lottery-service')
 
 export const SUPPORTED_LOTTERIES = [
   { type: 'megasena', name: 'Mega-Sena', color: '#209869' },
@@ -17,7 +30,6 @@ export const SUPPORTED_LOTTERIES = [
   { type: 'federal', name: 'Federal', color: '#144673' }
 ] as const
 
-const CAIXA_BASE_URL = 'https://servicebus2.caixa.gov.br/portaldeloterias/api'
 const CACHE_TTL_MS = 5 * 60 * 1000
 
 interface CacheEntry {
@@ -27,12 +39,28 @@ interface CacheEntry {
 
 const memoryCache = new Map<string, CacheEntry>()
 
-const parseCaixaDateToIso = (dateStr?: string): string | null => {
-  if (!dateStr) return null
-  const parts = dateStr.split('/')
-  if (parts.length !== 3) return null
-  const [day, month, year] = parts
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T20:00:00.000Z`
+const getProviderOrder = (preferred?: LotteryProviderName): LotteryProviderName[] => {
+  const envProvider = (process.env.LOTTERY_API_PROVIDER?.toLowerCase().trim() as LotteryProviderName) || undefined
+  const primary = preferred || envProvider || 'loteriascaixa'
+  const fallbackOrder: LotteryProviderName[] = ['loteriascaixa', 'caixa', 'guidi']
+  return [primary, ...fallbackOrder.filter((p) => p !== primary)]
+}
+
+const fetchFromProvider = async (
+  provider: LotteryProviderName,
+  type: string,
+  contestNumber?: number
+): Promise<ParsedLotteryData> => {
+  switch (provider) {
+    case 'loteriascaixa':
+      return await fetchFromLoteriasCaixaApi(type, contestNumber)
+    case 'caixa':
+      return await fetchFromCaixaOfficial(type, contestNumber)
+    case 'guidi':
+      return await fetchFromGuidiApi(type, contestNumber)
+    default:
+      return await fetchFromLoteriasCaixaApi(type, contestNumber)
+  }
 }
 
 export const fetchLotteryFromCaixa = async (
@@ -51,83 +79,91 @@ export const fetchLotteryFromCaixa = async (
     return cached.data
   }
 
-  const url = contestNumber
-    ? `${CAIXA_BASE_URL}/${normalizedType}/${contestNumber}`
-    : `${CAIXA_BASE_URL}/${normalizedType}`
+  const providers = getProviderOrder(options?.preferredProvider)
+  let lastError: any = null
+  const providerErrors: Record<string, string> = {}
 
-  try {
-    const client = createCaixaClient()
-    const response = await client.get<CaixaLotteryRawResponse>(url)
+  for (const provider of providers) {
+    try {
+      const data = await fetchFromProvider(provider, normalizedType, contestNumber)
 
-    const raw = response.data
-    const drawDateIso = parseCaixaDateToIso(raw.dataProximoConcurso || raw.dataApuracao)
-
-    const result: LotteryModalityInfo = {
-      type: normalizedType,
-      name,
-      color,
-      contestNumber: raw.numero,
-      nextContestNumber: raw.numeroConcursoProximo || raw.numero + 1,
-      drawDate: drawDateIso,
-      estimatedPrize: raw.valorEstimadoProximoConcurso ?? 0,
-      accumulatedPrize: raw.valorAcumuladoProximoConcurso ?? 0,
-      isAccumulated: Boolean(raw.acumulado),
-      lastDrawnNumbers: raw.listaDezenas || raw.dezenasSorteadasOrdemSorteio || []
-    }
-
-    memoryCache.set(cacheKey, {
-      timestamp: Date.now(),
-      data: result
-    })
-
-    return result
-  } catch (error) {
-    const err = error as any
-    const errorCode = err?.code
-    const httpStatus = err?.response?.status
-    const httpStatusText = err?.response?.statusText
-    const isTimeout = errorCode === 'ETIMEDOUT' || errorCode === 'ECONNABORTED'
-    const errorMessage = isTimeout
-      ? 'Tempo limite de conexão esgotado ao contatar o portal da Caixa Econômica Federal'
-      : err?.message || 'Erro de comunicação com a API da Caixa'
-
-    logger.error(
-      `[caixa] Falha ao consultar loteria "${name}" (${normalizedType}${contestNumber ? ` #${contestNumber}` : ''}): ${errorMessage}`,
-      { url, errorCode, httpStatus }
-    )
-
-    await logRepository.create({
-      category: options?.userContext?.id ? 'user' : 'system',
-      level: 'error',
-      action: 'CAIXA_API_ERROR',
-      title: `Erro na consulta da Caixa (${name})`,
-      description: `Falha na requisição para ${normalizedType}${contestNumber ? ` #${contestNumber}` : ''}: ${errorMessage}`,
-      userId: options?.userContext?.id,
-      userName: options?.userContext?.name,
-      userEmail: options?.userContext?.email,
-      targetId: normalizedType,
-      targetName: name,
-      errorMessage,
-      errorStack: err?.stack,
-      details: {
-        url,
-        lotteryType: normalizedType,
-        contestNumber: contestNumber ?? null,
-        httpStatus: httpStatus ?? null,
-        httpStatusText: httpStatusText ?? null,
-        errorCode: errorCode ?? null,
-        isTimeout,
-        cachedFallbackReturned: Boolean(cached)
+      const result: LotteryModalityInfo = {
+        type: normalizedType,
+        name,
+        color,
+        contestNumber: data.contestNumber,
+        nextContestNumber: data.nextContestNumber,
+        drawDate: data.drawDate,
+        estimatedPrize: data.estimatedPrize,
+        accumulatedPrize: data.accumulatedPrize,
+        isAccumulated: data.isAccumulated,
+        lastDrawnNumbers: data.lastDrawnNumbers
       }
-    })
 
-    if (cached) {
-      logger.warn(`[caixa] Retornando dados em cache expirados para "${normalizedType}" devido à falha na Caixa.`)
-      return cached.data
+      memoryCache.set(cacheKey, {
+        timestamp: Date.now(),
+        data: result
+      })
+
+      if (Object.keys(providerErrors).length > 0) {
+        logger.info(
+          `[lottery] Sucesso ao consultar loteria "${name}" via provedor fallback "${provider}" após falhas em: ${Object.keys(providerErrors).join(', ')}`
+        )
+      }
+
+      return result
+    } catch (err: any) {
+      lastError = err
+      const msg = err?.message || 'Falha na requisição'
+      providerErrors[provider] = msg
+      logger.warn(
+        `[lottery] Provedor "${provider}" falhou para "${name}" (${normalizedType}${contestNumber ? ` #${contestNumber}` : ''}): ${msg}`
+      )
     }
-
-    throw error
   }
+
+  const errorCode = lastError?.code
+  const httpStatus = lastError?.response?.status
+  const isTimeout = errorCode === 'ETIMEDOUT' || errorCode === 'ECONNABORTED'
+  const errorMessage = isTimeout
+    ? 'Tempo limite de conexão esgotado ao contatar provedores de loterias'
+    : lastError?.message || 'Erro de comunicação com todos os provedores de loterias'
+
+  logger.error(
+    `[lottery] Falha ao consultar loteria "${name}" (${normalizedType}${contestNumber ? ` #${contestNumber}` : ''}) em todos os provedores`,
+    { providerErrors }
+  )
+
+  await logRepository.create({
+    category: options?.userContext?.id ? 'user' : 'system',
+    level: 'error',
+    action: 'CAIXA_API_ERROR',
+    title: `Erro na consulta da Loteria (${name})`,
+    description: `Falha em todos os provedores para ${normalizedType}${contestNumber ? ` #${contestNumber}` : ''}: ${errorMessage}`,
+    userId: options?.userContext?.id,
+    userName: options?.userContext?.name,
+    userEmail: options?.userContext?.email,
+    targetId: normalizedType,
+    targetName: name,
+    errorMessage,
+    errorStack: lastError?.stack,
+    details: {
+      lotteryType: normalizedType,
+      contestNumber: contestNumber ?? null,
+      httpStatus: httpStatus ?? null,
+      errorCode: errorCode ?? null,
+      isTimeout,
+      providerErrors,
+      cachedFallbackReturned: Boolean(cached)
+    }
+  })
+
+  if (cached) {
+    logger.warn(`[lottery] Retornando dados em cache expirados para "${normalizedType}" devido à falha geral.`)
+    return cached.data
+  }
+
+  throw lastError
 }
 
 export const fetchAllLotteries = async (options?: { userContext?: CaixaUserContext }): Promise<LotteryModalityInfo[]> => {
@@ -160,15 +196,15 @@ export const fetchAllLotteries = async (options?: { userContext?: CaixaUserConte
 
   if (failedCount > 0) {
     logger.warn(
-      `[caixa] ${failedCount}/${SUPPORTED_LOTTERIES.length} modalidades falharam na consulta em lote da Caixa: ${failedLotteries.join(', ')}`
+      `[lottery] ${failedCount}/${SUPPORTED_LOTTERIES.length} modalidades falharam na consulta em lote: ${failedLotteries.join(', ')}`
     )
 
     await logRepository.create({
       category: options?.userContext?.id ? 'user' : 'system',
       level: failedCount === SUPPORTED_LOTTERIES.length ? 'error' : 'warn',
       action: 'CAIXA_BATCH_FETCH_FAILED',
-      title: 'Falha na consulta de loterias da Caixa em lote',
-      description: `${failedCount} de ${SUPPORTED_LOTTERIES.length} loterias não puderam ser carregadas da Caixa: ${failedLotteries.join(', ')}`,
+      title: 'Falha na consulta de loterias em lote',
+      description: `${failedCount} de ${SUPPORTED_LOTTERIES.length} loterias não puderam ser carregadas: ${failedLotteries.join(', ')}`,
       userId: options?.userContext?.id,
       userName: options?.userContext?.name,
       userEmail: options?.userContext?.email,
@@ -182,4 +218,3 @@ export const fetchAllLotteries = async (options?: { userContext?: CaixaUserConte
 
   return results
 }
-

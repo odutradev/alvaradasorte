@@ -11,6 +11,11 @@ export const resolveProxyConfig = (): AxiosProxyConfig | false => {
     return cachedProxyConfig
   }
 
+  if (process.env.LOTTERY_DISABLE_PROXY === 'true') {
+    cachedProxyConfig = false
+    return false
+  }
+
   const rawEnvProxy =
     process.env.CAIXA_PROXY ||
     process.env.HTTPS_PROXY ||
@@ -71,12 +76,12 @@ export const resolveProxyConfig = (): AxiosProxyConfig | false => {
   }
 }
 
-export const createCaixaClient = (): AxiosInstance => {
+export const createLotteryClient = (timeoutMs: number = 6000): AxiosInstance => {
   const proxy = resolveProxyConfig()
 
   return axios.create({
     proxy: proxy || undefined,
-    timeout: 12000,
+    timeout: timeoutMs,
     headers: {
       'User-Agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -84,3 +89,6 @@ export const createCaixaClient = (): AxiosInstance => {
     }
   })
 }
+
+export const createCaixaClient = createLotteryClient
+
