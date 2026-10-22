@@ -90,6 +90,7 @@ export interface ParticipationResponse {
   userId: string
   id: string
   quotaCount?: number
+  suggestedNumbers?: number[]
   userPhotoUrl?: string
 }
 
@@ -98,6 +99,7 @@ export interface UpdateParticipationRequest {
   userName?: string
   userDepartment?: string
   userPhone?: string
+  suggestedNumbers?: number[]
 }
 
 export interface SweepstakeDetailsResponse extends SweepstakeResponse {
@@ -107,9 +109,11 @@ export interface SweepstakeDetailsResponse extends SweepstakeResponse {
 export interface JoinSweepstakeRequest {
   receipt: File
   quotaCount?: number
+  suggestedNumbers?: number[]
 }
 
 export interface AddManualParticipationRequest {
   email: string
   quotaCount?: number
+  suggestedNumbers?: number[]
 }

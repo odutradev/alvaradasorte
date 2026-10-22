@@ -32,6 +32,9 @@ export const joinSweepstake = async (id: string, payload: JoinSweepstakeRequest)
   const formData = new FormData()
   formData.append('receipt', payload.receipt)
   if (payload.quotaCount) formData.append('quotaCount', String(payload.quotaCount))
+  if (payload.suggestedNumbers && payload.suggestedNumbers.length > 0) {
+    formData.append('suggestedNumbers', JSON.stringify(payload.suggestedNumbers))
+  }
   await api.post(`/iam/v1/sweepstakes/${id}/join`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
