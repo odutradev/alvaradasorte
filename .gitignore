@@ -28,6 +28,7 @@ coverage/
 # Environment files and API keys
 .env
 .env.*
+!.env.example
 *.local
 api/.env
 ui/.env
