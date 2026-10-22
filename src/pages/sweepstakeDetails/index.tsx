@@ -30,6 +30,7 @@ const SweepstakeDetailsPage = () => {
           <ParticipantsTable
             participations={details.participations}
             sweepstakeId={details.id}
+            hasResult={Boolean(details.result && details.result.length > 0)}
             onUpdate={fetchDetails}
           />
         </GridContainer>

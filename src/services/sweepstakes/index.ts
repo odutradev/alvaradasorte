@@ -63,3 +63,8 @@ export const setSweepstakeResult = async (id: string, payload: SetResultRequest)
   const response = await api.patch<SweepstakeResponse>(`/iam/v1/sweepstakes/${id}/result`, payload)
   return response.data
 }
+
+export const sendParticipationResultEmail = async (sweepstakeId: string, participationId: string): Promise<ParticipationResponse> => {
+  const response = await api.post<ParticipationResponse>(`/iam/v1/sweepstakes/${sweepstakeId}/participations/${participationId}/send-result-email`)
+  return response.data
+}

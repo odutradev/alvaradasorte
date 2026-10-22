@@ -92,6 +92,8 @@ export interface ParticipationResponse {
   quotaCount?: number
   suggestedNumbers?: number[]
   userPhotoUrl?: string
+  resultEmailSent?: boolean
+  resultEmailSentAt?: string
 }
 
 export interface UpdateParticipationRequest {

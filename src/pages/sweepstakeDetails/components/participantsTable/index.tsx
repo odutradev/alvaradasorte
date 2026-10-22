@@ -1,9 +1,12 @@
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined'
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined'
 import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
+import SendOutlinedIcon from '@mui/icons-material/SendOutlined'
+import MailOutlineIcon from '@mui/icons-material/MailOutline'
+import CircularProgress from '@mui/material/CircularProgress'
 import InputAdornment from '@mui/material/InputAdornment'
-import Modal from '@components/modal'
 import DeleteIcon from '@mui/icons-material/Delete'
 import IconButton from '@mui/material/IconButton'
 import SearchIcon from '@mui/icons-material/Search'
@@ -12,8 +15,10 @@ import CheckIcon from '@mui/icons-material/Check'
 import ClearIcon from '@mui/icons-material/Clear'
 import EditIcon from '@mui/icons-material/Edit'
 import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
+import Modal from '@components/modal'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import dayjs from 'dayjs'
@@ -29,7 +34,7 @@ import useParticipantsTable from './hook'
 
 import type { ExtendedParticipation, ParticipantsTableProps } from './types'
 
-const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: ParticipantsTableProps) => {
+const ParticipantsTable = ({ participations, sweepstakeId, hasResult, onUpdate }: ParticipantsTableProps) => {
   const {
     editingParticipation,
     deletingParticipation,
@@ -38,6 +43,8 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
     isValidationOpen,
     isAddModalOpen,
     isDeleting,
+    sendingEmailId,
+    isSendingAll,
     copiedList,
     searchQuery,
     filteredParticipations,
@@ -50,8 +57,12 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
     handleOpenReceipt,
     handleCloseReceipt,
     handleDeleteConfirm,
-    handleCopyList
+    handleCopyList,
+    handleSendResultEmail,
+    handleSendAllPendingEmails
   } = useParticipantsTable({ participations, sweepstakeId, onUpdate })
+
+  const pendingEmailsCount = participations.filter((p) => !p.resultEmailSent).length
 
   const columns: TableColumn<ExtendedParticipation>[] = [
     {
@@ -129,6 +140,71 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
           />
         )
     },
+    ...(hasResult && sweepstakeId
+      ? [
+          {
+            id: 'resultEmail',
+            label: 'E-mail do Resultado',
+            align: 'center' as const,
+            render: (part: ExtendedParticipation) => {
+              if (part.resultEmailSent) {
+                return (
+                  <Tooltip
+                    title={
+                      part.resultEmailSentAt
+                        ? `Enviado em ${dayjs(part.resultEmailSentAt).format('DD/MM/YYYY [às] HH:mm')}`
+                        : 'E-mail de resultado enviado com sucesso'
+                    }
+                  >
+                    <Chip
+                      size="small"
+                      icon={<CheckCircleOutlineIcon sx={{ fontSize: 14 }} />}
+                      label="Enviado"
+                      color="success"
+                      variant="outlined"
+                      sx={{
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                        height: 24,
+                        borderRadius: 1.5
+                      }}
+                    />
+                  </Tooltip>
+                )
+              }
+
+              const isSendingThis = sendingEmailId === part.id
+
+              return (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  color="primary"
+                  disabled={isSendingThis || isSendingAll}
+                  startIcon={
+                    isSendingThis ? (
+                      <CircularProgress size={12} color="inherit" />
+                    ) : (
+                      <MailOutlineIcon sx={{ fontSize: 15 }} />
+                    )
+                  }
+                  onClick={() => handleSendResultEmail(part.id, part.userName)}
+                  sx={{
+                    textTransform: 'none',
+                    fontSize: '0.75rem',
+                    py: 0.25,
+                    px: 1,
+                    borderRadius: 1.5,
+                    fontWeight: 600
+                  }}
+                >
+                  {isSendingThis ? 'Enviando...' : 'Enviar'}
+                </Button>
+              )
+            }
+          }
+        ]
+      : []),
     ...(sweepstakeId
       ? [
           {
@@ -175,6 +251,25 @@ const ParticipantsTable = ({ participations, sweepstakeId, onUpdate }: Participa
           />
         </Box>
         <ActionsContainer>
+          {hasResult && sweepstakeId && pendingEmailsCount > 0 && (
+            <Button
+              size="small"
+              variant="contained"
+              color="secondary"
+              disabled={isSendingAll || Boolean(sendingEmailId)}
+              startIcon={
+                isSendingAll ? (
+                  <CircularProgress size={14} color="inherit" />
+                ) : (
+                  <SendOutlinedIcon fontSize="small" />
+                )
+              }
+              onClick={handleSendAllPendingEmails}
+              sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 600 }}
+            >
+              {isSendingAll ? 'Enviando...' : `Enviar Pendentes (${pendingEmailsCount})`}
+            </Button>
+          )}
           {sweepstakeId && (
             <Button
               size="small"

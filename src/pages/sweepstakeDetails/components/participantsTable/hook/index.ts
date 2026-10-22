@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { deleteParticipation } from '@services/sweepstakes'
+import { deleteParticipation, sendParticipationResultEmail } from '@services/sweepstakes'
 import { capitalizeWords } from '@utils/string'
 import useAction from '@hooks/useAction'
 
@@ -15,6 +15,8 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
   const [isValidationOpen, setIsValidationOpen] = useState(false)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [sendingEmailId, setSendingEmailId] = useState<string | null>(null)
+  const [isSendingAll, setIsSendingAll] = useState(false)
   const [copiedList, setCopiedList] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -83,6 +85,52 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
     document.body.removeChild(textarea)
   }
 
+  const handleSendResultEmail = async (participationId: string, userName: string) => {
+    if (!sweepstakeId) return
+
+    setSendingEmailId(participationId)
+    await useAction({
+      action: async () => {
+        await sendParticipationResultEmail(sweepstakeId, participationId)
+      },
+      callback: () => {
+        onUpdate?.()
+      },
+      toastMessages: {
+        pending: `Enviando resultado para ${userName}...`,
+        success: `E-mail enviado com sucesso para ${userName}!`,
+        error: 'Erro ao enviar e-mail com resultado'
+      }
+    })
+    setSendingEmailId(null)
+  }
+
+  const handleSendAllPendingEmails = async () => {
+    if (!sweepstakeId) return
+    const pending = participations.filter((p) => !p.resultEmailSent)
+    if (pending.length === 0) return
+
+    setIsSendingAll(true)
+    for (const part of pending) {
+      setSendingEmailId(part.id)
+      await useAction({
+        action: async () => {
+          await sendParticipationResultEmail(sweepstakeId, part.id)
+        },
+        callback: () => {
+          onUpdate?.()
+        },
+        toastMessages: {
+          pending: `Enviando resultado para ${part.userName}...`,
+          success: `Enviado para ${part.userName}!`,
+          error: `Erro ao enviar para ${part.userName}`
+        }
+      })
+    }
+    setSendingEmailId(null)
+    setIsSendingAll(false)
+  }
+
   return {
     editingParticipation,
     deletingParticipation,
@@ -91,6 +139,8 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
     isValidationOpen,
     isAddModalOpen,
     isDeleting,
+    sendingEmailId,
+    isSendingAll,
     copiedList,
     searchQuery,
     filteredParticipations,
@@ -103,7 +153,9 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
     handleOpenReceipt,
     handleCloseReceipt,
     handleDeleteConfirm,
-    handleCopyList
+    handleCopyList,
+    handleSendResultEmail,
+    handleSendAllPendingEmails
   }
 }
 
