@@ -8,6 +8,7 @@ export type User = {
   phone?: string
   photoUrl?: string
   authProviderId?: string
+  notifySweepstakeResult?: boolean
   createdAt: string
   updatedAt: string
 }
@@ -36,4 +37,5 @@ export type UpdateUserPayload = {
   department?: string
   phone?: string
   role?: 'admin' | 'user'
+  notifySweepstakeResult?: boolean
 }

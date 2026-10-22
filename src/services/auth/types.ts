@@ -16,4 +16,5 @@ export interface UpdateMePayload {
   photoUrl?: string
   phone?: string
   name?: string
+  notifySweepstakeResult?: boolean
 }

@@ -110,6 +110,16 @@ const UserProfile = ({ onEditProfile, isProfileIncomplete, sweepstakes, user }: 
           <Typography variant="body2" color="text.secondary">Setor</Typography>
           <ValueText variant="body1" fontWeight={500}>{capitalizeWords(user.department ?? 'Não informado')}</ValueText>
         </InfoRow>
+        <InfoRow>
+          <Typography variant="body2" color="text.secondary">Notificação de Resultados</Typography>
+          <ValueText
+            variant="body2"
+            fontWeight={600}
+            color={user.notifySweepstakeResult !== false ? 'success.main' : 'text.disabled'}
+          >
+            {user.notifySweepstakeResult !== false ? 'Ativado por e-mail' : 'Desativado'}
+          </ValueText>
+        </InfoRow>
       </InfoContainer>
       <ActionsContainer>
         <LogsButton

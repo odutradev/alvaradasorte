@@ -1,5 +1,5 @@
-import { TextField, Button } from '@mui/material'
-import { useForm } from 'react-hook-form'
+import { TextField, Button, FormControlLabel, Switch, Box, Typography } from '@mui/material'
+import { useForm, Controller } from 'react-hook-form'
 import { useEffect } from 'react'
 
 import { ProfileForm, WarningAlert } from './styles'
@@ -18,19 +18,24 @@ const formatPhone = (value: string) => {
 
 const CompleteProfileModal = ({ isProfileIncomplete, onClose, open }: CompleteProfileModalProps) => {
   const { auth: { user }, updateUser } = useAuthStore()
-  const { handleSubmit, register, reset, formState: { errors } } = useForm<ProfileFormData>()
+  const { handleSubmit, register, reset, control, formState: { errors } } = useForm<ProfileFormData>()
 
   useEffect(() => {
     if (!open || !user) return
     reset({
       fullName: user.fullName ?? '',
       department: user.department ?? '',
-      phone: user.phone ? formatPhone(user.phone) : ''
+      phone: user.phone ? formatPhone(user.phone) : '',
+      notifySweepstakeResult: user.notifySweepstakeResult !== false
     })
   }, [open, user, reset])
 
   const onSubmit = async (data: ProfileFormData) => {
-    const cleanedData = { ...data, phone: data.phone.replace(/\D/g, '') }
+    const cleanedData = {
+      ...data,
+      phone: data.phone.replace(/\D/g, ''),
+      notifySweepstakeResult: data.notifySweepstakeResult ?? true
+    }
     await useAction({
       action: async () => await updateMeData(cleanedData),
       callback: (res) => {
@@ -39,7 +44,7 @@ const CompleteProfileModal = ({ isProfileIncomplete, onClose, open }: CompletePr
       },
       toastMessages: {
         pending: 'Atualizando perfil...',
-        success: 'Perfil completo!',
+        success: 'Perfil atualizado!',
         error: 'Erro ao atualizar'
       }
     })
@@ -107,6 +112,32 @@ const CompleteProfileModal = ({ isProfileIncomplete, onClose, open }: CompletePr
           required
           fullWidth
         />
+        <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'action.hover', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+          <Controller
+            name="notifySweepstakeResult"
+            control={control}
+            defaultValue={true}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={field.value !== false}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label={
+                  <Typography variant="body2" fontWeight={600}>
+                    Receber resultado dos bolões por e-mail
+                  </Typography>
+                }
+              />
+            )}
+          />
+          <Typography variant="caption" color="text.secondary" sx={{ pl: 4 }}>
+            Você receberá por e-mail as dezenas sorteadas e o desempenho das suas cotas assim que a apuração for concluída.
+          </Typography>
+        </Box>
       </ProfileForm>
     </Modal>
   )

@@ -1,3 +1,4 @@
+import FormControlLabel from '@mui/material/FormControlLabel'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -5,6 +6,7 @@ import { useState, useEffect } from 'react'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
+import Switch from '@mui/material/Switch'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 
@@ -19,7 +21,8 @@ const EditUserModal = ({ open, user, loading, onClose, onSubmit }: EditUserModal
     email: '',
     department: '',
     phone: '',
-    role: 'user' as 'admin' | 'user'
+    role: 'user' as 'admin' | 'user',
+    notifySweepstakeResult: true
   })
 
   useEffect(() => {
@@ -30,7 +33,8 @@ const EditUserModal = ({ open, user, loading, onClose, onSubmit }: EditUserModal
         email: user.email ?? '',
         department: user.department ?? '',
         phone: user.phone ?? '',
-        role: user.role ?? 'user'
+        role: user.role ?? 'user',
+        notifySweepstakeResult: user.notifySweepstakeResult !== false
       })
     }
   }, [user])
@@ -107,6 +111,16 @@ const EditUserModal = ({ open, user, loading, onClose, onSubmit }: EditUserModal
             <MenuItem value="admin">Administrador</MenuItem>
           </Select>
         </FormControl>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={formData.notifySweepstakeResult}
+              onChange={(e) => setFormData({ ...formData, notifySweepstakeResult: e.target.checked })}
+              color="primary"
+            />
+          }
+          label="Receber resultado dos bolões por e-mail"
+        />
       </Stack>
     </Modal>
   )

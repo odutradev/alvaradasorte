@@ -2,6 +2,7 @@ export interface ProfileFormData {
   department: string
   fullName: string
   phone: string
+  notifySweepstakeResult?: boolean
 }
 
 export interface CompleteProfileModalProps {
