@@ -8,11 +8,13 @@ export type ParticipationType = {
   userPhotoUrl?: string
   receiptUrl: string
   quotaCount: number
+  suggestedNumbers?: number[]
   createdAt: string
 }
 
 export type CreateParticipationPayload = Omit<ParticipationType, 'id' | 'createdAt'> & {
   quotaCount?: number
+  suggestedNumbers?: number[]
 }
 
 export type UpdateParticipationPayload = Partial<Omit<ParticipationType, 'id' | 'createdAt' | 'sweepstakeId' | 'userId'>>

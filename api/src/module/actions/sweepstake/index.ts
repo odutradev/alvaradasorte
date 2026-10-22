@@ -213,7 +213,8 @@ export const joinSweepstake = defineAction(
             type: 'object',
             properties: {
               receipt: { type: 'string', format: 'binary' },
-              quotaCount: { type: 'integer', minimum: 1, default: 1 }
+              quotaCount: { type: 'integer', minimum: 1, default: 1 },
+              suggestedNumbers: { type: 'string', description: 'JSON array or comma separated integers' }
             }
           }
         }
@@ -267,7 +268,8 @@ export const joinSweepstake = defineAction(
         userPhone: user.phone as string,
         userDepartment: user.department as string,
         receiptUrl: filePath,
-        quotaCount: requestedQuotaCount
+        quotaCount: requestedQuotaCount,
+        ...(data.suggestedNumbers && data.suggestedNumbers.length > 0 && { suggestedNumbers: data.suggestedNumbers })
       }
 
       await participationRepository.create(payload)
@@ -370,7 +372,8 @@ export const addManualParticipation = defineAction(
         userPhone: (user.phone || '') as string,
         userDepartment: (user.department || '') as string,
         receiptUrl: '',
-        quotaCount: requestedQuotaCount
+        quotaCount: requestedQuotaCount,
+        ...(data.suggestedNumbers && data.suggestedNumbers.length > 0 && { suggestedNumbers: data.suggestedNumbers })
       }
 
       const participation = await participationRepository.create(payload)
@@ -451,6 +454,7 @@ export const updateParticipation = defineAction(
       if (data.userName !== undefined) updateData.userName = data.userName
       if (data.userDepartment !== undefined) updateData.userDepartment = data.userDepartment
       if (data.userPhone !== undefined) updateData.userPhone = data.userPhone
+      if (data.suggestedNumbers !== undefined) updateData.suggestedNumbers = data.suggestedNumbers
 
       const updatedParticipation = await participationRepository.update(params.participationId, updateData)
 

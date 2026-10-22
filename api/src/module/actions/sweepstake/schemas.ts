@@ -13,6 +13,7 @@ export const participationSchema = z.object({
   userPhotoUrl: z.string().optional().openapi({ example: 'https://lh3.googleusercontent.com/a/abc' }),
   receiptUrl: z.string().openapi({ example: 'receipts/bolao-id/user-uid-123456789.png' }),
   quotaCount: z.number().int().min(1).default(1).openapi({ example: 2 }),
+  suggestedNumbers: z.array(z.number().int().min(1)).optional().openapi({ example: [7, 14] }),
   createdAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' })
 }).openapi('ParticipationResponse')
 
@@ -69,8 +70,25 @@ export const sweepstakeListItemSchema = sweepstakeSchema.extend({
   }).optional()
 }).openapi('SweepstakeListItemResponse')
 
+export const parseSuggestedNumbers = (val: unknown): number[] | undefined => {
+  if (val === undefined || val === null || val === '') return undefined
+  if (Array.isArray(val)) return val.map(Number).filter((n) => !isNaN(n) && n > 0)
+  if (typeof val === 'string') {
+    try {
+      const parsed = JSON.parse(val)
+      if (Array.isArray(parsed)) return parsed.map(Number).filter((n) => !isNaN(n) && n > 0)
+      if (!isNaN(Number(parsed)) && Number(parsed) > 0) return [Number(parsed)]
+    } catch {
+      return val.split(',').map((v) => Number(v.trim())).filter((n) => !isNaN(n) && n > 0)
+    }
+  }
+  if (typeof val === 'number' && !isNaN(val) && val > 0) return [val]
+  return undefined
+}
+
 export const joinSweepstakeBodySchema = z.object({
-  quotaCount: z.coerce.number().int().min(1).default(1).openapi({ example: 1 })
+  quotaCount: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
+  suggestedNumbers: z.preprocess(parseSuggestedNumbers, z.array(z.number().int().min(1)).optional()).openapi({ example: [7, 14] })
 }).openapi('JoinSweepstakeBody')
 
 export const createSweepstakeSchema = z.object({
@@ -119,7 +137,8 @@ export const sweepstakeParamsSchema = z.object({
 
 export const addManualParticipationBodySchema = z.object({
   email: z.string().email().openapi({ example: 'usuario@exemplo.com' }),
-  quotaCount: z.number().int().min(1).optional().default(1).openapi({ example: 1 })
+  quotaCount: z.number().int().min(1).optional().default(1).openapi({ example: 1 }),
+  suggestedNumbers: z.preprocess(parseSuggestedNumbers, z.array(z.number().int().min(1)).optional()).openapi({ example: [7, 14] })
 }).openapi('AddManualParticipationBody')
 
 export const deleteParticipationParamsSchema = z.object({
@@ -131,5 +150,6 @@ export const updateParticipationBodySchema = z.object({
   quotaCount: z.number().int().min(1).optional().openapi({ example: 2 }),
   userName: z.string().min(1).optional().openapi({ example: 'John Doe' }),
   userDepartment: z.string().min(1).optional().openapi({ example: 'Tecnologia' }),
-  userPhone: z.string().min(1).optional().openapi({ example: '(34) 99999-0000' })
+  userPhone: z.string().min(1).optional().openapi({ example: '(34) 99999-0000' }),
+  suggestedNumbers: z.preprocess(parseSuggestedNumbers, z.array(z.number().int().min(1)).optional()).openapi({ example: [7, 14] })
 }).openapi('UpdateParticipationBody')
