@@ -28,6 +28,8 @@ import {
   QueueItemRow,
   SlotBall,
   NumbersContainer,
+  AddGameScrollContainer,
+  NewGameButton,
   ResultSection,
   ResultCard
 } from './styles'
@@ -374,71 +376,37 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
 
             {/* FILA DE JOGOS: Mostra todos os jogos, o status de preenchimento e slots vazios */}
             <GamesSection sx={{ gap: 1.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+              {/* Cabeçalho da Fila com Ações Globais */}
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="subtitle1" fontWeight={700}>
-                    Fila de Preenchimento ({queuedGames.length} jogos)
+                    Fila de Preenchimento
                   </Typography>
+                  <Chip
+                    size="small"
+                    color={pendingGamesCount === 0 && queuedGames.length > 0 ? 'success' : 'default'}
+                    label={`${queuedGames.length} jogos (${completedGamesCount} completos, ${pendingGamesCount} pendentes)`}
+                    sx={{ height: 22, fontSize: '0.75rem', fontWeight: 700 }}
+                  />
                 </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                  {/* Adicionar Jogo Vazio Avulso */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
-                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
-                      Novo jogo:
-                    </Typography>
-                    {selectableTargetCounts.map((count) => {
-                      const price = getGamePrice(lotteryType, count)
-                      const odds = getLotteryOdds(lotteryType, count)
-                      const equiv = getEquivalentGamesCount(lotteryType, count)
-                      return (
-                        <Tooltip
-                          key={count}
-                          arrow
-                          title={
-                            <Box sx={{ p: 0.5, maxWidth: 220 }}>
-                              <Typography variant="caption" fontWeight={700} display="block">
-                                Jogo de {count} dezenas ({formatCurrency(price)})
-                              </Typography>
-                              <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
-                                🎯 Chances de acertar: <strong>{odds}</strong>
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary" display="block">
-                                Equivale a {equiv} aposta{equiv > 1 ? 's' : ''} simples
-                              </Typography>
-                            </Box>
-                          }
-                        >
-                          <Chip
-                            label={`+ ${count} dezenas (${formatCurrency(price)})`}
-                            size="small"
-                            clickable
-                            onClick={() => addEmptyGameToQueue(count)}
-                            variant="outlined"
-                            sx={{
-                              height: 24,
-                              fontSize: '0.6875rem',
-                              fontWeight: 600,
-                              transition: 'all 0.15s ease',
-                              '&:hover': {
-                                borderColor: 'primary.main',
-                                backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08)
-                              }
-                            }}
-                          />
-                        </Tooltip>
-                      )
-                    })}
-                  </Box>
-
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   {pendingGamesCount > 0 && (
                     <Button
                       size="small"
-                      variant="outlined"
-                      color="secondary"
+                      variant="contained"
                       startIcon={<CasinoIcon fontSize="small" />}
                       onClick={fillAllPendingWithSurpresinha}
-                      sx={{ textTransform: 'none', fontSize: '0.75rem' }}
+                      sx={{
+                        bgcolor: '#8b5cf6',
+                        color: '#ffffff',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        textTransform: 'none',
+                        borderRadius: 2,
+                        boxShadow: '0 2px 8px rgba(139, 92, 246, 0.4)',
+                        '&:hover': { bgcolor: '#7c3aed' }
+                      }}
                     >
                       Preencher Pendentes com Surpresinha
                     </Button>
@@ -447,15 +415,89 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                   {queuedGames.length > 0 && (
                     <Button
                       size="small"
+                      variant="outlined"
                       color="error"
-                      variant="text"
+                      startIcon={<DeleteIcon fontSize="small" />}
                       onClick={clearAllQueuedGames}
-                      sx={{ textTransform: 'none', fontSize: '0.75rem', p: 0 }}
+                      sx={{
+                        fontSize: '0.75rem',
+                        textTransform: 'none',
+                        borderRadius: 2,
+                        fontWeight: 600,
+                        color: '#f87171',
+                        borderColor: 'rgba(239, 68, 68, 0.4)',
+                        '&:hover': { bgcolor: 'rgba(239, 68, 68, 0.1)', borderColor: '#ef4444' }
+                      }}
                     >
                       Limpar fila
                     </Button>
                   )}
                 </Box>
+              </Box>
+
+              {/* Barra Dedicada de Adição de Novo Jogo com Scroll Horizontal e Alto Contraste */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  p: 1.25,
+                  borderRadius: 2,
+                  bgcolor: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid',
+                  borderColor: 'rgba(255, 255, 255, 0.12)'
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 800,
+                    color: '#ffffff',
+                    whiteSpace: 'nowrap',
+                    textTransform: 'uppercase',
+                    letterSpacing: 0.5,
+                    fontSize: '0.75rem'
+                  }}
+                >
+                  + Novo jogo:
+                </Typography>
+
+                <AddGameScrollContainer>
+                  {selectableTargetCounts.map((count) => {
+                    const price = getGamePrice(lotteryType, count)
+                    const odds = getLotteryOdds(lotteryType, count)
+                    const equiv = getEquivalentGamesCount(lotteryType, count)
+                    return (
+                      <Tooltip
+                        key={count}
+                        arrow
+                        title={
+                          <Box sx={{ p: 0.5, maxWidth: 240 }}>
+                            <Typography variant="subtitle2" fontWeight={800} display="block" color="primary.light">
+                              Jogo com {count} dezenas
+                            </Typography>
+                            <Typography variant="body2" fontWeight={700} sx={{ mt: 0.25 }}>
+                              Valor do bilhete: {formatCurrency(price)}
+                            </Typography>
+                            <Typography variant="body2" sx={{ mt: 0.5, color: '#4ade80', fontWeight: 700 }}>
+                              🎯 Chances de acertar: {odds}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.25 }}>
+                              Equivale a {equiv} aposta{equiv > 1 ? 's' : ''} simples
+                            </Typography>
+                          </Box>
+                        }
+                      >
+                        <NewGameButton onClick={() => addEmptyGameToQueue(count)}>
+                          <span>+ {count} dezenas</span>
+                          <span style={{ color: '#4ade80', fontWeight: 800, marginLeft: 5 }}>
+                            ({formatCurrency(price)})
+                          </span>
+                        </NewGameButton>
+                      </Tooltip>
+                    )
+                  })}
+                </AddGameScrollContainer>
               </Box>
 
               {queuedGames.length === 0 ? (
