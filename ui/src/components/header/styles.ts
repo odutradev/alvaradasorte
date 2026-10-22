@@ -3,6 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import AppBar from '@mui/material/AppBar'
+import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 
 export const HeaderWrapper = styled(Box)(({ theme }) => ({
@@ -35,6 +36,16 @@ export const LogoText = styled(Typography)({
     opacity: 0.8
   }
 })
+
+export const VersionChip = styled(Chip)(({ theme }) => ({
+  height: 20,
+  fontSize: '0.6875rem',
+  fontWeight: 600,
+  borderRadius: 6,
+  borderColor: theme.palette.divider,
+  color: theme.palette.text.secondary,
+  backgroundColor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.06)'
+}))
 
 export const NavContainer = styled(Box)(({ theme }) => ({
   alignItems: 'center',

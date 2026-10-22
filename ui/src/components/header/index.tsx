@@ -22,6 +22,7 @@ import {
   StyledAppBar,
   StyledToolbar,
   LogoText,
+  VersionChip,
   NavContainer,
   MenuButton,
   DrawerContent,
@@ -43,14 +44,18 @@ const Header = (_props: HeaderProps = {}) => {
     setDrawerOpen(false)
   }
 
+  const appVersion = import.meta.env.VITE_APP_VERSION || '3.0.1'
+  const versionLabel = appVersion.startsWith('v') ? appVersion : `v${appVersion}`
+
   return (
     <HeaderWrapper>
       <StyledAppBar position="static" elevation={0}>
         <StyledToolbar>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <LogoText variant="h6" fontWeight={700} color="primary" onClick={() => navigate('/')}>
               AlvaraDaSorte
             </LogoText>
+            <VersionChip label={versionLabel} size="small" variant="outlined" />
           </Box>
           <NavContainer>
             {user?.role === 'admin' ? (
