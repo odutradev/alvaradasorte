@@ -1,4 +1,5 @@
 import sweepstakeRepository from '@module/repositories/sweepstake'
+import { sendSweepstakeResultEmailsRoutine } from '@module/services/sweepstakeResultNotifier'
 import { fetchLotteryFromCaixa } from '@module/services/caixa'
 import createLogger from '@core/utils/logger'
 
@@ -142,6 +143,14 @@ export const processSweepstakeSync = async (
       logger.info(
         `[autoResultSync] SUCESSO na tentativa ${attemptNumber} para bolão "${sweepstake.title}". Dezenas: ${drawnNumbers.join(', ')}`
       )
+
+      sendSweepstakeResultEmailsRoutine(sweepstake.id, { triggeredBy: 'auto_sync' }).catch((emailError) => {
+        logger.error(
+          `[autoResultSync] Erro na rotina de envio de e-mails para o bolão "${sweepstake.title}" (ID: ${sweepstake.id})`,
+          emailError
+        )
+      })
+
       return true
     }
 
