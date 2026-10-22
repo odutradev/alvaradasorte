@@ -114,8 +114,28 @@ export const GamesFlowContainer = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(0.5)
 }))
 
-export const GameChip = styled(Box)(({ theme }) => {
+export const GameChip = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'hasHits'
+})<{ hasHits?: boolean }>(({ theme, hasHits }) => {
   const isDark = theme.palette.mode === 'dark'
+  if (hasHits) {
+    return {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: theme.spacing(0.75),
+      padding: theme.spacing(0.5, 1.25),
+      borderRadius: 20,
+      backgroundColor: isDark ? alpha('#16a34a', 0.15) : alpha('#16a34a', 0.08),
+      border: '1.5px solid #22c55e',
+      boxShadow: '0 0 10px rgba(34, 197, 94, 0.25)',
+      transition: 'border-color 0.15s ease, transform 0.15s ease',
+      '&:hover': {
+        borderColor: '#4ade80',
+        transform: 'translateY(-1px)'
+      }
+    }
+  }
+
   return {
     display: 'inline-flex',
     alignItems: 'center',
@@ -140,11 +160,17 @@ export const ChipNumber = styled('span', {
     return {
       backgroundColor: '#16a34a',
       color: '#ffffff',
-      borderRadius: 4,
-      padding: '1px 4px',
+      borderRadius: '50%',
+      width: 22,
+      height: 22,
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       fontWeight: 800,
       fontSize: '0.75rem',
-      lineHeight: 1.2
+      lineHeight: 1,
+      boxShadow: '0 0 8px rgba(34, 197, 94, 0.7)',
+      border: '1.5px solid #4ade80'
     }
   }
 
@@ -152,7 +178,11 @@ export const ChipNumber = styled('span', {
     color: isDark ? '#f8fafc' : '#0f172a',
     fontWeight: 600,
     fontSize: '0.75rem',
-    lineHeight: 1.2
+    lineHeight: 1.2,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 18
   }
 })
 

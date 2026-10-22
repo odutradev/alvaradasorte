@@ -1,6 +1,8 @@
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import CheckIcon from '@mui/icons-material/Check'
 import Typography from '@mui/material/Typography'
 import { useNavigate } from 'react-router-dom'
+import { alpha } from '@mui/material/styles'
 import { useMemo } from 'react'
 import Tooltip from '@mui/material/Tooltip'
 import Button from '@mui/material/Button'
@@ -47,7 +49,8 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
   const animatedMinPrize = useCountUp(minPrizePerPerson)
 
   const games = data.games ?? []
-  const resultSet = useMemo(() => new Set(data.result ?? []), [data.result])
+  const resultNumbers = useMemo(() => (data.result ?? []).map(Number), [data.result])
+  const resultSet = useMemo(() => new Set(resultNumbers), [resultNumbers])
 
   return (
     <CardContainer elevation={0}>
@@ -117,31 +120,98 @@ const SweepstakeCard = ({ onJoin, data }: SweepstakeCardProps) => {
           drawDate={data.drawDate}
         />
 
+        {resultNumbers.length > 0 && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              p: 1.5,
+              borderRadius: 2,
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'dark' ? alpha('#16a34a', 0.12) : alpha('#16a34a', 0.08),
+              border: (theme) => `1px solid ${alpha('#16a34a', 0.3)}`
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+              <Typography variant="caption" fontWeight={700} color="success.main">
+                Dezenas Sorteadas (Resultado Oficial):
+              </Typography>
+              {data.contestNumber && (
+                <Chip
+                  label={`Concurso #${data.contestNumber}`}
+                  size="small"
+                  color="success"
+                  variant="outlined"
+                  sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700 }}
+                />
+              )}
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+              {resultNumbers.map((num, i) => (
+                <Box
+                  key={i}
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    backgroundColor: '#16a34a',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 800,
+                    fontSize: '0.75rem',
+                    boxShadow: '0 2px 6px rgba(22, 163, 74, 0.4)'
+                  }}
+                >
+                  {num < 10 ? `0${num}` : num}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        )}
+
         {games.length > 0 && (
           <GamesFlowContainer>
             {games.map((game, idx) => {
               const gamePrice = getGamePrice(data.lotteryType, game.length)
+              const hits = game.filter((num) => resultSet.has(Number(num))).length
               return (
                 <Tooltip
                   key={idx}
-                  title={`Jogo de ${game.length} dezenas • Valor: ${formatCurrency(gamePrice)}`}
+                  title={`Jogo de ${game.length} dezenas • Valor: ${formatCurrency(gamePrice)}${hits > 0 ? ` • ${hits} acerto(s)!` : ''}`}
                   arrow
                   placement="top"
                 >
-                  <GameChip sx={{ cursor: 'pointer' }}>
+                  <GameChip hasHits={hits > 0} sx={{ cursor: 'pointer' }}>
                     <Typography
                       component="span"
-                      sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'text.secondary', mr: 0.25 }}
+                      sx={{
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        color: hits > 0 ? 'success.main' : 'text.secondary',
+                        mr: 0.25
+                      }}
                     >
                       #{idx + 1}
                     </Typography>
                     <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.6 }}>
                       {game.map((num, nIdx) => (
-                        <ChipNumber key={nIdx} matched={resultSet.has(num)}>
-                          {num < 10 ? `0${num}` : num}
+                        <ChipNumber key={nIdx} matched={resultSet.has(Number(num))}>
+                          {Number(num) < 10 ? `0${Number(num)}` : num}
                         </ChipNumber>
                       ))}
                     </Box>
+                    {hits > 0 && (
+                      <Chip
+                        size="small"
+                        color="success"
+                        label={`${hits} ${hits === 1 ? 'acerto' : 'acertos'}`}
+                        icon={<CheckIcon sx={{ fontSize: '0.75rem !important' }} />}
+                        sx={{ height: 20, fontSize: '0.6875rem', fontWeight: 800, ml: 0.25 }}
+                      />
+                    )}
                   </GameChip>
                 </Tooltip>
               )
