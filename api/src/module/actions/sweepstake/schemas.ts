@@ -1,0 +1,162 @@
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
+import { z } from 'zod'
+
+extendZodWithOpenApi(z)
+
+export const participationSchema = z.object({
+  id: z.string().openapi({ example: 'chave-unica' }),
+  sweepstakeId: z.string().openapi({ example: 'bolao-id' }),
+  userId: z.string().openapi({ example: 'user-uid' }),
+  userName: z.string().openapi({ example: 'John Doe' }),
+  userPhone: z.string().openapi({ example: '(34) 99999-0000' }),
+  userDepartment: z.string().openapi({ example: 'Tecnologia' }),
+  userPhotoUrl: z.string().optional().openapi({ example: 'https://lh3.googleusercontent.com/a/abc' }),
+  receiptUrl: z.string().openapi({ example: 'receipts/bolao-id/user-uid-123456789.png' }),
+  quotaCount: z.number().int().min(1).default(1).openapi({ example: 2 }),
+  suggestedNumbers: z.array(z.number().int().min(1)).optional().openapi({ example: [7, 14] }),
+  resultEmailSent: z.boolean().optional().openapi({ example: false }),
+  resultEmailSentAt: z.string().optional().openapi({ example: '2023-01-01T00:00:00.000Z' }),
+  createdAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' })
+}).openapi('ParticipationResponse')
+
+export const resultSyncAttemptSchema = z.object({
+  attemptNumber: z.number().int().openapi({ example: 1 }),
+  timestamp: z.string().openapi({ example: '2023-12-20T20:15:00.000Z' }),
+  success: z.boolean().openapi({ example: false }),
+  message: z.string().optional().openapi({ example: 'Resultado ainda não apurado pela Caixa' }),
+  drawnNumbers: z.array(z.number()).optional().openapi({ example: [4, 12, 23, 31, 45, 58] })
+}).openapi('ResultSyncAttempt')
+
+export const resultSyncLogSchema = z.object({
+  status: z.enum(['pending', 'success', 'failed']).openapi({ example: 'success' }),
+  attemptsCount: z.number().int().openapi({ example: 2 }),
+  maxAttempts: z.number().int().openapi({ example: 6 }),
+  lastAttemptAt: z.string().optional().openapi({ example: '2023-12-20T20:25:00.000Z' }),
+  nextAttemptAt: z.string().optional().openapi({ example: '2023-12-20T20:35:00.000Z' }),
+  successAt: z.string().optional().openapi({ example: '2023-12-20T20:25:00.000Z' }),
+  attempts: z.array(resultSyncAttemptSchema).openapi({ example: [] })
+}).openapi('ResultSyncLog')
+
+export const sweepstakeSchema = z.object({
+  id: z.string().openapi({ example: 'chave-unica' }),
+  adminId: z.string().openapi({ example: 'admin-uid' }),
+  title: z.string().openapi({ example: 'Bolão da Copa' }),
+  description: z.string().openapi({ example: 'Participe do bolão oficial!' }),
+  quotaPrice: z.number().openapi({ example: 50.0 }),
+  prizeValue: z.number().openapi({ example: 1000.0 }),
+  availableQuotas: z.number().openapi({ example: 20 }),
+  drawDate: z.string().openapi({ example: '2023-12-20T20:00:00.000Z' }),
+  purchaseLimitDate: z.string().openapi({ example: '2023-12-19T23:59:59.000Z' }),
+  presetId: z.string().openapi({ example: 'preset-id' }),
+  contestNumber: z.number().int().optional().openapi({ example: 3073 }),
+  lotteryType: z.string().optional().openapi({ example: 'megasena' }),
+  games: z.array(z.array(z.number())).optional().openapi({ example: [[1, 2, 3, 4], [5, 6, 7, 8]] }),
+  result: z.array(z.number()).optional().openapi({ example: [1, 2, 3, 4] }),
+  resultSyncLog: resultSyncLogSchema.optional(),
+  createdAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' }),
+  updatedAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' })
+}).openapi('SweepstakeResponse')
+
+export const sweepstakeDetailsSchema = sweepstakeSchema.extend({
+  participations: z.array(participationSchema)
+}).openapi('SweepstakeDetailsResponse')
+
+export const sweepstakeListItemSchema = sweepstakeSchema.extend({
+  metadata: z.object({
+    filledQuotas: z.number().openapi({ example: 5 })
+  }),
+  userParticipation: z.object({
+    isParticipant: z.boolean().openapi({ example: true }),
+    quotaCount: z.number().int().min(0).openapi({ example: 2 }),
+    joinedAt: z.string().nullable().openapi({ example: '2023-01-01T00:00:00.000Z' })
+  }).optional()
+}).openapi('SweepstakeListItemResponse')
+
+export const parseSuggestedNumbers = (val: unknown): number[] | undefined => {
+  if (val === undefined || val === null || val === '') return undefined
+  if (Array.isArray(val)) return val.map(Number).filter((n) => !isNaN(n) && n > 0)
+  if (typeof val === 'string') {
+    try {
+      const parsed = JSON.parse(val)
+      if (Array.isArray(parsed)) return parsed.map(Number).filter((n) => !isNaN(n) && n > 0)
+      if (!isNaN(Number(parsed)) && Number(parsed) > 0) return [Number(parsed)]
+    } catch {
+      return val.split(',').map((v) => Number(v.trim())).filter((n) => !isNaN(n) && n > 0)
+    }
+  }
+  if (typeof val === 'number' && !isNaN(val) && val > 0) return [val]
+  return undefined
+}
+
+export const joinSweepstakeBodySchema = z.object({
+  quotaCount: z.coerce.number().int().min(1).default(1).openapi({ example: 1 }),
+  suggestedNumbers: z.preprocess(parseSuggestedNumbers, z.array(z.number().int().min(1)).optional()).openapi({ example: [7, 14] })
+}).openapi('JoinSweepstakeBody')
+
+export const createSweepstakeSchema = z.object({
+  title: z.string().min(1).openapi({ example: 'Bolão da Copa' }),
+  description: z.string().min(1).openapi({ example: 'Participe do bolão oficial!' }),
+  quotaPrice: z.number().min(0.01).openapi({ example: 50.0 }),
+  prizeValue: z.number().min(0.01).openapi({ example: 1000.0 }),
+  availableQuotas: z.number().min(1).openapi({ example: 20 }),
+  drawDate: z.string().datetime().openapi({ example: '2023-12-20T20:00:00.000Z' }),
+  purchaseLimitDate: z.string().datetime().openapi({ example: '2023-12-19T23:59:59.000Z' }),
+  presetId: z.string().min(1).openapi({ example: 'preset-id' }),
+  contestNumber: z.number().int().optional().openapi({ example: 3073 }),
+  lotteryType: z.string().optional().openapi({ example: 'megasena' })
+}).openapi('CreateSweepstakeRequest')
+
+export const updateSweepstakeSchema = z.object({
+  title: z.string().min(1).optional().openapi({ example: 'Bolão da Copa Atualizado' }),
+  description: z.string().min(1).optional().openapi({ example: 'Nova descrição' }),
+  quotaPrice: z.number().min(0.01).optional().openapi({ example: 60.0 }),
+  prizeValue: z.number().min(0.01).optional().openapi({ example: 1200.0 }),
+  availableQuotas: z.number().min(1).optional().openapi({ example: 30 }),
+  drawDate: z.string().datetime().optional().openapi({ example: '2023-12-25T20:00:00.000Z' }),
+  purchaseLimitDate: z.string().datetime().optional().openapi({ example: '2023-12-24T23:59:59.000Z' }),
+  presetId: z.string().min(1).optional().openapi({ example: 'new-preset-id' }),
+  contestNumber: z.number().int().optional().openapi({ example: 3073 }),
+  lotteryType: z.string().optional().openapi({ example: 'megasena' })
+}).openapi('UpdateSweepstakeRequest')
+
+export const addSweepstakeGamesSchema = z.object({
+  games: z.array(z.array(z.number().int().min(1)).min(1)).openapi({ example: [[1, 2, 3, 4], [5, 6, 7, 8]] })
+}).openapi('AddSweepstakeGamesRequest')
+
+export const setSweepstakeResultSchema = z.object({
+  result: z.array(z.number().int().min(1)).min(1).openapi({ example: [1, 2, 3, 4] })
+}).openapi('SetSweepstakeResultRequest')
+
+export const listSweepstakesResponseSchema = z.array(sweepstakeListItemSchema).openapi('ListSweepstakesResponse')
+
+export const listSweepstakesQuerySchema = z.object({
+  userId: z.string().optional().openapi({ example: 'user-uid' })
+}).openapi('ListSweepstakesQuery')
+
+export const sweepstakeParamsSchema = z.object({
+  id: z.string().openapi({ example: 'chave-unica' })
+})
+
+export const addManualParticipationBodySchema = z.object({
+  email: z.string().email().openapi({ example: 'usuario@exemplo.com' }),
+  quotaCount: z.number().int().min(1).optional().default(1).openapi({ example: 1 }),
+  suggestedNumbers: z.preprocess(parseSuggestedNumbers, z.array(z.number().int().min(1)).optional()).openapi({ example: [7, 14] })
+}).openapi('AddManualParticipationBody')
+
+export const deleteParticipationParamsSchema = z.object({
+  id: z.string().openapi({ example: 'bolao-id' }),
+  participationId: z.string().openapi({ example: 'participacao-id' })
+}).openapi('DeleteParticipationParams')
+
+export const sendResultEmailParamsSchema = z.object({
+  id: z.string().openapi({ example: 'bolao-id' }),
+  participationId: z.string().openapi({ example: 'participacao-id' })
+}).openapi('SendResultEmailParams')
+
+export const updateParticipationBodySchema = z.object({
+  quotaCount: z.number().int().min(1).optional().openapi({ example: 2 }),
+  userName: z.string().min(1).optional().openapi({ example: 'John Doe' }),
+  userDepartment: z.string().min(1).optional().openapi({ example: 'Tecnologia' }),
+  userPhone: z.string().min(1).optional().openapi({ example: '(34) 99999-0000' }),
+  suggestedNumbers: z.preprocess(parseSuggestedNumbers, z.array(z.number().int().min(1)).optional()).openapi({ example: [7, 14] })
+}).openapi('UpdateParticipationBody')
