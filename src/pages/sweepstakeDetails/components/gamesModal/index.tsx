@@ -17,6 +17,7 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
 
+import { alpha } from '@mui/material/styles'
 import {
   ModalContainer,
   SuggestionCard,
@@ -31,7 +32,7 @@ import {
   ResultCard
 } from './styles'
 import { getLotteryMeta } from '@services/lotteries'
-import { getGamePrice } from '@utils/lotteryRules'
+import { getGamePrice, getLotteryOdds, getEquivalentGamesCount } from '@utils/lotteryRules'
 import { formatCurrency } from '@utils/string'
 import ResultSyncStatus from '../resultSyncStatus'
 import Modal from '@components/modal'
@@ -382,21 +383,52 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                   {/* Adicionar Jogo Vazio Avulso */}
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography variant="caption" color="text.secondary">
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
                       Novo jogo:
                     </Typography>
-                    {selectableTargetCounts.slice(0, 4).map((count) => (
-                      <Chip
-                        key={count}
-                        label={`+ ${count} dezenas`}
-                        size="small"
-                        clickable
-                        onClick={() => addEmptyGameToQueue(count)}
-                        variant="outlined"
-                        sx={{ height: 22, fontSize: '0.6875rem', fontWeight: 600 }}
-                      />
-                    ))}
+                    {selectableTargetCounts.map((count) => {
+                      const price = getGamePrice(lotteryType, count)
+                      const odds = getLotteryOdds(lotteryType, count)
+                      const equiv = getEquivalentGamesCount(lotteryType, count)
+                      return (
+                        <Tooltip
+                          key={count}
+                          arrow
+                          title={
+                            <Box sx={{ p: 0.5, maxWidth: 220 }}>
+                              <Typography variant="caption" fontWeight={700} display="block">
+                                Jogo de {count} dezenas ({formatCurrency(price)})
+                              </Typography>
+                              <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
+                                🎯 Chances de acertar: <strong>{odds}</strong>
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary" display="block">
+                                Equivale a {equiv} aposta{equiv > 1 ? 's' : ''} simples
+                              </Typography>
+                            </Box>
+                          }
+                        >
+                          <Chip
+                            label={`+ ${count} dezenas (${formatCurrency(price)})`}
+                            size="small"
+                            clickable
+                            onClick={() => addEmptyGameToQueue(count)}
+                            variant="outlined"
+                            sx={{
+                              height: 24,
+                              fontSize: '0.6875rem',
+                              fontWeight: 600,
+                              transition: 'all 0.15s ease',
+                              '&:hover': {
+                                borderColor: 'primary.main',
+                                backgroundColor: (theme) => alpha(theme.palette.primary.main, 0.08)
+                              }
+                            }}
+                          />
+                        </Tooltip>
+                      )
+                    })}
                   </Box>
 
                   {pendingGamesCount > 0 && (
