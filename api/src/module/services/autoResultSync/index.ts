@@ -6,10 +6,10 @@ import type { SweepstakeType, ResultSyncAttempt, ResultSyncLog } from '@module/r
 
 const logger = createLogger('autoResultSync')
 
-export const INITIAL_DELAY_MS = 15 * 60 * 1000 // 15 minutos do jogo
-export const RETRY_INTERVAL_MS = 10 * 60 * 1000 // 10 minutos entre tentativas
-export const MAX_ATTEMPTS = 6 // 6 tentativas no total
-const CHECK_INTERVAL_MS = 60 * 1000 // Checagem a cada 1 minuto
+export const INITIAL_DELAY_MS = 15 * 60 * 1000
+export const RETRY_INTERVAL_MS = 10 * 60 * 1000
+export const MAX_ATTEMPTS = 6
+const CHECK_INTERVAL_MS = 60 * 1000
 
 let isRunning = false
 let syncIntervalTimer: NodeJS.Timeout | null = null
@@ -36,17 +36,14 @@ export const shouldAttemptResultSync = (
   sweepstake: SweepstakeType,
   now: number
 ): { shouldRun: boolean; attemptNumber: number } => {
-  // Já tem resultado preenchido
   if (sweepstake.result && sweepstake.result.length > 0) {
     return { shouldRun: false, attemptNumber: 0 }
   }
 
-  // Não tem loteria configurada
   if (!sweepstake.lotteryType) {
     return { shouldRun: false, attemptNumber: 0 }
   }
 
-  // Não tem drawDate válido
   if (!sweepstake.drawDate) {
     return { shouldRun: false, attemptNumber: 0 }
   }
@@ -56,12 +53,10 @@ export const shouldAttemptResultSync = (
     return { shouldRun: false, attemptNumber: 0 }
   }
 
-  // Deve estar fechado
   if (!isSweepstakeClosed(sweepstake, now)) {
     return { shouldRun: false, attemptNumber: 0 }
   }
 
-  // Deve ter passado 15 minutos do jogo
   const firstAttemptTime = drawTime + INITIAL_DELAY_MS
   if (now < firstAttemptTime) {
     return { shouldRun: false, attemptNumber: 0 }
@@ -69,24 +64,20 @@ export const shouldAttemptResultSync = (
 
   const syncLog = sweepstake.resultSyncLog
 
-  // Se já teve sucesso, não roda mais
   if (syncLog?.status === 'success') {
     return { shouldRun: false, attemptNumber: 0 }
   }
 
   const currentAttempts = syncLog?.attemptsCount ?? 0
 
-  // Se já atingiu ou ultrapassou o limite de tentativas
   if (currentAttempts >= MAX_ATTEMPTS) {
     return { shouldRun: false, attemptNumber: 0 }
   }
 
-  // Primeira tentativa
   if (currentAttempts === 0) {
     return { shouldRun: true, attemptNumber: 1 }
   }
 
-  // Tentativas seguintes: precisa ter passado 10 minutos da última tentativa
   if (syncLog?.lastAttemptAt) {
     const lastAttemptTime = new Date(syncLog.lastAttemptAt).getTime()
     if (!Number.isNaN(lastAttemptTime)) {
@@ -121,7 +112,6 @@ export const processSweepstakeSync = async (
 
     const hasNumbers = Boolean(lotteryData?.lastDrawnNumbers && lotteryData.lastDrawnNumbers.length > 0)
     
-    // Se o bolão especificou contestNumber, confere se o concurso da Caixa bate
     const contestMatches = !sweepstake.contestNumber || !lotteryData?.contestNumber || lotteryData.contestNumber === sweepstake.contestNumber
 
     if (lotteryData && hasNumbers && contestMatches) {
@@ -155,7 +145,6 @@ export const processSweepstakeSync = async (
       return true
     }
 
-    // Caso não tenha retornado dezenas ou ainda não tenha apurado
     const isLastAttempt = attemptNumber >= MAX_ATTEMPTS
     const failMessage = !contestMatches
       ? `A Caixa retornou concurso #${lotteryData?.contestNumber}, aguardando apuração do concurso #${sweepstake.contestNumber}`
@@ -255,12 +244,10 @@ export const startAutoResultSyncRoutine = (): void => {
 
   logger.info('[autoResultSync] Rotina de busca automática de resultados de bolões inicializada.')
 
-  // Roda uma verificação inicial logo no startup
   syncPendingSweepstakesResults().catch((err) => {
     logger.error('[autoResultSync] Erro na verificação inicial', err)
   })
 
-  // E agenda checagens a cada 1 minuto
   syncIntervalTimer = setInterval(() => {
     syncPendingSweepstakesResults().catch((err) => {
       logger.error('[autoResultSync] Erro no intervalo de verificação', err)

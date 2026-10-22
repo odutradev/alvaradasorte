@@ -26,7 +26,6 @@ export const listLogs = defineAction(
 
       const isAdmin = user.role === 'admin'
 
-      // Se não for admin, o usuário só pode consultar os seus próprios logs de categoria 'user'
       const filters = {
         page: query?.page ? Number(query.page) : 1,
         limit: query?.limit ? Number(query.limit) : 20,

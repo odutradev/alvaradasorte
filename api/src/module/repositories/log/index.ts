@@ -67,7 +67,6 @@ const logRepository = {
       )
     }
 
-    // Ordenação decrescente por data (mais recentes primeiro)
     rows.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
     const count = rows.length

@@ -15,7 +15,7 @@ export const SUPPORTED_LOTTERIES = [
 ] as const
 
 const CAIXA_BASE_URL = 'https://servicebus2.caixa.gov.br/portaldeloterias/api'
-const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
+const CACHE_TTL_MS = 5 * 60 * 1000
 
 interface CacheEntry {
   timestamp: number
@@ -29,7 +29,6 @@ const parseCaixaDateToIso = (dateStr?: string): string | null => {
   const parts = dateStr.split('/')
   if (parts.length !== 3) return null
   const [day, month, year] = parts
-  // Draws usually occur at 20:00 (Brasilia time, UTC-3)
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T20:00:00.000Z`
 }
 
@@ -85,7 +84,6 @@ export const fetchLotteryFromCaixa = async (
 
     return result
   } catch (error) {
-    // If request failed but we have stale cache, return it as fallback
     if (cached) {
       return cached.data
     }
@@ -100,7 +98,6 @@ export const fetchAllLotteries = async (): Promise<LotteryModalityInfo[]> => {
       if (data) return data
     } catch {}
 
-    // Fallback item if fetch fails
     return {
       type: item.type,
       name: item.name,
