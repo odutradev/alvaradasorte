@@ -1,5 +1,5 @@
+import { sendResultEmailToParticipantGroup } from '@module/services/sweepstakeResultNotifier'
 import { sendResultEmailParamsSchema, updateParticipationBodySchema, deleteParticipationParamsSchema, addManualParticipationBodySchema, listSweepstakesResponseSchema, listSweepstakesQuerySchema, setSweepstakeResultSchema, addSweepstakeGamesSchema, sweepstakeDetailsSchema, updateSweepstakeSchema, createSweepstakeSchema, sweepstakeParamsSchema, joinSweepstakeBodySchema, participationSchema, sweepstakeSchema } from './schemas'
-import { sweepstakeResultTemplate } from '@email/templates/sweepstakeResult'
 import participationRepository from '@module/repositories/participation/index'
 import sweepstakeRepository from '@module/repositories/sweepstake/index'
 import userRepository from '@module/repositories/user/index'
@@ -765,85 +765,20 @@ export const sendParticipationResultEmail = defineAction(
         return manageError({ code: 'conflict', details: 'O e-mail de resultado já foi enviado para todas as cotas deste participante' })
       }
 
-      const totalUserQuotas = userParticipations.reduce((sum, p) => sum + (p.quotaCount ?? 1), 0)
-
-      const drawnNumbersFormatted = sweepstake.result
-        .map((n) => (n < 10 ? `0${n}` : String(n)))
-        .join(' - ')
-
-      const lotteryInfo = sweepstake.contestNumber
-        ? `**Concurso:** ${sweepstake.contestNumber}${sweepstake.lotteryType ? ` (${sweepstake.lotteryType.toUpperCase()})` : ''}`
-        : (sweepstake.lotteryType ? `**Modalidade:** ${sweepstake.lotteryType.toUpperCase()}` : '')
-
-      const totalFilledQuotas = allSweepstakeParticipations.reduce((sum, p) => sum + (p.quotaCount ?? 1), 0)
-      const collectedValue = (totalFilledQuotas * sweepstake.quotaPrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-      const prizeValue = sweepstake.prizeValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
-
-      const resultSet = new Set(sweepstake.result)
-      let gamesList = '_Nenhum jogo cadastrado no bolão._'
-      if (sweepstake.games && sweepstake.games.length > 0) {
-        gamesList = sweepstake.games.map((game, idx) => {
-          const sortedGame = [...game].sort((a, b) => a - b)
-          const matched = sortedGame.filter((n) => resultSet.has(n))
-          const hits = matched.length
-          const formattedNums = sortedGame.map((n) => {
-            const formatted = n < 10 ? `0${n}` : String(n)
-            return resultSet.has(n) ? `**${formatted}**` : formatted
-          }).join(' - ')
-
-          const hitsDescription = hits > 0
-            ? `🎯 **${hits} ${hits === 1 ? 'acerto' : 'acertos'}** (dezena(s): **${matched.map((n) => (n < 10 ? `0${n}` : String(n))).join(', ')}**)`
-            : `⚪ Nenhum acerto`
-
-          return `- **Jogo ${idx + 1}** (${sortedGame.length} dezenas): ${hitsDescription}\n  - Dezenas: ${formattedNums}`
-        }).join('\n\n')
-      }
-
-      const emailResult = await sweepstakeResultTemplate.send({
-        to: user.email,
-        variables: {
-          userName: user.fullName || user.name || participation.userName,
-          sweepstakeTitle: sweepstake.title,
-          drawnNumbers: drawnNumbersFormatted,
-          lotteryInfo,
-          quotaCount: totalUserQuotas,
-          quotaLabel: totalUserQuotas === 1 ? 'cota' : 'cotas',
-          collectedValue,
-          prizeValue,
-          gamesList
+      const sendResult = await sendResultEmailToParticipantGroup(
+        sweepstake,
+        allSweepstakeParticipations,
+        user,
+        userParticipations,
+        {
+          triggeredBy: 'admin',
+          adminUserId: ids.userId
         }
-      })
-
-      if (!emailResult.success) {
-        return manageError({ code: 'internal_error', details: emailResult.error ?? 'Falha ao enviar e-mail' })
-      }
-
-      const now = new Date().toISOString()
-
-      await Promise.all(
-        userParticipations.map((p) =>
-          participationRepository.update(p.id, {
-            resultEmailSent: true,
-            resultEmailSentAt: now
-          })
-        )
       )
 
-      logRepository.create({
-        category: 'admin',
-        level: 'info',
-        action: 'EMAIL_RESULT_SENT',
-        title: 'E-mail de resultado enviado (unificado)',
-        description: `E-mail de resultado do bolão "${sweepstake.title}" enviado para ${user.email} (${participation.userName}) cobrindo ${totalUserQuotas} cota(s) em ${userParticipations.length} registro(s)`,
-        userId: ids.userId,
-        targetId: params.id,
-        details: {
-          participationId: params.participationId,
-          userEmail: user.email,
-          totalQuotas: totalUserQuotas,
-          participationsCount: userParticipations.length
-        }
-      })
+      if (!sendResult.success) {
+        return manageError({ code: 'internal_error', details: sendResult.error ?? 'Falha ao enviar e-mail' })
+      }
 
       const updatedCurrent = await participationRepository.findById(params.participationId)
       return updatedCurrent!
