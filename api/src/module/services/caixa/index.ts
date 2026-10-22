@@ -1,5 +1,4 @@
-import axios from 'axios'
-
+import { createCaixaClient } from './client'
 import type { CaixaLotteryRawResponse, LotteryModalityInfo } from './types'
 
 export const SUPPORTED_LOTTERIES = [
@@ -53,13 +52,8 @@ export const fetchLotteryFromCaixa = async (
       ? `${CAIXA_BASE_URL}/${normalizedType}/${contestNumber}`
       : `${CAIXA_BASE_URL}/${normalizedType}`
 
-    const response = await axios.get<CaixaLotteryRawResponse>(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        Accept: 'application/json'
-      },
-      timeout: 10000
-    })
+    const client = createCaixaClient()
+    const response = await client.get<CaixaLotteryRawResponse>(url)
 
     const raw = response.data
     const drawDateIso = parseCaixaDateToIso(raw.dataProximoConcurso || raw.dataApuracao)
