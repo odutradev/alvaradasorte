@@ -46,6 +46,30 @@ const SweepstakeCard = ({ sweepstake, onViewDetails, onEdit, onDelete }: Sweepst
               sx={{ fontWeight: 600, height: 22, fontSize: '0.75rem' }}
             />
           )}
+          {sweepstake.resultSyncLog?.status === 'success' && (
+            <Chip
+              label={`Resultado obtido (${sweepstake.resultSyncLog.attemptsCount}ª tentativa)`}
+              size="small"
+              color="success"
+              sx={{ fontWeight: 600, height: 22, fontSize: '0.75rem' }}
+            />
+          )}
+          {sweepstake.resultSyncLog?.status === 'pending' && (
+            <Chip
+              label={`Buscando resultado (${sweepstake.resultSyncLog.attemptsCount}/6)`}
+              size="small"
+              color="warning"
+              sx={{ fontWeight: 600, height: 22, fontSize: '0.75rem' }}
+            />
+          )}
+          {sweepstake.resultSyncLog?.status === 'failed' && (
+            <Chip
+              label={`Falha na apuração (${sweepstake.resultSyncLog.attemptsCount}/6)`}
+              size="small"
+              color="error"
+              sx={{ fontWeight: 600, height: 22, fontSize: '0.75rem' }}
+            />
+          )}
         </Box>
         {sweepstake.description && (
           <Typography variant="body2" color="text.secondary" sx={{ mt: -0.5 }}>

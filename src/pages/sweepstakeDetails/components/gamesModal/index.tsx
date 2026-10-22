@@ -41,6 +41,7 @@ import {
 } from './styles'
 import { LOTTERY_METADATA, getLotteryMeta } from '@services/lotteries'
 import { getLotteryRule, getGamePrice } from '@utils/lotteryRules'
+import ResultSyncStatus from '../resultSyncStatus'
 import { formatCurrency } from '@utils/string'
 import Modal from '@components/modal'
 import useGamesModal from './hook'
@@ -495,6 +496,8 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
               {isFetchingCaixaResult ? 'Buscando da Caixa...' : 'Buscar Resultado Oficial na Caixa'}
             </Button>
           </Box>
+
+          <ResultSyncStatus sweepstake={sweepstake} />
 
           <ResultCard elevation={0}>
             {/* Status e Ações do Volante de Resultado */}

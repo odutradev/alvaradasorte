@@ -1,3 +1,21 @@
+export interface ResultSyncAttempt {
+  attemptNumber: number
+  timestamp: string
+  success: boolean
+  message?: string
+  drawnNumbers?: number[]
+}
+
+export interface ResultSyncLog {
+  status: 'pending' | 'success' | 'failed'
+  attemptsCount: number
+  maxAttempts: number
+  lastAttemptAt?: string
+  nextAttemptAt?: string
+  successAt?: string
+  attempts: ResultSyncAttempt[]
+}
+
 export interface SweepstakeResponse {
   purchaseLimitDate: string
   availableQuotas: number
@@ -15,6 +33,7 @@ export interface SweepstakeResponse {
   id: string
   contestNumber?: number
   lotteryType?: string
+  resultSyncLog?: ResultSyncLog
   metadata: {
     filledQuotas: number
   }

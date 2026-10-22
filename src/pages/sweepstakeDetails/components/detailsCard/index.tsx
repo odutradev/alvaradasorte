@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 import { CardContainer, DividerLine, HeaderRow, ActionButtonsGroup } from './styles'
 import { capitalizeWords, formatCurrency } from '@utils/string'
 import { QuotaProgress } from '@components/quotaProgress'
+import ResultSyncStatus from '../resultSyncStatus'
 import MessageModal from '../messageModal'
 import EditForm from './components/editForm'
 import GamesModal from '../gamesModal'
@@ -106,6 +107,13 @@ const DetailsCard = ({ data, preset, presets, onUpdate }: DetailsCardProps) => {
               label="Conta Recebedora"
               value={`${preset.receiverName} (${preset.bank})`}
             />
+          )}
+
+          {data.lotteryType && (
+            <>
+              <DividerLine />
+              <ResultSyncStatus sweepstake={data} />
+            </>
           )}
         </>
       )}
