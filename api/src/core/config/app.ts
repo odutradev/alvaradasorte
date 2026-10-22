@@ -2,8 +2,13 @@ import fs from 'fs'
 import path from 'path'
 
 const resolveVersion = (): string => {
-  if (process.env.APP_VERSION) return process.env.APP_VERSION
-  if (process.env.npm_package_version) return process.env.npm_package_version
+  try {
+    const dockerPkgPath = path.resolve(process.cwd(), 'root-package.json')
+    if (fs.existsSync(dockerPkgPath)) {
+      const data = JSON.parse(fs.readFileSync(dockerPkgPath, 'utf8'))
+      if (data.version) return data.version
+    }
+  } catch {}
 
   try {
     const rootPkgPath = path.resolve(process.cwd(), '../package.json')
@@ -11,9 +16,7 @@ const resolveVersion = (): string => {
       const data = JSON.parse(fs.readFileSync(rootPkgPath, 'utf8'))
       if (data.version) return data.version
     }
-  } catch {
-    // ignore
-  }
+  } catch {}
 
   try {
     const pkgPath = path.resolve(process.cwd(), 'package.json')
@@ -21,9 +24,7 @@ const resolveVersion = (): string => {
       const data = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
       if (data.version) return data.version
     }
-  } catch {
-    // ignore
-  }
+  } catch {}
 
   return '1.0.0'
 }

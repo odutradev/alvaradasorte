@@ -12,30 +12,35 @@ export default defineConfig(({ mode }) => {
     if (!env[key]) throw new Error(chalk.red(`The environment variable ${chalk.bold(key)} is not defined.`))
   })
 
-  let appVersion = env.VITE_APP_VERSION || process.env.VITE_APP_VERSION
-  if (!appVersion) {
+  const getPackageVersion = (): string => {
     try {
-      const rootPkgPath = path.resolve(__dirname, '../package.json')
-      if (fs.existsSync(rootPkgPath)) {
-        const rootPkg = JSON.parse(fs.readFileSync(rootPkgPath, 'utf-8'))
-        appVersion = rootPkg.version
+      const dockerPkg = path.resolve(__dirname, 'root-package.json')
+      if (fs.existsSync(dockerPkg)) {
+        const pkg = JSON.parse(fs.readFileSync(dockerPkg, 'utf-8'))
+        if (pkg.version) return pkg.version
       }
-    } catch {
-      // ignore
-    }
-  }
-  if (!appVersion) {
+    } catch {}
+
     try {
-      const localPkgPath = path.resolve(__dirname, 'package.json')
-      if (fs.existsSync(localPkgPath)) {
-        const localPkg = JSON.parse(fs.readFileSync(localPkgPath, 'utf-8'))
-        appVersion = localPkg.version
+      const rootPkg = path.resolve(__dirname, '../package.json')
+      if (fs.existsSync(rootPkg)) {
+        const pkg = JSON.parse(fs.readFileSync(rootPkg, 'utf-8'))
+        if (pkg.version) return pkg.version
       }
-    } catch {
-      // ignore
-    }
+    } catch {}
+
+    try {
+      const localPkg = path.resolve(__dirname, 'package.json')
+      if (fs.existsSync(localPkg)) {
+        const pkg = JSON.parse(fs.readFileSync(localPkg, 'utf-8'))
+        if (pkg.version) return pkg.version
+      }
+    } catch {}
+
+    return '1.0.0'
   }
-  appVersion = appVersion || '3.0.1'
+
+  const appVersion = getPackageVersion()
 
   return {
     define: {

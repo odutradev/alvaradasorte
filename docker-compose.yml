@@ -1,14 +1,15 @@
 services:
   api:
     build:
-      context: ./api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./api/Dockerfile
     restart: unless-stopped
+    volumes:
+      - ./package.json:/app/root-package.json:ro
     expose:
       - "80"
     environment:
       - PORT=80
-      - APP_VERSION=${APP_VERSION:-3.0.1}
       - NODE_ENV=${NODE_ENV:-${ENV:-production}}
       - ENV=${ENV:-${NODE_ENV:-production}}
       - CORS_ORIGIN=${CORS_ORIGIN:-${CORS_ALLOWED_ORIGINS:-*}}
@@ -42,10 +43,9 @@ services:
 
   ui:
     build:
-      context: ./ui
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./ui/Dockerfile
       args:
-        - VITE_APP_VERSION=${VITE_APP_VERSION:-${APP_VERSION:-3.0.1}}
         - VITE_BASE_URL=${VITE_BASE_URL:-${VITE_API_URL:-https://api.alvaradasorte.odutra.com}}
         - VITE_FIREBASE_API_KEY=${VITE_FIREBASE_API_KEY}
         - VITE_FIREBASE_AUTH_DOMAIN=${VITE_FIREBASE_AUTH_DOMAIN}
