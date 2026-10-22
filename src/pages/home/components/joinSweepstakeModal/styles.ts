@@ -64,3 +64,12 @@ export const TotalSummaryBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main + '12',
   border: `1px solid ${theme.palette.primary.main + '30'}`
 }))
+
+export const SuggestionToggleBox = styled(Box)(({ theme }) => ({
+  flexDirection: 'column',
+  display: 'flex',
+  padding: theme.spacing(1.5, 2),
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius * 1.5,
+  backgroundColor: theme.palette.background.paper
+}))
