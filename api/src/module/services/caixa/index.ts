@@ -35,7 +35,8 @@ const parseCaixaDateToIso = (dateStr?: string): string | null => {
 
 export const fetchLotteryFromCaixa = async (
   type: string,
-  contestNumber?: number
+  contestNumber?: number,
+  options?: { forceRefresh?: boolean }
 ): Promise<LotteryModalityInfo | null> => {
   const normalizedType = type.toLowerCase().trim()
   const meta = SUPPORTED_LOTTERIES.find((l) => l.type === normalizedType)
@@ -44,7 +45,7 @@ export const fetchLotteryFromCaixa = async (
 
   const cacheKey = contestNumber ? `${normalizedType}-${contestNumber}` : normalizedType
   const cached = memoryCache.get(cacheKey)
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+  if (!options?.forceRefresh && cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.data
   }
 
