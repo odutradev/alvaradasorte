@@ -59,6 +59,13 @@ export const ValueText = styled(Typography)({
   textAlign: 'right'
 })
 
+export const LogsButton = styled(Button)(({ theme }) => ({
+  width: '100%',
+  borderRadius: theme.shape.borderRadius * 1.5,
+  textTransform: 'none',
+  fontWeight: 600
+}))
+
 export const EditProfileButton = styled(Button)(({ theme }) => ({
   width: '100%',
   borderRadius: theme.shape.borderRadius * 1.5,

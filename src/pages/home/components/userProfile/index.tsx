@@ -6,7 +6,9 @@ import LogoutIcon from '@mui/icons-material/Logout'
 import AppleIcon from '@mui/icons-material/Apple'
 import Typography from '@mui/material/Typography'
 import EditIcon from '@mui/icons-material/Edit'
+import HistoryIcon from '@mui/icons-material/History'
 import Tooltip from '@mui/material/Tooltip'
+import { useNavigate } from 'react-router-dom'
 
 import {
   ProfileCard,
@@ -15,6 +17,7 @@ import {
   InfoRow,
   ValueText,
   ActionsContainer,
+  LogsButton,
   EditProfileButton,
   LogoutButton,
   ProviderRow,
@@ -50,6 +53,7 @@ const ROLE_LABEL_MAP: Record<string, string> = {
 }
 
 const UserProfile = ({ onEditProfile, isProfileIncomplete, sweepstakes, user }: UserProfileProps) => {
+  const navigate = useNavigate()
   const { logout } = useAuth()
   const displayName = user.fullName ?? user.name
   const initials = displayName?.substring(0, 2).toUpperCase() ?? 'UN'
@@ -108,6 +112,14 @@ const UserProfile = ({ onEditProfile, isProfileIncomplete, sweepstakes, user }: 
         </InfoRow>
       </InfoContainer>
       <ActionsContainer>
+        <LogsButton
+          variant="contained"
+          color="primary"
+          startIcon={<HistoryIcon />}
+          onClick={() => navigate('/my-logs')}
+        >
+          Meus Logs de Ações
+        </LogsButton>
         <EditProfileButton
           variant="outlined"
           color="primary"

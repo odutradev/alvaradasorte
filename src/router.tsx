@@ -3,6 +3,7 @@ import { createElement } from 'react'
 
 import SweepstakeDetailsPage from '@pages/sweepstakeDetails'
 import Sweepstakes from '@pages/sweepstakes'
+import UserLogs from '@pages/userLogs'
 import NotFound from '@pages/notFound'
 import Presets from '@pages/presets'
 import Users from '@pages/users'
@@ -23,6 +24,7 @@ const appRouter = createBrowserRouter([
   { path: '/login', element: createElement(Login) },
   { path: '/', element: createElement(Home) },
   ...processProtectedRoutes([
+    { path: '/my-logs', element: createElement(UserLogs), auth: true },
     { path: '/sweepstakes', element: createElement(Sweepstakes), auth: true },
     { path: '/sweepstakes/:id', element: createElement(SweepstakeDetailsPage), auth: true },
     { path: '/presets', element: createElement(Presets), auth: true },
