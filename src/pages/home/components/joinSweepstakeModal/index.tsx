@@ -1,10 +1,10 @@
-import { Typography, IconButton, TextField, Button, Switch, Box, Chip } from '@mui/material'
+import { Typography, IconButton, TextField, Button, Switch, Box, Chip, CircularProgress } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
 import { useForm } from 'react-hook-form'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 
 import {
   FileUploadBox,
@@ -35,6 +35,8 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
   const [quotaCount, setQuotaCount] = useState<number>(1)
   const [indicateNumber, setIndicateNumber] = useState<boolean>(false)
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([])
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const isSubmittingRef = useRef<boolean>(false)
 
   const lotteryType = sweepstake?.lotteryType || 'megasena'
   const rule = useMemo(() => getLotteryRule(lotteryType), [lotteryType])
@@ -51,6 +53,7 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
   const totalPrice = quotaCount * quotaPrice
 
   const handleClose = () => {
+    if (isSubmittingRef.current) return
     setSelectedFile(null)
     setQuotaCount(1)
     setIndicateNumber(false)
@@ -60,10 +63,12 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
   }
 
   const handleIncrement = () => {
+    if (isSubmitting) return
     if (quotaCount < maxQuotas) setQuotaCount((prev) => prev + 1)
   }
 
   const handleDecrement = () => {
+    if (isSubmitting) return
     if (quotaCount > 1) {
       setQuotaCount((prev) => {
         const next = prev - 1
@@ -74,6 +79,7 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
   }
 
   const handleToggleNumber = (num: number) => {
+    if (isSubmitting) return
     if (selectedNumbers.includes(num)) {
       setSelectedNumbers((prev) => prev.filter((n) => n !== num))
     } else {
@@ -88,29 +94,37 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
   }
 
   const onSubmit = async (data: JoinFormData) => {
-    if (!data.receipt || data.receipt.length === 0) return
-    await useAction({
-      action: async () =>
-        await joinSweepstake(sweepstakeId, {
-          receipt: data.receipt[0],
-          quotaCount,
-          suggestedNumbers: indicateNumber && selectedNumbers.length > 0 ? selectedNumbers : undefined
-        }),
-      callback: () => {
-        setSelectedFile(null)
-        setQuotaCount(1)
-        setIndicateNumber(false)
-        setSelectedNumbers([])
-        onSuccess()
-        onClose()
-        reset()
-      },
-      toastMessages: {
-        success: 'Participação registrada!',
-        pending: 'Enviando comprovante...',
-        error: 'Erro ao participar'
-      }
-    })
+    if (!data.receipt || data.receipt.length === 0 || isSubmittingRef.current) return
+    isSubmittingRef.current = true
+    setIsSubmitting(true)
+
+    try {
+      await useAction({
+        action: async () =>
+          await joinSweepstake(sweepstakeId, {
+            receipt: data.receipt[0],
+            quotaCount,
+            suggestedNumbers: indicateNumber && selectedNumbers.length > 0 ? selectedNumbers : undefined
+          }),
+        callback: () => {
+          setSelectedFile(null)
+          setQuotaCount(1)
+          setIndicateNumber(false)
+          setSelectedNumbers([])
+          onSuccess()
+          onClose()
+          reset()
+        },
+        toastMessages: {
+          success: 'Participação registrada!',
+          pending: 'Enviando comprovante...',
+          error: 'Erro ao participar'
+        }
+      })
+    } finally {
+      isSubmittingRef.current = false
+      setIsSubmitting(false)
+    }
   }
 
   const { onChange, ...restRegister } = register('receipt', { required: true })
@@ -139,17 +153,18 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
       }}
       actions={
         <>
-          <Button onClick={handleClose} color="inherit" size="medium">
+          <Button onClick={handleClose} color="inherit" size="medium" disabled={isSubmitting}>
             Cancelar
           </Button>
           <Button
             type="submit"
             variant="contained"
             color="primary"
-            disabled={!selectedFile}
+            disabled={!selectedFile || isSubmitting}
+            startIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : undefined}
             size="medium"
           >
-            Confirmar
+            {isSubmitting ? 'Enviando...' : 'Confirmar'}
           </Button>
         </>
       }
@@ -161,11 +176,12 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
               Quantidade de Cotas
             </Typography>
             <QuantityControl>
-              <IconButton size="small" onClick={handleDecrement} disabled={quotaCount <= 1}>
+              <IconButton size="small" onClick={handleDecrement} disabled={quotaCount <= 1 || isSubmitting}>
                 <RemoveIcon fontSize="small" />
               </IconButton>
               <TextField
                 value={quotaCount}
+                disabled={isSubmitting}
                 onChange={(e) => {
                   const val = parseInt(e.target.value, 10)
                   if (isNaN(val)) return
@@ -182,7 +198,7 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
                 size="small"
                 variant="outlined"
               />
-              <IconButton size="small" onClick={handleIncrement} disabled={quotaCount >= maxQuotas}>
+              <IconButton size="small" onClick={handleIncrement} disabled={quotaCount >= maxQuotas || isSubmitting}>
                 <AddIcon fontSize="small" />
               </IconButton>
             </QuantityControl>
@@ -213,6 +229,7 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
             <Switch
               size="small"
               checked={indicateNumber}
+              disabled={isSubmitting}
               onChange={(e) => {
                 setIndicateNumber(e.target.checked)
                 if (!e.target.checked) setSelectedNumbers([])
@@ -235,7 +252,7 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
                       key={num}
                       size="small"
                       label={num < 10 ? `0${num}` : num}
-                      onDelete={() => handleToggleNumber(num)}
+                      onDelete={isSubmitting ? undefined : () => handleToggleNumber(num)}
                       sx={{
                         height: 20,
                         fontSize: '0.7rem',
@@ -252,6 +269,7 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
                     size="small"
                     variant="text"
                     color="inherit"
+                    disabled={isSubmitting}
                     onClick={() => setSelectedNumbers([])}
                     sx={{ fontSize: '0.7rem', minWidth: 'auto', p: 0, textTransform: 'none' }}
                   >
@@ -269,7 +287,14 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
                       selected={isSelected}
                       badgeColor={lotteryColor}
                       onClick={() => handleToggleNumber(num)}
-                      sx={{ minWidth: 32, width: 32, height: 32, fontSize: '0.75rem' }}
+                      sx={{
+                        minWidth: 32,
+                        width: 32,
+                        height: 32,
+                        fontSize: '0.75rem',
+                        cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                        opacity: isSubmitting ? 0.6 : 1
+                      }}
                     >
                       {num < 10 ? `0${num}` : num}
                     </NumberBall>
@@ -296,11 +321,16 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
             </Typography>
           </InstructionBox>
 
-          <FileUploadBox component="label" htmlFor="receipt-upload">
+          <FileUploadBox
+            component="label"
+            htmlFor={isSubmitting ? undefined : 'receipt-upload'}
+            sx={isSubmitting ? { opacity: 0.6, cursor: 'not-allowed', pointerEvents: 'none' } : undefined}
+          >
             <input
               {...restRegister}
               id="receipt-upload"
               type="file"
+              disabled={isSubmitting}
               accept="image/*,application/pdf"
               style={{ display: 'none' }}
               onChange={(e) => {
