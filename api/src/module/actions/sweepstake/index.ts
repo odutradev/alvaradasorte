@@ -741,11 +741,15 @@ export const sendParticipationResultEmail = defineAction(
         return manageError({ code: 'bad_request', details: 'O bolão ainda não possui resultado apurado' })
       }
 
-      if (participation.resultEmailSent) {
-        return manageError({ code: 'conflict', details: 'O e-mail de resultado já foi enviado para este participante' })
+      // Busca todas as participações do bolão para unificar as cotas do mesmo usuário
+      const allSweepstakeParticipations = await participationRepository.findBySweepstakeId(params.id)
+
+      let user = participation.userId ? await userRepository.findById(participation.userId) : null
+      if (!user && participation.userName) {
+        const allUsers = await userRepository.findAll({ limit: 500 })
+        user = allUsers.rows.find((u) => u.name === participation.userName || u.fullName === participation.userName) ?? null
       }
 
-      const user = await userRepository.findById(participation.userId)
       if (!user || !user.email) {
         return manageError({ code: 'bad_request', details: 'Usuário participante não encontrado ou sem e-mail cadastrado' })
       }
@@ -753,6 +757,20 @@ export const sendParticipationResultEmail = defineAction(
       if (user.notifySweepstakeResult === false) {
         return manageError({ code: 'bad_request', details: 'O participante optou por não receber notificações de resultado por e-mail' })
       }
+
+      // Identifica todas as participações do mesmo usuário neste bolão
+      const userParticipations = allSweepstakeParticipations.filter(
+        (p) => p.userId === participation.userId || (p.userId === user?.id)
+      )
+
+      // Se todas as participações desse usuário já foram enviadas, impede reenvio
+      const allAlreadySent = userParticipations.length > 0 && userParticipations.every((p) => p.resultEmailSent)
+      if (allAlreadySent) {
+        return manageError({ code: 'conflict', details: 'O e-mail de resultado já foi enviado para todas as cotas deste participante' })
+      }
+
+      // Unifica a soma de cotas do participante
+      const totalUserQuotas = userParticipations.reduce((sum, p) => sum + (p.quotaCount ?? 1), 0)
 
       const drawnNumbersFormatted = sweepstake.result
         .map((n) => (n < 10 ? `0${n}` : String(n)))
@@ -762,8 +780,7 @@ export const sendParticipationResultEmail = defineAction(
         ? `**Concurso:** ${sweepstake.contestNumber}${sweepstake.lotteryType ? ` (${sweepstake.lotteryType.toUpperCase()})` : ''}`
         : (sweepstake.lotteryType ? `**Modalidade:** ${sweepstake.lotteryType.toUpperCase()}` : '')
 
-      const participations = await participationRepository.findBySweepstakeId(params.id)
-      const totalFilledQuotas = participations.reduce((sum, p) => sum + (p.quotaCount ?? 1), 0)
+      const totalFilledQuotas = allSweepstakeParticipations.reduce((sum, p) => sum + (p.quotaCount ?? 1), 0)
       const collectedValue = (totalFilledQuotas * sweepstake.quotaPrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
       const prizeValue = sweepstake.prizeValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
@@ -787,8 +804,8 @@ export const sendParticipationResultEmail = defineAction(
           sweepstakeTitle: sweepstake.title,
           drawnNumbers: drawnNumbersFormatted,
           lotteryInfo,
-          quotaCount: participation.quotaCount ?? 1,
-          quotaLabel: (participation.quotaCount ?? 1) === 1 ? 'cota' : 'cotas',
+          quotaCount: totalUserQuotas,
+          quotaLabel: totalUserQuotas === 1 ? 'cota' : 'cotas',
           collectedValue,
           prizeValue,
           gamesList
@@ -800,23 +817,35 @@ export const sendParticipationResultEmail = defineAction(
       }
 
       const now = new Date().toISOString()
-      const updatedParticipation = await participationRepository.update(params.participationId, {
-        resultEmailSent: true,
-        resultEmailSentAt: now
-      })
+
+      // Marca enviado em TODAS as participações do usuário neste bolão
+      await Promise.all(
+        userParticipations.map((p) =>
+          participationRepository.update(p.id, {
+            resultEmailSent: true,
+            resultEmailSentAt: now
+          })
+        )
+      )
 
       logRepository.create({
         category: 'admin',
         level: 'info',
         action: 'EMAIL_RESULT_SENT',
-        title: 'E-mail de resultado enviado',
-        description: `E-mail de resultado do bolão "${sweepstake.title}" enviado para ${user.email} (${participation.userName})`,
+        title: 'E-mail de resultado enviado (unificado)',
+        description: `E-mail de resultado do bolão "${sweepstake.title}" enviado para ${user.email} (${participation.userName}) cobrindo ${totalUserQuotas} cota(s) em ${userParticipations.length} registro(s)`,
         userId: ids.userId,
         targetId: params.id,
-        details: { participationId: params.participationId, userEmail: user.email }
+        details: {
+          participationId: params.participationId,
+          userEmail: user.email,
+          totalQuotas: totalUserQuotas,
+          participationsCount: userParticipations.length
+        }
       })
 
-      return updatedParticipation!
+      const updatedCurrent = await participationRepository.findById(params.participationId)
+      return updatedCurrent!
     } catch (error) {
       return manageError({ code: 'internal_error', error })
     }
