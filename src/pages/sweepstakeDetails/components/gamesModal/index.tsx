@@ -51,14 +51,12 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
     balance,
     allocationSuggestion,
     newGameInput,
-    resultInput,
     resultNumbers,
     isSavingGames,
     isSavingResult,
     isFetchingCaixaResult,
     setActiveGameId,
     setNewGameInput,
-    setResultInput,
     toggleNumber,
     toggleResultNumber,
     clearResultNumbers,
@@ -619,15 +617,6 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                   )
                 })}
               </NumberGrid>
-
-              <TextField
-                size="small"
-                fullWidth
-                label="Ou digite separadas por vírgula"
-                placeholder="Ex: 04, 12, 23, 31, 45, 58"
-                value={resultInput}
-                onChange={(e) => setResultInput(e.target.value)}
-              />
             </ResultCard>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 1 }}>
