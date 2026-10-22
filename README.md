@@ -381,7 +381,14 @@ npm --prefix ui install
 
 ### Execução em Desenvolvimento
 
-Você pode rodar os dois projetos a partir da raiz:
+Você pode rodar a API e o Frontend simultaneamente em paralelo a partir da raiz com um único comando:
+
+```bash
+# Executa API e UI em paralelo com prefixos e cores formatadas
+npm run dev
+```
+
+Caso prefira rodar os serviços em terminais separados:
 
 ```bash
 # Terminal 1: Iniciar a API em modo watch
@@ -400,6 +407,9 @@ Ou navegando até a pasta de cada módulo:
 
 | Comando | Descrição |
 | :--- | :--- |
+| `npm run dev` | Inicia Backend e Frontend simultaneamente via `concurrently` |
+| `npm run dev:api` | Inicia apenas o servidor de desenvolvimento da API |
+| `npm run dev:ui` | Inicia apenas o servidor de desenvolvimento da UI |
 | `npm run build` | Executa o build de produção da API e da UI |
 | `npm run build:api` | Compila o backend com `tsup` para `api/dist` |
 | `npm run build:ui` | Checa tipos com `tsc` e gera os estáticos da UI em `ui/dist` |
