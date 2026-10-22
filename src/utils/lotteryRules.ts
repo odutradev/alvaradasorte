@@ -26,14 +26,10 @@ export const getGamePrice = (type: string | undefined, numbersCount: number): nu
   const rule = getLotteryRule(type)
   const price = rule.prices[String(numbersCount)]
   if (price !== undefined) return price
-  // Fallback para o menor preço caso não encontre
   const minPrice = rule.prices[String(rule.minNumbers)]
   return minPrice || 0
 }
 
-/**
- * Combinação simples C(n, k)
- */
 export const combinations = (n: number, k: number): number => {
   if (k < 0 || k > n) return 0
   if (k === 0 || k === n) return 1
@@ -45,9 +41,6 @@ export const combinations = (n: number, k: number): number => {
   return Math.round(result)
 }
 
-/**
- * Retorna as chances oficiais de acertar o prêmio principal com a quantidade de dezenas selecionada
- */
 export const getLotteryOdds = (type: string | undefined, numbersCount: number): string => {
   const rule = getLotteryRule(type)
   const n = rule.totalNumbers
@@ -60,9 +53,6 @@ export const getLotteryOdds = (type: string | undefined, numbersCount: number): 
   return `1 em ${odds.toLocaleString('pt-BR')}`
 }
 
-/**
- * Quantidade de apostas simples equivalentes contidas no bilhete
- */
 export const getEquivalentGamesCount = (type: string | undefined, numbersCount: number): number => {
   const rule = getLotteryRule(type)
   return combinations(numbersCount, rule.minNumbers)

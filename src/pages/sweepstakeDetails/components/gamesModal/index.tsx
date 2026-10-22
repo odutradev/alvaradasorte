@@ -151,7 +151,6 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
       }
     >
       <ModalContainer sx={{ gap: 2 }}>
-        {/* Abas Principais */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={mainTab}
@@ -184,10 +183,8 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
           </Tabs>
         </Box>
 
-        {/* ABA 1: FILA DE JOGOS & PREENCHIMENTO */}
         {mainTab === 'games' && (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* Barra Financeira */}
             <Box
               sx={{
                 display: 'flex',
@@ -229,7 +226,6 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
               </Box>
             </Box>
 
-            {/* CARD DE SUGESTÃO: Mostra quais jogos fazer e botão para criar a fila de preenchimento */}
             {allocationSuggestion.allocations.length > 0 && (
               <SuggestionCard elevation={0} sx={{ p: 2, gap: 1.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
@@ -277,7 +273,6 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
               </SuggestionCard>
             )}
 
-            {/* PAINEL DE NÚMEROS INDICADOS PELOS PARTICIPANTES */}
             <SuggestedNumbersCard elevation={0}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, flexWrap: 'wrap' }}>
@@ -404,7 +399,6 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
               )}
             </SuggestedNumbersCard>
 
-            {/* ÁREA DO VOLANTE: Preenche o jogo selecionado na fila */}
             <Box
               sx={{
                 p: 2,
@@ -528,9 +522,7 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
               )}
             </Box>
 
-            {/* FILA DE JOGOS: Mostra todos os jogos, o status de preenchimento e slots vazios */}
             <GamesSection sx={{ gap: 1.5 }}>
-              {/* Cabeçalho da Fila com Ações Globais */}
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Typography variant="subtitle1" fontWeight={700}>
@@ -610,7 +602,6 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                 </Box>
               </Box>
 
-              {/* Opções de Adição de Novo Jogo soltas, sem card e sem scroll */}
               <AddGameItemsContainer>
                 <Typography
                   variant="caption"
@@ -684,7 +675,6 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                     const gamePrice = getGamePrice(lotteryType, game.targetCount)
                     const hits = getHitsCount(game.numbers)
 
-                    // Cria slots vazios para completar o targetCount visualmente
                     const slots = Array.from({ length: game.targetCount }, (_, i) => {
                       const num = game.numbers[i]
                       return {
@@ -718,7 +708,6 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                           />
                         </Box>
 
-                        {/* Slots do Jogo (Números marcados + espaços pontilhados vazios) */}
                         <NumbersContainer sx={{ gap: 0.5 }}>
                           {slots.map((slot, sIdx) => {
                             const isMatched = slot.filled && sweepstake.result?.includes(slot.number)
@@ -797,7 +786,6 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
           </Box>
         )}
 
-        {/* ABA 2: RESULTADO DO SORTEIO */}
         {mainTab === 'result' && (
           <ResultSection sx={{ gap: 2 }}>
             <ResultSyncStatus sweepstake={sweepstake} />

@@ -133,7 +133,6 @@ const UserLogs = () => {
                     </Typography>
                   )}
 
-                  {/* Detalhes específicos (Cotas, Dezenas Indicadas, Valor) */}
                   {log.details && (
                     <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1, pt: 0.5 }}>
                       {log.details.quotaCount !== undefined && (

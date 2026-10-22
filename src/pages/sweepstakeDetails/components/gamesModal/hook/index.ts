@@ -29,13 +29,11 @@ const useGamesModal = (
 
   const rule = useMemo(() => getLotteryRule(lotteryType), [lotteryType])
 
-  // Inicializa estado quando abre o modal
   useEffect(() => {
     if (!open) return
     const initialType = sweepstake.lotteryType || 'megasena'
     setLotteryType(initialType)
 
-    // Converte jogos existentes salvos para o formato de QueuedGame
     const initialGames: QueuedGame[] = (sweepstake.games ?? []).map((numbers, idx) => ({
       id: `saved-${idx}-${Date.now()}`,
       targetCount: numbers.length,
@@ -54,7 +52,6 @@ const useGamesModal = (
   const filledQuotas = sweepstake.participations?.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0) ?? 0
   const availableBudget = Number((filledQuotas * sweepstake.quotaPrice).toFixed(2))
 
-  // Custo total baseado no targetCount de cada jogo da fila
   const totalCurrentCost = useMemo(() => {
     return Number(
       queuedGames.reduce((acc, g) => acc + getGamePrice(lotteryType, g.targetCount), 0).toFixed(2)
@@ -63,7 +60,6 @@ const useGamesModal = (
 
   const balance = Number((availableBudget - totalCurrentCost).toFixed(2))
 
-  // Sugestão baseada no orçamento arrecadado
   const allocationSuggestion = useMemo(() => {
     return allocateGamesByBudget(lotteryType, availableBudget)
   }, [lotteryType, availableBudget])
@@ -73,7 +69,6 @@ const useGamesModal = (
     return queuedGames.find((g) => g.id === activeGameId) || null
   }, [queuedGames, activeGameId])
 
-  // Lista agregada de números indicados pelos participantes
   const suggestedNumbersList = useMemo<SuggestedNumberItem[]>(() => {
     const map = new Map<number, { participants: Set<string>; usedCount: number }>()
 
@@ -115,7 +110,6 @@ const useGamesModal = (
   )
   const pendingSuggestedCount = totalSuggestedCount - usedSuggestedCount
 
-  // Alterna número no jogo atualmente ativo
   const toggleNumber = useCallback(
     (num: number) => {
       if (!activeGameId) {
@@ -144,7 +138,6 @@ const useGamesModal = (
         const newQueue = [...prev]
         newQueue[gameIndex] = updatedGame
 
-        // Se completou este jogo, busca o próximo jogo incompleto da fila e foca nele automaticamente
         if (updatedNumbers.length === target.targetCount) {
           const nextPending = newQueue.find((g) => g.id !== activeGameId && g.numbers.length < g.targetCount)
           if (nextPending) {
@@ -160,7 +153,6 @@ const useGamesModal = (
     [activeGameId]
   )
 
-  // Aplica a sugestão criando a fila de jogos vazios para preenchimento
   const applySuggestionAsQueue = useCallback(() => {
     if (allocationSuggestion.allocations.length === 0) {
       toast.warn('Nenhuma sugestão disponível para o valor atual.')
@@ -189,7 +181,6 @@ const useGamesModal = (
     }
   }, [allocationSuggestion])
 
-  // Adiciona manualmente um jogo vazio de tamanho específico
   const addEmptyGameToQueue = useCallback((targetCount: number) => {
     const newGame: QueuedGame = {
       id: `manual-${Date.now()}`,
@@ -214,7 +205,6 @@ const useGamesModal = (
     []
   )
 
-  // Gera surpresinha para o jogo ativo (ou completa vagas restantes mantendo os indicados/atuais)
   const generateSurpresinhaForActive = useCallback(() => {
     if (!activeGameId) return
     setQueuedGames((prev) => {
@@ -232,7 +222,6 @@ const useGamesModal = (
     })
   }, [activeGameId, lotteryType, fillRemainingWithRandom, rule.totalNumbers])
 
-  // Gera surpresinha para um jogo específico (ou completa vagas restantes)
   const generateSurpresinhaForGame = useCallback(
     (gameId: string) => {
       setQueuedGames((prev) => {
@@ -252,7 +241,6 @@ const useGamesModal = (
     [lotteryType, fillRemainingWithRandom, rule.totalNumbers]
   )
 
-  // Preenche todos os jogos pendentes da fila completando com surpresinha
   const fillAllPendingWithSurpresinha = useCallback(() => {
     setQueuedGames((prev) =>
       prev.map((game) => {
@@ -271,7 +259,6 @@ const useGamesModal = (
     toast.success('Todos os jogos pendentes foram completados com surpresinha!')
   }, [lotteryType, fillRemainingWithRandom, rule.totalNumbers])
 
-  // Preenche um jogo individual com os números indicados
   const fillGameWithSuggested = useCallback(
     (gameId: string) => {
       const gameIndex = queuedGames.findIndex((g) => g.id === gameId)
@@ -283,12 +270,10 @@ const useGamesModal = (
         return
       }
 
-      // Prioriza números indicados ainda não usados na fila inteira
       const unusedSuggested = suggestedNumbersList
         .filter((s) => !s.isUsed && !target.numbers.includes(s.number))
         .map((s) => s.number)
 
-      // Fallback para outros indicados que ainda não estão neste jogo
       const fallbackSuggested = suggestedNumbersList
         .filter((s) => !target.numbers.includes(s.number))
         .map((s) => s.number)
@@ -321,7 +306,6 @@ const useGamesModal = (
     [queuedGames, suggestedNumbersList]
   )
 
-  // Preenche o jogo ativo com números indicados
   const fillActiveGameWithSuggested = useCallback(() => {
     if (!activeGameId) {
       toast.info('Selecione um jogo na fila para preencher com os números indicados.')
@@ -330,7 +314,6 @@ const useGamesModal = (
     fillGameWithSuggested(activeGameId)
   }, [activeGameId, fillGameWithSuggested])
 
-  // Preenche todos os jogos pendentes apenas com números indicados
   const fillAllPendingWithSuggested = useCallback(() => {
     const hasPending = queuedGames.some((g) => g.numbers.length < g.targetCount)
     if (!hasPending) {
@@ -395,7 +378,6 @@ const useGamesModal = (
     }
   }, [queuedGames, suggestedNumbersList])
 
-  // Limpa o jogo ativo
   const clearActiveGame = useCallback(() => {
     if (!activeGameId) return
     setQueuedGames((prev) =>
@@ -403,14 +385,12 @@ const useGamesModal = (
     )
   }, [activeGameId])
 
-  // Limpa um jogo pelo ID
   const clearGameById = useCallback((gameId: string) => {
     setQueuedGames((prev) =>
       prev.map((g) => (g.id === gameId ? { ...g, numbers: [] } : g))
     )
   }, [])
 
-  // Remove um jogo da fila
   const removeGameFromQueue = useCallback(
     (gameId: string) => {
       setQueuedGames((prev) => {
@@ -424,13 +404,11 @@ const useGamesModal = (
     [activeGameId]
   )
 
-  // Remove todos os jogos da fila
   const clearAllQueuedGames = useCallback(() => {
     setQueuedGames([])
     setActiveGameId(null)
   }, [])
 
-  // Adiciona jogos via digitação de texto
   const addGameFromInput = useCallback(() => {
     if (!newGameInput.trim()) return
 
@@ -458,14 +436,12 @@ const useGamesModal = (
     }
   }, [newGameInput, rule.minNumbers, rule.totalNumbers])
 
-  // Salva os jogos no servidor
   const handleSaveGames = useCallback(async () => {
     if (queuedGames.length === 0) {
       toast.warn('Nenhum jogo na lista para salvar.')
       return
     }
 
-    // Verifica se há jogos incompletos na fila
     const incomplete = queuedGames.filter((g) => g.numbers.length < g.targetCount)
     if (incomplete.length > 0) {
       toast.warn(
@@ -491,7 +467,6 @@ const useGamesModal = (
     }
   }, [sweepstake.id, queuedGames, onUpdate])
 
-  // Salva o resultado do sorteio
   const handleSaveResult = useCallback(async () => {
     const numbersToSave = resultNumbers.length > 0 ? resultNumbers : parseNumbers(resultInput)
     if (!numbersToSave.length) {
@@ -514,7 +489,6 @@ const useGamesModal = (
     }
   }, [sweepstake.id, resultNumbers, resultInput, onUpdate])
 
-  // Busca o resultado da Caixa
   const handleFetchCaixaResult = useCallback(async () => {
     setIsFetchingCaixaResult(true)
     try {

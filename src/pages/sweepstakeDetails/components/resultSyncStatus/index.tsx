@@ -62,7 +62,6 @@ export const ResultSyncStatus = ({ sweepstake }: ResultSyncStatusProps) => {
     StatusIcon = SyncIcon
   }
 
-  // Resumo em texto de 1 linha
   let summaryText = ''
   if (isSuccess) {
     if (syncLog?.successAt) {
@@ -117,7 +116,6 @@ export const ResultSyncStatus = ({ sweepstake }: ResultSyncStatusProps) => {
         </SyncRow>
       </CompactSyncContainer>
 
-      {/* Modal/Dialog de Histórico das Tentativas (não ocupa espaço na tela principal) */}
       <Dialog
         open={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}

@@ -14,10 +14,6 @@ export interface GameAllocationResult {
   totalGamesCount: number
 }
 
-/**
- * Aloca jogos da modalidade de acordo com o orçamento disponível,
- * priorizando jogos com mais dezenas (mais caros) e descendo para os mais baratos.
- */
 export const allocateGamesByBudget = (
   lotteryType: string | undefined,
   availableBudget: number
@@ -25,7 +21,6 @@ export const allocateGamesByBudget = (
   const rule = getLotteryRule(lotteryType)
   let remaining = Math.max(0, availableBudget)
 
-  // Lista de dezenas disponíveis na regra ordenadas do maior para o menor
   const numbersOptions = Object.keys(rule.prices)
     .map(Number)
     .filter((n) => !isNaN(n))
@@ -65,9 +60,6 @@ export const allocateGamesByBudget = (
   }
 }
 
-/**
- * Gera um único jogo aleatório (surpresinha) respeitando a quantidade de dezenas e o total da modalidade.
- */
 export const generateRandomGame = (
   lotteryType: string | undefined,
   numbersCount: number
@@ -85,9 +77,6 @@ export const generateRandomGame = (
   return Array.from(selected).sort((a, b) => a - b)
 }
 
-/**
- * Gera todos os jogos sorteados a partir do resultado de alocação de orçamento.
- */
 export const generateAllocatedGames = (
   lotteryType: string | undefined,
   allocations: GameAllocationItem[]

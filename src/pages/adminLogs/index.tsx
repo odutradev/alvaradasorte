@@ -110,7 +110,6 @@ const AdminLogs = () => {
           </Box>
         </HeaderSection>
 
-        {/* Abas das 3 Categorias */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={category}
@@ -142,7 +141,6 @@ const AdminLogs = () => {
           </Tabs>
         </Box>
 
-        {/* Barra de Filtros e Busca */}
         <FiltersBar>
           <TextField
             size="small"
@@ -205,7 +203,6 @@ const AdminLogs = () => {
           )}
         </FiltersBar>
 
-        {/* Conteúdo de Logs */}
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
             <CircularProgress size={36} />
@@ -224,7 +221,6 @@ const AdminLogs = () => {
 
               return (
                 <LogCard key={log.id} level={log.level} elevation={0}>
-                  {/* Cabeçalho do Card */}
                   <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
                       {getLevelBadge(log.level)}
@@ -252,7 +248,6 @@ const AdminLogs = () => {
                     </Typography>
                   </Box>
 
-                  {/* Usuário envolvido */}
                   {(log.userName || log.userEmail) && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
                       <Typography variant="caption" color="text.secondary">
@@ -271,14 +266,12 @@ const AdminLogs = () => {
                     </Box>
                   )}
 
-                  {/* Descrição */}
                   {log.description && (
                     <Typography variant="body2" color="text.primary" sx={{ lineHeight: 1.5 }}>
                       {log.description}
                     </Typography>
                   )}
 
-                  {/* Mensagem de Erro destacada para auxiliar na resolução */}
                   {log.errorMessage && (
                     <ErrorBox>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -293,7 +286,6 @@ const AdminLogs = () => {
                     </ErrorBox>
                   )}
 
-                  {/* Se houver detalhes ou stack trace, botão para expandir */}
                   {(hasCodeDetails || hasStack) && (
                     <Box sx={{ pt: 0.5 }}>
                       <Button

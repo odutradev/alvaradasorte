@@ -7,9 +7,6 @@ import type { PresetResponse } from '@services/presets/types'
 
 export type MessageType = 'invite' | 'games' | 'result'
 
-/**
- * 1. Mensagem chamando pro bolão (Convite)
- */
 export const generateInviteMessage = (data: SweepstakeResponse, preset: PresetResponse | null): string => {
   const limitDateObj = dayjs(data.purchaseLimitDate)
   const limitTime = limitDateObj.minute() === 0 ? limitDateObj.format('H[h]') : limitDateObj.format('H:mm')
@@ -52,9 +49,6 @@ export const generateInviteMessage = (data: SweepstakeResponse, preset: PresetRe
   return parts.join('\n')
 }
 
-/**
- * 2. Mensagem com os jogos realizados
- */
 export const generateGamesMessage = (data: SweepstakeResponse): string => {
   const parts: string[] = []
   const drawDateFormatted = dayjs(data.drawDate).format('DD/MM/YYYY [às] HH:mm')
@@ -86,9 +80,6 @@ export const generateGamesMessage = (data: SweepstakeResponse): string => {
   return parts.join('\n')
 }
 
-/**
- * 3. Mensagem com os jogos realizados, o resultado e acertos destacados nos jogos realizados
- */
 export const generateResultConferenceMessage = (data: SweepstakeResponse): string => {
   const parts: string[] = []
   const contestInfo = data.contestNumber ? ` • Concurso #${data.contestNumber}` : ''
@@ -134,7 +125,6 @@ export const generateResultConferenceMessage = (data: SweepstakeResponse): strin
     const hitLabel = hits === 1 ? '1 acerto' : `${hits} acertos`
     const hitBadge = hits >= 4 ? `🔥 *${hitLabel.toUpperCase()}!*` : `(${hitLabel})`
 
-    // Destaque nas dezenas: acertadas com ✅ e negrito
     const numbersWithHits = game
       .map((n) => {
         const str = n < 10 ? `0${n}` : String(n)
@@ -158,5 +148,4 @@ export const generateResultConferenceMessage = (data: SweepstakeResponse): strin
   return parts.join('\n')
 }
 
-// Mantém retrocompatibilidade para qualquer import antigo
 export const generateSweepstakeMessage = generateInviteMessage

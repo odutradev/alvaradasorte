@@ -26,7 +26,6 @@ const MessageModal = ({ open, onClose, data, preset }: MessageModalProps) => {
   const [messageText, setMessageText] = useState('')
   const [copied, setCopied] = useState(false)
 
-  // Atualiza o texto sempre que trocar a opção ou os dados mudarem
   useEffect(() => {
     if (!open) return
 
@@ -99,7 +98,6 @@ const MessageModal = ({ open, onClose, data, preset }: MessageModalProps) => {
       }
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Seletor com as 3 opções de mensagens */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={selectedType}
