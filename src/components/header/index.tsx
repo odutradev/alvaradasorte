@@ -1,3 +1,4 @@
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined'
 import CasinoOutlinedIcon from '@mui/icons-material/CasinoOutlined'
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
@@ -124,6 +125,19 @@ const Header = (_props: HeaderProps = {}) => {
                 </ListItemIcon>
                 <ListItemText
                   primary="Bolões"
+                  primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
+                />
+              </ListItemButton>
+              <ListItemButton
+                selected={location.pathname.startsWith('/admin/logs')}
+                onClick={() => handleNavigate('/admin/logs')}
+                sx={{ borderRadius: 2, mb: 0.5 }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                  <ArticleOutlinedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Logs do Sistema"
                   primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }}
                 />
               </ListItemButton>
