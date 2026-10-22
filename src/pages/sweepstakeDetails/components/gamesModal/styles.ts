@@ -366,3 +366,68 @@ export const ResultCard = styled(Paper)(({ theme }) => {
     backgroundColor: isDark ? alpha('#0f172a', 0.5) : '#f8fafc'
   }
 })
+
+export const SuggestedNumbersCard = styled(Paper)(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark'
+  return {
+    padding: theme.spacing(2),
+    borderRadius: theme.shape.borderRadius * 1.5,
+    backgroundColor: isDark ? alpha('#0284c7', 0.06) : alpha('#0284c7', 0.04),
+    border: `1px solid ${isDark ? alpha('#38bdf8', 0.25) : alpha('#0284c7', 0.2)}`,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(1.5)
+  }
+})
+
+export const SuggestedBallButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== 'isUsed' && prop !== 'badgeColor'
+})<{ isUsed?: boolean; badgeColor?: string }>(({ theme, isUsed, badgeColor }) => {
+  const isDark = theme.palette.mode === 'dark'
+  const highlightColor = badgeColor || theme.palette.primary.main
+
+  if (isUsed) {
+    return {
+      minWidth: 36,
+      width: 36,
+      height: 36,
+      padding: 0,
+      borderRadius: '50%',
+      fontWeight: 700,
+      fontSize: '0.8rem',
+      backgroundColor: isDark ? 'rgba(34, 197, 94, 0.18)' : '#dcfce7',
+      color: isDark ? '#4ade80' : '#15803d',
+      border: `2px solid ${isDark ? '#22c55e' : '#16a34a'}`,
+      position: 'relative',
+      transition: 'all 0.15s ease',
+      '&:hover': {
+        backgroundColor: isDark ? 'rgba(34, 197, 94, 0.3)' : '#bbf7d0',
+        transform: 'scale(1.1)',
+        zIndex: 2
+      }
+    }
+  }
+
+  return {
+    minWidth: 36,
+    width: 36,
+    height: 36,
+    padding: 0,
+    borderRadius: '50%',
+    fontWeight: 800,
+    fontSize: '0.85rem',
+    backgroundColor: highlightColor,
+    color: '#ffffff',
+    border: '2px solid #ffffff',
+    boxShadow: `0 2px 8px ${alpha(highlightColor, 0.6)}`,
+    position: 'relative',
+    transition: 'all 0.15s ease',
+    '&:hover': {
+      backgroundColor: highlightColor,
+      filter: 'brightness(1.2)',
+      transform: 'scale(1.15)',
+      boxShadow: `0 4px 12px ${alpha(highlightColor, 0.85)}`,
+      zIndex: 2
+    }
+  }
+})

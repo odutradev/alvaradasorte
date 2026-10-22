@@ -8,6 +8,13 @@ export interface QueuedGame {
   numbers: number[]
 }
 
+export interface SuggestedNumberItem {
+  number: number
+  participants: string[]
+  isUsed: boolean
+  usedCount: number
+}
+
 export interface UseGamesModalReturn {
   queuedGames: QueuedGame[]
   activeGameId: string | null
@@ -21,6 +28,10 @@ export interface UseGamesModalReturn {
   newGameInput: string
   resultInput: string
   resultNumbers: number[]
+  suggestedNumbersList: SuggestedNumberItem[]
+  totalSuggestedCount: number
+  usedSuggestedCount: number
+  pendingSuggestedCount: number
   isSavingGames: boolean
   isSavingResult: boolean
   isFetchingCaixaResult: boolean
@@ -35,6 +46,9 @@ export interface UseGamesModalReturn {
   generateSurpresinhaForActive: () => void
   generateSurpresinhaForGame: (gameId: string) => void
   fillAllPendingWithSurpresinha: () => void
+  fillGameWithSuggested: (gameId: string) => void
+  fillActiveGameWithSuggested: () => void
+  fillAllPendingWithSuggested: () => void
   clearActiveGame: () => void
   clearGameById: (gameId: string) => void
   addEmptyGameToQueue: (targetCount: number) => void

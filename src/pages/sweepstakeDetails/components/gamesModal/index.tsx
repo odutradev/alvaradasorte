@@ -2,6 +2,7 @@ import { useState } from 'react'
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
+import HowToVoteIcon from '@mui/icons-material/HowToVote'
 import CasinoIcon from '@mui/icons-material/Casino'
 import DeleteIcon from '@mui/icons-material/Delete'
 import CheckIcon from '@mui/icons-material/Check'
@@ -21,6 +22,8 @@ import { alpha } from '@mui/material/styles'
 import {
   ModalContainer,
   SuggestionCard,
+  SuggestedNumbersCard,
+  SuggestedBallButton,
   NumberGrid,
   NumberBall,
   GamesSection,
@@ -55,6 +58,10 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
     allocationSuggestion,
     newGameInput,
     resultNumbers,
+    suggestedNumbersList,
+    totalSuggestedCount,
+    usedSuggestedCount,
+    pendingSuggestedCount,
     isSavingGames,
     isSavingResult,
     isFetchingCaixaResult,
@@ -67,6 +74,9 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
     generateSurpresinhaForActive,
     generateSurpresinhaForGame,
     fillAllPendingWithSurpresinha,
+    fillGameWithSuggested,
+    fillActiveGameWithSuggested,
+    fillAllPendingWithSuggested,
     clearActiveGame,
     clearGameById,
     addEmptyGameToQueue,
@@ -263,6 +273,133 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
               </SuggestionCard>
             )}
 
+            {/* PAINEL DE NÚMEROS INDICADOS PELOS PARTICIPANTES */}
+            <SuggestedNumbersCard elevation={0}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, flexWrap: 'wrap' }}>
+                  <HowToVoteIcon color="primary" fontSize="small" />
+                  <Typography variant="subtitle2" fontWeight={700}>
+                    Números Indicados pelos Participantes
+                  </Typography>
+                  <Chip
+                    size="small"
+                    color="primary"
+                    label={`${totalSuggestedCount} indicados`}
+                    sx={{ height: 22, fontSize: '0.72rem', fontWeight: 700 }}
+                  />
+                  {totalSuggestedCount > 0 && (
+                    <>
+                      <Chip
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                        icon={<CheckIcon sx={{ fontSize: '13px !important' }} />}
+                        label={`${usedSuggestedCount} em jogos`}
+                        sx={{ height: 22, fontSize: '0.72rem', fontWeight: 700 }}
+                      />
+                      <Chip
+                        size="small"
+                        color={pendingSuggestedCount > 0 ? 'warning' : 'default'}
+                        variant="outlined"
+                        label={`${pendingSuggestedCount} não usados`}
+                        sx={{ height: 22, fontSize: '0.72rem', fontWeight: 700 }}
+                      />
+                    </>
+                  )}
+                </Box>
+
+                {activeGame && totalSuggestedCount > 0 && (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<HowToVoteIcon fontSize="small" />}
+                    onClick={fillActiveGameWithSuggested}
+                    sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 700, fontSize: '0.75rem' }}
+                  >
+                    Inserir indicados neste jogo
+                  </Button>
+                )}
+              </Box>
+
+              {totalSuggestedCount === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  Nenhum participante indicou números na compra de cotas até o momento.
+                </Typography>
+              ) : (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    Clique em qualquer número para inseri-lo diretamente no jogo ativo selecionado:
+                  </Typography>
+
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                    {suggestedNumbersList.map((item) => {
+                      const isInActiveGame = activeGame?.numbers.includes(item.number)
+                      return (
+                        <Tooltip
+                          key={item.number}
+                          arrow
+                          title={
+                            <Box sx={{ p: 0.5, maxWidth: 220 }}>
+                              <Typography variant="subtitle2" fontWeight={800} color="primary.light">
+                                Dezena {item.number < 10 ? `0${item.number}` : item.number}
+                              </Typography>
+                              <Typography variant="body2" sx={{ mt: 0.25 }}>
+                                {item.isUsed ? (
+                                  <span style={{ color: '#4ade80', fontWeight: 700 }}>
+                                    ✓ Já usada em {item.usedCount} jogo(s)
+                                  </span>
+                                ) : (
+                                  <span style={{ color: '#fbbf24', fontWeight: 700 }}>
+                                    ● Ainda não usada em nenhum jogo
+                                  </span>
+                                )}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                                Indicado por: {item.participants.join(', ')}
+                              </Typography>
+                              {activeGame && (
+                                <Typography variant="caption" sx={{ color: '#38bdf8', display: 'block', mt: 0.25, fontWeight: 700 }}>
+                                  {isInActiveGame ? 'Clique para remover do jogo ativo' : 'Clique para adicionar ao jogo ativo'}
+                                </Typography>
+                              )}
+                            </Box>
+                          }
+                        >
+                          <SuggestedBallButton
+                            isUsed={item.isUsed}
+                            badgeColor={lotteryColor}
+                            onClick={() => toggleNumber(item.number)}
+                            sx={{
+                              ...(isInActiveGame && {
+                                outline: '2px solid #38bdf8',
+                                outlineOffset: 2
+                              })
+                            }}
+                          >
+                            {item.number < 10 ? `0${item.number}` : item.number}
+                            {item.isUsed && (
+                              <CheckIcon
+                                sx={{
+                                  position: 'absolute',
+                                  bottom: -2,
+                                  right: -2,
+                                  fontSize: 12,
+                                  bgcolor: '#16a34a',
+                                  color: '#fff',
+                                  borderRadius: '50%',
+                                  p: '1px'
+                                }}
+                              />
+                            )}
+                          </SuggestedBallButton>
+                        </Tooltip>
+                      )
+                    })}
+                  </Box>
+                </Box>
+              )}
+            </SuggestedNumbersCard>
+
             {/* ÁREA DO VOLANTE: Preenche o jogo selecionado na fila */}
             <Box
               sx={{
@@ -310,6 +447,17 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
 
                   {activeGame && inputMode === 'wheel' && (
                     <>
+                      {suggestedNumbersList.length > 0 && (
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          startIcon={<HowToVoteIcon fontSize="small" />}
+                          onClick={fillActiveGameWithSuggested}
+                          sx={{ textTransform: 'none', fontSize: '0.75rem' }}
+                        >
+                          Preencher com indicados
+                        </Button>
+                      )}
                       <Button
                         size="small"
                         variant="outlined"
@@ -391,6 +539,27 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  {pendingGamesCount > 0 && suggestedNumbersList.length > 0 && (
+                    <Button
+                      size="small"
+                      variant="contained"
+                      startIcon={<HowToVoteIcon fontSize="small" />}
+                      onClick={fillAllPendingWithSuggested}
+                      sx={{
+                        bgcolor: '#0284c7',
+                        color: '#ffffff',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        textTransform: 'none',
+                        borderRadius: 2,
+                        boxShadow: '0 2px 8px rgba(2, 132, 199, 0.4)',
+                        '&:hover': { bgcolor: '#0369a1' }
+                      }}
+                    >
+                      Preencher Pendentes com Indicados ({pendingSuggestedCount} livres)
+                    </Button>
+                  )}
+
                   {pendingGamesCount > 0 && (
                     <Button
                       size="small"
@@ -571,6 +740,18 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                           <Typography variant="caption" fontWeight={600} color="text.secondary">
                             {formatCurrency(gamePrice)}
                           </Typography>
+                          {suggestedNumbersList.length > 0 && (
+                            <Tooltip title="Preencher este jogo com números indicados">
+                              <IconButton
+                                size="small"
+                                onClick={() => fillGameWithSuggested(game.id)}
+                                color="info"
+                                sx={{ p: 0.25 }}
+                              >
+                                <HowToVoteIcon sx={{ fontSize: 16 }} />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                           <Tooltip title="Surpresinha neste jogo">
                             <IconButton size="small" onClick={() => generateSurpresinhaForGame(game.id)} color="primary" sx={{ p: 0.25 }}>
                               <CasinoIcon sx={{ fontSize: 16 }} />
