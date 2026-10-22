@@ -496,8 +496,9 @@ const useGamesModal = (
       } else {
         toast.warn('Nenhum resultado de sorteio foi retornado pela Caixa para este concurso.')
       }
-    } catch {
-      toast.error('Não foi possível obter o resultado da Caixa Econômica.')
+    } catch (error: any) {
+      const errorDetails = error?.response?.data?.details || error?.response?.data?.message
+      toast.error(errorDetails ? `Caixa: ${errorDetails}` : 'Não foi possível obter o resultado da Caixa Econômica.')
     } finally {
       setIsFetchingCaixaResult(false)
     }

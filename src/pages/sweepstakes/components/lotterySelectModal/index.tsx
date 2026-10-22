@@ -29,8 +29,17 @@ const LotterySelectModal = ({ open, onClose, onSelect, onManual }: LotterySelect
     try {
       const data = await getLotteries()
       setLotteries(data)
-    } catch {
-      setError('Não foi possível carregar as informações da Caixa Econômica. Tente novamente ou crie manualmente.')
+      const allUnavailable = data.length > 0 && data.every((l) => !l.contestNumber && !l.estimatedPrize)
+      if (allUnavailable) {
+        setError('Não foi possível obter dados atualizados dos servidores da Caixa no momento. Você ainda pode criar o bolão manualmente ou tentar novamente.')
+      }
+    } catch (err: any) {
+      const errorDetails = err?.response?.data?.details || err?.response?.data?.message
+      setError(
+        errorDetails
+          ? `Falha ao carregar loterias da Caixa: ${errorDetails}`
+          : 'Não foi possível carregar as informações da Caixa Econômica. Tente novamente ou crie manualmente.'
+      )
     } finally {
       setLoading(false)
     }
