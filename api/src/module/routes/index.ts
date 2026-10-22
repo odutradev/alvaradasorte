@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { updateParticipation, addManualParticipation, deleteParticipation, getSweepstakeDetails, addSweepstakeGames, setSweepstakeResult, updateSweepstake, deleteSweepstake, createSweepstake, listSweepstakes, joinSweepstake } from '@module/actions/sweepstake/index'
+import { sendParticipationResultEmail, updateParticipation, addManualParticipation, deleteParticipation, getSweepstakeDetails, addSweepstakeGames, setSweepstakeResult, updateSweepstake, deleteSweepstake, createSweepstake, listSweepstakes, joinSweepstake } from '@module/actions/sweepstake/index'
 import { getLotteryByType, listLotteries } from '@module/actions/lottery/index'
 import { updatePreset, createPreset, deletePreset, listPresets } from '@module/actions/preset/index'
 import { updateUser, deleteUser, listUsers } from '@module/actions/user/index'
@@ -31,6 +31,7 @@ defaultModuleRouter.post('/sweepstakes', authMiddleware, adminMiddleware, create
 defaultModuleRouter.get('/sweepstakes/:id/details', authMiddleware, adminMiddleware, getSweepstakeDetails)
 defaultModuleRouter.post('/sweepstakes/:id/join', authMiddleware, joinSweepstake)
 defaultModuleRouter.post('/sweepstakes/:id/participations/manual', authMiddleware, adminMiddleware, addManualParticipation)
+defaultModuleRouter.post('/sweepstakes/:id/participations/:participationId/send-result-email', authMiddleware, adminMiddleware, sendParticipationResultEmail)
 defaultModuleRouter.patch('/sweepstakes/:id/participations/:participationId', authMiddleware, adminMiddleware, updateParticipation)
 defaultModuleRouter.delete('/sweepstakes/:id/participations/:participationId', authMiddleware, adminMiddleware, deleteParticipation)
 defaultModuleRouter.patch('/sweepstakes/:id/games', authMiddleware, adminMiddleware, addSweepstakeGames)

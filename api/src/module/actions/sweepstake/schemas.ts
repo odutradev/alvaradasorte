@@ -148,6 +148,11 @@ export const deleteParticipationParamsSchema = z.object({
   participationId: z.string().openapi({ example: 'participacao-id' })
 }).openapi('DeleteParticipationParams')
 
+export const sendResultEmailParamsSchema = z.object({
+  id: z.string().openapi({ example: 'bolao-id' }),
+  participationId: z.string().openapi({ example: 'participacao-id' })
+}).openapi('SendResultEmailParams')
+
 export const updateParticipationBodySchema = z.object({
   quotaCount: z.number().int().min(1).optional().openapi({ example: 2 }),
   userName: z.string().min(1).optional().openapi({ example: 'John Doe' }),

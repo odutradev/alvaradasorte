@@ -1,4 +1,5 @@
-import { updateParticipationBodySchema, deleteParticipationParamsSchema, addManualParticipationBodySchema, listSweepstakesResponseSchema, listSweepstakesQuerySchema, setSweepstakeResultSchema, addSweepstakeGamesSchema, sweepstakeDetailsSchema, updateSweepstakeSchema, createSweepstakeSchema, sweepstakeParamsSchema, joinSweepstakeBodySchema, participationSchema, sweepstakeSchema } from './schemas'
+import { sendResultEmailParamsSchema, updateParticipationBodySchema, deleteParticipationParamsSchema, addManualParticipationBodySchema, listSweepstakesResponseSchema, listSweepstakesQuerySchema, setSweepstakeResultSchema, addSweepstakeGamesSchema, sweepstakeDetailsSchema, updateSweepstakeSchema, createSweepstakeSchema, sweepstakeParamsSchema, joinSweepstakeBodySchema, participationSchema, sweepstakeSchema } from './schemas'
+import { sweepstakeResultTemplate } from '@email/templates/sweepstakeResult'
 import participationRepository from '@module/repositories/participation/index'
 import sweepstakeRepository from '@module/repositories/sweepstake/index'
 import userRepository from '@module/repositories/user/index'
@@ -8,7 +9,7 @@ import defineAction from '@core/factories/defineAction'
 import upload from '@core/middlewares/upload'
 import { isPast } from '@core/utils/date'
 
-import type { UpdateParticipationRequest, AddManualParticipationRequest, DeleteParticipationRequest, SetSweepstakeResultRequest, AddSweepstakeGamesRequest, SweepstakeDetailsResponse, DeleteSweepstakeRequest, UpdateSweepstakeRequest, CreateSweepstakeRequest, SweepstakeParamsRequest, ListSweepstakesResponse, ListSweepstakesRequest, JoinSweepstakeRequest, ParticipationResponse, SweepstakeResponse } from './types'
+import type { SendResultEmailRequest, UpdateParticipationRequest, AddManualParticipationRequest, DeleteParticipationRequest, SetSweepstakeResultRequest, AddSweepstakeGamesRequest, SweepstakeDetailsResponse, DeleteSweepstakeRequest, UpdateSweepstakeRequest, CreateSweepstakeRequest, SweepstakeParamsRequest, ListSweepstakesResponse, ListSweepstakesRequest, JoinSweepstakeRequest, ParticipationResponse, SweepstakeResponse } from './types'
 import type { ParticipationType } from '@module/repositories/participation/types'
 import type { ManageRequestResponse, ManageRequestBody } from '@core/middlewares/manageRequest/types'
 
@@ -711,4 +712,114 @@ export const updateParticipation = defineAction(
     }
   },
   { params: deleteParticipationParamsSchema, body: updateParticipationBodySchema }
+)
+
+export const sendParticipationResultEmail = defineAction(
+  {
+    method: 'post',
+    path: '/iam/v1/sweepstakes/{id}/participations/{participationId}/send-result-email',
+    summary: 'Enviar e-mail com resultado do bolão para participante (Admin)',
+    tags: ['IAM - Bolões'],
+    authenticate: true,
+    responses: {
+      200: { description: 'Sucesso', schema: participationSchema }
+    }
+  },
+  async ({ ids, params, manageError }: ManageRequestBody<SendResultEmailRequest>): ManageRequestResponse<ParticipationResponse> => {
+    try {
+      const [sweepstake, participation] = await Promise.all([
+        sweepstakeRepository.findById(params.id),
+        participationRepository.findById(params.participationId)
+      ])
+
+      if (!sweepstake) return manageError({ code: 'not_found', details: 'Bolão não encontrado' })
+      if (!participation || participation.sweepstakeId !== params.id) {
+        return manageError({ code: 'not_found', details: 'Participação não encontrada neste bolão' })
+      }
+
+      if (!sweepstake.result || sweepstake.result.length === 0) {
+        return manageError({ code: 'bad_request', details: 'O bolão ainda não possui resultado apurado' })
+      }
+
+      if (participation.resultEmailSent) {
+        return manageError({ code: 'conflict', details: 'O e-mail de resultado já foi enviado para este participante' })
+      }
+
+      const user = await userRepository.findById(participation.userId)
+      if (!user || !user.email) {
+        return manageError({ code: 'bad_request', details: 'Usuário participante não encontrado ou sem e-mail cadastrado' })
+      }
+
+      if (user.notifySweepstakeResult === false) {
+        return manageError({ code: 'bad_request', details: 'O participante optou por não receber notificações de resultado por e-mail' })
+      }
+
+      const drawnNumbersFormatted = sweepstake.result
+        .map((n) => (n < 10 ? `0${n}` : String(n)))
+        .join(' - ')
+
+      const lotteryInfo = sweepstake.contestNumber
+        ? `**Concurso:** ${sweepstake.contestNumber}${sweepstake.lotteryType ? ` (${sweepstake.lotteryType.toUpperCase()})` : ''}`
+        : (sweepstake.lotteryType ? `**Modalidade:** ${sweepstake.lotteryType.toUpperCase()}` : '')
+
+      const participations = await participationRepository.findBySweepstakeId(params.id)
+      const totalFilledQuotas = participations.reduce((sum, p) => sum + (p.quotaCount ?? 1), 0)
+      const collectedValue = (totalFilledQuotas * sweepstake.quotaPrice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+      const prizeValue = sweepstake.prizeValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+
+      const resultSet = new Set(sweepstake.result)
+      let gamesList = '_Nenhum jogo cadastrado no bolão._'
+      if (sweepstake.games && sweepstake.games.length > 0) {
+        gamesList = sweepstake.games.map((game, idx) => {
+          const hits = game.filter((n) => resultSet.has(n)).length
+          const formattedNums = game.map((n) => {
+            const formatted = n < 10 ? `0${n}` : String(n)
+            return resultSet.has(n) ? `**${formatted}**` : formatted
+          }).join(', ')
+          return `- **Jogo ${idx + 1}:** [ ${formattedNums} ] — _${hits} ${hits === 1 ? 'acerto' : 'acertos'}_`
+        }).join('\n')
+      }
+
+      const emailResult = await sweepstakeResultTemplate.send({
+        to: user.email,
+        variables: {
+          userName: user.fullName || user.name || participation.userName,
+          sweepstakeTitle: sweepstake.title,
+          drawnNumbers: drawnNumbersFormatted,
+          lotteryInfo,
+          quotaCount: participation.quotaCount ?? 1,
+          quotaLabel: (participation.quotaCount ?? 1) === 1 ? 'cota' : 'cotas',
+          collectedValue,
+          prizeValue,
+          gamesList
+        }
+      })
+
+      if (!emailResult.success) {
+        return manageError({ code: 'internal_error', details: emailResult.error ?? 'Falha ao enviar e-mail' })
+      }
+
+      const now = new Date().toISOString()
+      const updatedParticipation = await participationRepository.update(params.participationId, {
+        resultEmailSent: true,
+        resultEmailSentAt: now
+      })
+
+      logRepository.create({
+        category: 'admin',
+        level: 'info',
+        action: 'EMAIL_RESULT_SENT',
+        title: 'E-mail de resultado enviado',
+        description: `E-mail de resultado do bolão "${sweepstake.title}" enviado para ${user.email} (${participation.userName})`,
+        userId: ids.userId,
+        targetId: params.id,
+        details: { participationId: params.participationId, userEmail: user.email }
+      })
+
+      return updatedParticipation!
+    } catch (error) {
+      return manageError({ code: 'internal_error', error })
+    }
+  },
+  { params: sendResultEmailParamsSchema }
 )
