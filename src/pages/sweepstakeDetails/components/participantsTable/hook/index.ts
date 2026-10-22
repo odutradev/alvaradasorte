@@ -110,8 +110,20 @@ const useParticipantsTable = ({ participations, sweepstakeId, onUpdate }: UsePar
     const pending = participations.filter((p) => !p.resultEmailSent)
     if (pending.length === 0) return
 
-    setIsSendingAll(true)
+    // Agrupa por usuário para disparar apenas 1 e-mail por participante único
+    const seenUserKeys = new Set<string>()
+    const uniquePending: ExtendedParticipation[] = []
+
     for (const part of pending) {
+      const key = part.userId || part.userName
+      if (!seenUserKeys.has(key)) {
+        seenUserKeys.add(key)
+        uniquePending.push(part)
+      }
+    }
+
+    setIsSendingAll(true)
+    for (const part of uniquePending) {
       setSendingEmailId(part.id)
       await useAction({
         action: async () => {

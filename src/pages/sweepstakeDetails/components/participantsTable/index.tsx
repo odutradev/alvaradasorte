@@ -62,7 +62,10 @@ const ParticipantsTable = ({ participations, sweepstakeId, hasResult, onUpdate }
     handleSendAllPendingEmails
   } = useParticipantsTable({ participations, sweepstakeId, onUpdate })
 
-  const pendingEmailsCount = participations.filter((p) => !p.resultEmailSent).length
+  const pendingUserKeys = new Set(
+    participations.filter((p) => !p.resultEmailSent).map((p) => p.userId || p.userName)
+  )
+  const pendingEmailsCount = pendingUserKeys.size
 
   const columns: TableColumn<ExtendedParticipation>[] = [
     {
