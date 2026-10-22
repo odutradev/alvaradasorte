@@ -12,6 +12,7 @@
     "paths": {
       "@module/*": ["./src/module/*"],
       "@core/*": ["./src/core/*"],
+      "@email/*": ["./src/email/*"],
       "@/*": ["./src/*"]
     }
   },

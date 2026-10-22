@@ -1,6 +1,7 @@
 import 'dotenv/config'
 
 import { registeredModules } from '@core/registry'
+import { connectEmail } from '@email/connect'
 import database from '@core/database/database'
 import createLogger from '@core/utils/logger'
 import buildApp from '@core/app'
@@ -18,6 +19,7 @@ const startServer = async (): Promise<void> => {
     logger.info(`Registered modules: [${loadedModules}]`)
 
     await database.connect()
+    await connectEmail()
 
     const startups = registeredModules.reduce<Array<Promise<void>>>((acc, mod) => {
       return mod.onStartup ? [...acc, mod.onStartup()] : acc
