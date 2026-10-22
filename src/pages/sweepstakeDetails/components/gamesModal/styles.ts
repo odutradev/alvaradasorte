@@ -160,6 +160,91 @@ export const GamesSection = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2)
 }))
 
+export const QueueItemRow = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'isActive' && prop !== 'isComplete'
+})<{ isActive?: boolean; isComplete?: boolean }>(({ theme, isActive, isComplete }) => {
+  const isDark = theme.palette.mode === 'dark'
+  let borderColor = isDark ? '#2f3447' : '#e2e8f0'
+  let bgColor = isDark ? '#1b1d26' : '#ffffff'
+
+  if (isActive) {
+    borderColor = theme.palette.primary.main
+    bgColor = isDark ? alpha(theme.palette.primary.main, 0.12) : alpha(theme.palette.primary.main, 0.06)
+  } else if (isComplete) {
+    borderColor = alpha(theme.palette.success.main, 0.45)
+  }
+
+  return {
+    backgroundColor: bgColor,
+    border: `1.5px solid ${borderColor}`,
+    borderRadius: theme.shape.borderRadius * 1.5,
+    padding: theme.spacing(1, 1.5),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.spacing(1.5),
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    '&:hover': {
+      borderColor: theme.palette.primary.main,
+      transform: 'translateY(-1px)'
+    }
+  }
+})
+
+export const SlotBall = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'filled' && prop !== 'matched'
+})<{ filled?: boolean; matched?: boolean }>(({ theme, filled, matched }) => {
+  const isDark = theme.palette.mode === 'dark'
+
+  if (matched) {
+    return {
+      backgroundColor: '#16a34a',
+      color: '#ffffff',
+      border: '1.5px solid #4ade80',
+      borderRadius: '50%',
+      width: 28,
+      height: 28,
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: 800,
+      fontSize: '0.75rem',
+      boxShadow: '0 0 8px rgba(74, 222, 128, 0.4)'
+    }
+  }
+
+  if (filled) {
+    return {
+      backgroundColor: isDark ? '#2b2f40' : '#f1f5f9',
+      color: isDark ? '#f8fafc' : '#0f172a',
+      border: `1px solid ${isDark ? '#434963' : '#cbd5e1'}`,
+      borderRadius: '50%',
+      width: 28,
+      height: 28,
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: 700,
+      fontSize: '0.75rem'
+    }
+  }
+
+  return {
+    backgroundColor: 'transparent',
+    color: theme.palette.text.disabled,
+    border: `1.5px dashed ${isDark ? '#434963' : '#cbd5e1'}`,
+    borderRadius: '50%',
+    width: 28,
+    height: 28,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '0.75rem',
+    fontWeight: 600
+  }
+})
+
 export const GameRow = styled(Box)(({ theme }) => {
   const isDark = theme.palette.mode === 'dark'
   return {

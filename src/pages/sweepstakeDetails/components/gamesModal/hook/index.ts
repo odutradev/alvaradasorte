@@ -2,14 +2,14 @@ import { useState, useCallback, useEffect, useMemo } from 'react'
 import { toast } from 'react-toastify'
 
 import { setSweepstakeGames, setSweepstakeResult } from '@services/sweepstakes'
-import { allocateGamesByBudget, generateRandomGame, generateAllocatedGames } from '@utils/gameAllocation'
+import { allocateGamesByBudget, generateRandomGame } from '@utils/gameAllocation'
 import { getLotteryRule, getGamePrice } from '@utils/lotteryRules'
 import { getLotteryByType } from '@services/lotteries'
 import { parseNumbers } from '../../../utils/games'
 import useAction from '@hooks/useAction'
 
 import type { SweepstakeDetailsResponse } from '@services/sweepstakes/types'
-import type { UseGamesModalReturn } from './types'
+import type { UseGamesModalReturn, QueuedGame } from './types'
 import type { NumberEntry } from '../types'
 
 const useGamesModal = (
@@ -18,8 +18,8 @@ const useGamesModal = (
   onUpdate: () => Promise<void>
 ): UseGamesModalReturn => {
   const [lotteryType, setLotteryType] = useState<string>(sweepstake.lotteryType || 'megasena')
-  const [games, setGames] = useState<number[][]>(sweepstake.games ?? [])
-  const [selectedNumbers, setSelectedNumbers] = useState<number[]>([])
+  const [queuedGames, setQueuedGames] = useState<QueuedGame[]>([])
+  const [activeGameId, setActiveGameId] = useState<string | null>(null)
   const [newGameInput, setNewGameInput] = useState('')
   const [resultNumbers, setResultNumbers] = useState<number[]>(sweepstake.result ?? [])
   const [resultInput, setResultInput] = useState((sweepstake.result ?? []).join(', '))
@@ -28,131 +28,277 @@ const useGamesModal = (
   const [isFetchingCaixaResult, setIsFetchingCaixaResult] = useState(false)
 
   const rule = useMemo(() => getLotteryRule(lotteryType), [lotteryType])
-  const [targetCount, setTargetCount] = useState<number>(rule.minNumbers)
 
+  // Inicializa estado quando abre o modal
   useEffect(() => {
     if (!open) return
     const initialType = sweepstake.lotteryType || 'megasena'
     setLotteryType(initialType)
-    const initialRule = getLotteryRule(initialType)
-    setTargetCount(initialRule.minNumbers)
-    setGames(sweepstake.games ?? [])
+
+    // Converte jogos existentes salvos para o formato de QueuedGame
+    const initialGames: QueuedGame[] = (sweepstake.games ?? []).map((numbers, idx) => ({
+      id: `saved-${idx}-${Date.now()}`,
+      targetCount: numbers.length,
+      numbers: [...numbers].sort((a, b) => a - b)
+    }))
+
+    setQueuedGames(initialGames)
+    setActiveGameId(initialGames.length > 0 ? initialGames[0].id : null)
+
     const initialResult = sweepstake.result ?? []
     setResultNumbers(initialResult)
     setResultInput(initialResult.join(', '))
     setNewGameInput('')
-    setSelectedNumbers([])
   }, [open, sweepstake])
-
-  // Ajusta targetCount se a regra mudar
-  useEffect(() => {
-    if (targetCount < rule.minNumbers || targetCount > rule.maxNumbers) {
-      setTargetCount(rule.minNumbers)
-    }
-    setSelectedNumbers((prev) => prev.filter((n) => n <= rule.totalNumbers))
-  }, [rule])
 
   const filledQuotas = sweepstake.participations?.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0) ?? 0
   const availableBudget = Number((filledQuotas * sweepstake.quotaPrice).toFixed(2))
 
+  // Custo total baseado no targetCount de cada jogo da fila
   const totalCurrentCost = useMemo(() => {
     return Number(
-      games.reduce((acc, g) => acc + getGamePrice(lotteryType, g.length), 0).toFixed(2)
+      queuedGames.reduce((acc, g) => acc + getGamePrice(lotteryType, g.targetCount), 0).toFixed(2)
     )
-  }, [games, lotteryType])
+  }, [queuedGames, lotteryType])
 
   const balance = Number((availableBudget - totalCurrentCost).toFixed(2))
 
+  // Sugestão baseada no orçamento arrecadado
   const allocationSuggestion = useMemo(() => {
     return allocateGamesByBudget(lotteryType, availableBudget)
   }, [lotteryType, availableBudget])
 
+  const activeGame = useMemo(() => {
+    if (!activeGameId) return null
+    return queuedGames.find((g) => g.id === activeGameId) || null
+  }, [queuedGames, activeGameId])
+
+  // Alterna número no jogo atualmente ativo
   const toggleNumber = useCallback(
     (num: number) => {
-      setSelectedNumbers((prev) => {
-        if (prev.includes(num)) {
-          return prev.filter((n) => n !== num)
+      if (!activeGameId) {
+        toast.info('Selecione um jogo na fila para preencher ou crie um novo jogo.')
+        return
+      }
+
+      setQueuedGames((prev) => {
+        const gameIndex = prev.findIndex((g) => g.id === activeGameId)
+        if (gameIndex === -1) return prev
+
+        const target = prev[gameIndex]
+        let updatedNumbers: number[]
+
+        if (target.numbers.includes(num)) {
+          updatedNumbers = target.numbers.filter((n) => n !== num)
+        } else {
+          if (target.numbers.length >= target.targetCount) {
+            toast.warn(`Este jogo já atingiu o limite de ${target.targetCount} dezenas.`)
+            return prev
+          }
+          updatedNumbers = [...target.numbers, num].sort((a, b) => a - b)
         }
-        if (prev.length >= targetCount) {
-          // Se já atingiu o alvo, substitui o primeiro ou apenas não adiciona
-          return prev
+
+        const updatedGame = { ...target, numbers: updatedNumbers }
+        const newQueue = [...prev]
+        newQueue[gameIndex] = updatedGame
+
+        // Se completou este jogo, busca o próximo jogo incompleto da fila e foca nele automaticamente
+        if (updatedNumbers.length === target.targetCount) {
+          const nextPending = newQueue.find((g) => g.id !== activeGameId && g.numbers.length < g.targetCount)
+          if (nextPending) {
+            setTimeout(() => {
+              setActiveGameId(nextPending.id)
+            }, 150)
+          }
         }
-        return [...prev, num].sort((a, b) => a - b)
+
+        return newQueue
       })
     },
-    [targetCount]
+    [activeGameId]
   )
 
-  const generateSurpresinha = useCallback(() => {
-    const random = generateRandomGame(lotteryType, targetCount)
-    setSelectedNumbers(random)
-  }, [lotteryType, targetCount])
+  // Aplica a sugestão criando a fila de jogos vazios para preenchimento
+  const applySuggestionAsQueue = useCallback(() => {
+    if (allocationSuggestion.allocations.length === 0) {
+      toast.warn('Nenhuma sugestão disponível para o valor atual.')
+      return
+    }
 
-  const clearSelectedNumbers = useCallback(() => {
-    setSelectedNumbers([])
+    const newEmptyGames: QueuedGame[] = []
+    let counter = 1
+
+    for (const item of allocationSuggestion.allocations) {
+      for (let i = 0; i < item.count; i++) {
+        newEmptyGames.push({
+          id: `suggested-${Date.now()}-${counter++}`,
+          targetCount: item.numbersCount,
+          numbers: []
+        })
+      }
+    }
+
+    setQueuedGames(newEmptyGames)
+    if (newEmptyGames.length > 0) {
+      setActiveGameId(newEmptyGames[0].id)
+      toast.success(
+        `Fila de preenchimento criada com ${newEmptyGames.length} jogo(s) vazios! Preencha as dezenas no volante.`
+      )
+    }
+  }, [allocationSuggestion])
+
+  // Adiciona manualmente um jogo vazio de tamanho específico
+  const addEmptyGameToQueue = useCallback((targetCount: number) => {
+    const newGame: QueuedGame = {
+      id: `manual-${Date.now()}`,
+      targetCount,
+      numbers: []
+    }
+    setQueuedGames((prev) => [...prev, newGame])
+    setActiveGameId(newGame.id)
   }, [])
 
-  const addCurrentGame = useCallback((): boolean => {
-    if (selectedNumbers.length < rule.minNumbers) {
-      return false
-    }
-    const sorted = [...selectedNumbers].sort((a, b) => a - b)
-    setGames((prev) => [...prev, sorted])
-    setSelectedNumbers([])
-    return true
-  }, [selectedNumbers, rule.minNumbers])
+  // Gera surpresinha para o jogo ativo
+  const generateSurpresinhaForActive = useCallback(() => {
+    if (!activeGameId) return
+    setQueuedGames((prev) => {
+      const gameIndex = prev.findIndex((g) => g.id === activeGameId)
+      if (gameIndex === -1) return prev
+      const target = prev[gameIndex]
+      const random = generateRandomGame(lotteryType, target.targetCount)
+      const newQueue = [...prev]
+      newQueue[gameIndex] = { ...target, numbers: random }
+      return newQueue
+    })
+  }, [activeGameId, lotteryType])
 
+  // Gera surpresinha para um jogo específico
+  const generateSurpresinhaForGame = useCallback(
+    (gameId: string) => {
+      setQueuedGames((prev) => {
+        const gameIndex = prev.findIndex((g) => g.id === gameId)
+        if (gameIndex === -1) return prev
+        const target = prev[gameIndex]
+        const random = generateRandomGame(lotteryType, target.targetCount)
+        const newQueue = [...prev]
+        newQueue[gameIndex] = { ...target, numbers: random }
+        return newQueue
+      })
+    },
+    [lotteryType]
+  )
+
+  // Preenche todos os jogos pendentes da fila com surpresinha
+  const fillAllPendingWithSurpresinha = useCallback(() => {
+    setQueuedGames((prev) =>
+      prev.map((game) => {
+        if (game.numbers.length === game.targetCount) return game
+        return {
+          ...game,
+          numbers: generateRandomGame(lotteryType, game.targetCount)
+        }
+      })
+    )
+    toast.success('Todos os jogos pendentes foram preenchidos com surpresinha!')
+  }, [lotteryType])
+
+  // Limpa o jogo ativo
+  const clearActiveGame = useCallback(() => {
+    if (!activeGameId) return
+    setQueuedGames((prev) =>
+      prev.map((g) => (g.id === activeGameId ? { ...g, numbers: [] } : g))
+    )
+  }, [activeGameId])
+
+  // Limpa um jogo pelo ID
+  const clearGameById = useCallback((gameId: string) => {
+    setQueuedGames((prev) =>
+      prev.map((g) => (g.id === gameId ? { ...g, numbers: [] } : g))
+    )
+  }, [])
+
+  // Remove um jogo da fila
+  const removeGameFromQueue = useCallback(
+    (gameId: string) => {
+      setQueuedGames((prev) => {
+        const remaining = prev.filter((g) => g.id !== gameId)
+        if (activeGameId === gameId) {
+          setActiveGameId(remaining.length > 0 ? remaining[0].id : null)
+        }
+        return remaining
+      })
+    },
+    [activeGameId]
+  )
+
+  // Remove todos os jogos da fila
+  const clearAllQueuedGames = useCallback(() => {
+    setQueuedGames([])
+    setActiveGameId(null)
+  }, [])
+
+  // Adiciona jogos via digitação de texto
   const addGameFromInput = useCallback(() => {
     if (!newGameInput.trim()) return
 
-    // Suporta múltiplas linhas ou um único jogo
     const lines = newGameInput.split('\n').map((l) => l.trim()).filter(Boolean)
-    const newGamesToAdd: number[][] = []
+    const newGamesToAdd: QueuedGame[] = []
 
     for (const line of lines) {
       const numbers = parseNumbers(line)
       if (numbers.length >= rule.minNumbers) {
-        // Remove duplicados dentro do jogo e filtra valores fora do range
         const unique = Array.from(new Set(numbers.filter((n) => n <= rule.totalNumbers))).sort((a, b) => a - b)
         if (unique.length >= rule.minNumbers) {
-          newGamesToAdd.push(unique)
+          newGamesToAdd.push({
+            id: `text-${Date.now()}-${Math.random()}`,
+            targetCount: unique.length,
+            numbers: unique
+          })
         }
       }
     }
 
     if (newGamesToAdd.length > 0) {
-      setGames((prev) => [...prev, ...newGamesToAdd])
+      setQueuedGames((prev) => [...prev, ...newGamesToAdd])
       setNewGameInput('')
+      toast.success(`${newGamesToAdd.length} jogo(s) adicionados!`)
     }
   }, [newGameInput, rule.minNumbers, rule.totalNumbers])
 
-  const removeGame = useCallback((index: number) => {
-    setGames((prev) => prev.filter((_, i) => i !== index))
-  }, [])
-
-  const clearAllGames = useCallback(() => {
-    setGames([])
-  }, [])
-
-  const applySuggestion = useCallback(() => {
-    const suggestedGames = generateAllocatedGames(lotteryType, allocationSuggestion.allocations)
-    if (suggestedGames.length > 0) {
-      setGames((prev) => [...prev, ...suggestedGames])
-    }
-  }, [lotteryType, allocationSuggestion])
-
+  // Salva os jogos no servidor
   const handleSaveGames = useCallback(async () => {
+    if (queuedGames.length === 0) {
+      toast.warn('Nenhum jogo na lista para salvar.')
+      return
+    }
+
+    // Verifica se há jogos incompletos na fila
+    const incomplete = queuedGames.filter((g) => g.numbers.length < g.targetCount)
+    if (incomplete.length > 0) {
+      toast.warn(
+        `Existem ${incomplete.length} jogo(s) incompletos na fila. Preencha todas as dezenas ou exclua-os antes de salvar.`
+      )
+      return
+    }
+
     setIsSavingGames(true)
     try {
+      const gamesArray = queuedGames.map((g) => g.numbers)
       await useAction({
-        action: () => setSweepstakeGames(sweepstake.id, { games }),
-        callback: () => onUpdate()
+        action: () => setSweepstakeGames(sweepstake.id, { games: gamesArray }),
+        callback: () => onUpdate(),
+        toastMessages: {
+          success: 'Jogos do bolão salvos com sucesso!',
+          pending: 'Salvando jogos...',
+          error: 'Erro ao salvar jogos'
+        }
       })
     } finally {
       setIsSavingGames(false)
     }
-  }, [sweepstake.id, games, onUpdate])
+  }, [sweepstake.id, queuedGames, onUpdate])
 
+  // Salva o resultado do sorteio
   const handleSaveResult = useCallback(async () => {
     const numbersToSave = resultNumbers.length > 0 ? resultNumbers : parseNumbers(resultInput)
     if (!numbersToSave.length) {
@@ -175,6 +321,7 @@ const useGamesModal = (
     }
   }, [sweepstake.id, resultNumbers, resultInput, onUpdate])
 
+  // Busca o resultado da Caixa
   const handleFetchCaixaResult = useCallback(async () => {
     setIsFetchingCaixaResult(true)
     try {
@@ -219,34 +366,30 @@ const useGamesModal = (
     setResultInput('')
   }, [])
 
-  const handleResultInputChange = useCallback((val: string) => {
-    setResultInput(val)
-    const parsed = parseNumbers(val)
-    setResultNumbers(parsed)
-  }, [])
-
   const getMatchedNumbers = useCallback(
-    (game: number[]): NumberEntry[] => {
+    (numbers: number[]): NumberEntry[] => {
       const effectiveResult = resultNumbers.length > 0 ? resultNumbers : parseNumbers(resultInput)
-      const resultSet = new Set(effectiveResult)
-      return game.map((n) => ({ number: n, matched: resultSet.has(n) }))
+      return numbers.map((num) => ({
+        number: num,
+        matched: effectiveResult.includes(num)
+      }))
     },
     [resultNumbers, resultInput]
   )
 
   const getHitsCount = useCallback(
-    (game: number[]): number => {
+    (numbers: number[]): number => {
       const effectiveResult = resultNumbers.length > 0 ? resultNumbers : parseNumbers(resultInput)
-      const resultSet = new Set(effectiveResult)
-      return game.filter((n) => resultSet.has(n)).length
+      if (!effectiveResult.length) return 0
+      return numbers.filter((num) => effectiveResult.includes(num)).length
     },
     [resultNumbers, resultInput]
   )
 
   return {
-    games,
-    selectedNumbers,
-    targetCount,
+    queuedGames,
+    activeGameId,
+    activeGame,
     lotteryType,
     rule,
     availableBudget,
@@ -259,21 +402,24 @@ const useGamesModal = (
     isSavingGames,
     isSavingResult,
     isFetchingCaixaResult,
+    setActiveGameId,
     setNewGameInput,
-    setResultInput: handleResultInputChange,
-    setTargetCount,
+    setResultInput,
     setLotteryType,
     toggleNumber,
     toggleResultNumber,
     clearResultNumbers,
     handleFetchCaixaResult,
-    generateSurpresinha,
-    clearSelectedNumbers,
-    addCurrentGame,
+    generateSurpresinhaForActive,
+    generateSurpresinhaForGame,
+    fillAllPendingWithSurpresinha,
+    clearActiveGame,
+    clearGameById,
+    addEmptyGameToQueue,
     addGameFromInput,
-    removeGame,
-    clearAllGames,
-    applySuggestion,
+    removeGameFromQueue,
+    clearAllQueuedGames,
+    applySuggestionAsQueue,
     handleSaveGames,
     handleSaveResult,
     getMatchedNumbers,
