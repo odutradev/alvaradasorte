@@ -160,46 +160,33 @@ export const GamesSection = styled(Box)(({ theme }) => ({
   gap: theme.spacing(2)
 }))
 
-export const AddGameScrollContainer = styled(Box)(({ theme }) => ({
+export const AddGameItemsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
+  flexWrap: 'wrap',
   gap: theme.spacing(0.75),
-  overflowX: 'auto',
-  padding: theme.spacing(0.5, 0),
   width: '100%',
-  scrollbarWidth: 'thin',
-  '&::-webkit-scrollbar': {
-    height: 4
-  },
-  '&::-webkit-scrollbar-track': {
-    backgroundColor: alpha(theme.palette.divider, 0.2),
-    borderRadius: 2
-  },
-  '&::-webkit-scrollbar-thumb': {
-    backgroundColor: alpha(theme.palette.text.secondary, 0.4),
-    borderRadius: 2
-  }
+  padding: theme.spacing(0.25, 0)
 }))
 
 export const NewGameButton = styled(Button)(({ theme }) => {
   const isDark = theme.palette.mode === 'dark'
   return {
     whiteSpace: 'nowrap',
-    flexShrink: 0,
     textTransform: 'none',
-    fontSize: '0.75rem',
+    fontSize: '0.725rem',
     fontWeight: 600,
-    padding: '4px 10px',
-    borderRadius: 8,
-    color: isDark ? '#ffffff' : '#0f172a',
-    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : '#f1f5f9',
-    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.25)' : '#cbd5e1'}`,
+    padding: '3px 8px',
+    minHeight: 26,
+    borderRadius: 6,
+    color: isDark ? '#f1f5f9' : '#0f172a',
+    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.06)' : '#f1f5f9',
+    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.16)' : '#cbd5e1'}`,
     transition: 'all 0.15s ease',
     '&:hover': {
-      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.16)' : '#e2e8f0',
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.14)' : '#e2e8f0',
       borderColor: theme.palette.primary.main,
-      transform: 'translateY(-1px)',
-      boxShadow: `0 2px 8px ${alpha(theme.palette.primary.main, 0.3)}`
+      color: '#ffffff'
     }
   }
 })

@@ -28,7 +28,7 @@ import {
   QueueItemRow,
   SlotBall,
   NumbersContainer,
-  AddGameScrollContainer,
+  AddGameItemsContainer,
   NewGameButton,
   ResultSection,
   ResultCard
@@ -435,70 +435,57 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                 </Box>
               </Box>
 
-              {/* Barra Dedicada de Adição de Novo Jogo com Scroll Horizontal e Alto Contraste */}
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5,
-                  p: 1.25,
-                  borderRadius: 2,
-                  bgcolor: 'rgba(255, 255, 255, 0.04)',
-                  border: '1px solid',
-                  borderColor: 'rgba(255, 255, 255, 0.12)'
-                }}
-              >
+              {/* Opções de Adição de Novo Jogo soltas, sem card e sem scroll */}
+              <AddGameItemsContainer>
                 <Typography
                   variant="caption"
                   sx={{
-                    fontWeight: 800,
-                    color: '#ffffff',
+                    fontWeight: 700,
+                    color: 'text.secondary',
                     whiteSpace: 'nowrap',
                     textTransform: 'uppercase',
-                    letterSpacing: 0.5,
-                    fontSize: '0.75rem'
+                    fontSize: '0.72rem',
+                    mr: 0.5
                   }}
                 >
                   + Novo jogo:
                 </Typography>
 
-                <AddGameScrollContainer>
-                  {selectableTargetCounts.map((count) => {
-                    const price = getGamePrice(lotteryType, count)
-                    const odds = getLotteryOdds(lotteryType, count)
-                    const equiv = getEquivalentGamesCount(lotteryType, count)
-                    return (
-                      <Tooltip
-                        key={count}
-                        arrow
-                        title={
-                          <Box sx={{ p: 0.5, maxWidth: 240 }}>
-                            <Typography variant="subtitle2" fontWeight={800} display="block" color="primary.light">
-                              Jogo com {count} dezenas
-                            </Typography>
-                            <Typography variant="body2" fontWeight={700} sx={{ mt: 0.25 }}>
-                              Valor do bilhete: {formatCurrency(price)}
-                            </Typography>
-                            <Typography variant="body2" sx={{ mt: 0.5, color: '#4ade80', fontWeight: 700 }}>
-                              🎯 Chances de acertar: {odds}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.25 }}>
-                              Equivale a {equiv} aposta{equiv > 1 ? 's' : ''} simples
-                            </Typography>
-                          </Box>
-                        }
-                      >
-                        <NewGameButton onClick={() => addEmptyGameToQueue(count)}>
-                          <span>+ {count} dezenas</span>
-                          <span style={{ color: '#4ade80', fontWeight: 800, marginLeft: 5 }}>
-                            ({formatCurrency(price)})
-                          </span>
-                        </NewGameButton>
-                      </Tooltip>
-                    )
-                  })}
-                </AddGameScrollContainer>
-              </Box>
+                {selectableTargetCounts.map((count) => {
+                  const price = getGamePrice(lotteryType, count)
+                  const odds = getLotteryOdds(lotteryType, count)
+                  const equiv = getEquivalentGamesCount(lotteryType, count)
+                  return (
+                    <Tooltip
+                      key={count}
+                      arrow
+                      title={
+                        <Box sx={{ p: 0.5, maxWidth: 240 }}>
+                          <Typography variant="subtitle2" fontWeight={800} display="block" color="primary.light">
+                            Jogo com {count} dezenas
+                          </Typography>
+                          <Typography variant="body2" fontWeight={700} sx={{ mt: 0.25 }}>
+                            Valor do bilhete: {formatCurrency(price)}
+                          </Typography>
+                          <Typography variant="body2" sx={{ mt: 0.5, color: '#4ade80', fontWeight: 700 }}>
+                            🎯 Chances de acertar: {odds}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.25 }}>
+                            Equivale a {equiv} aposta{equiv > 1 ? 's' : ''} simples
+                          </Typography>
+                        </Box>
+                      }
+                    >
+                      <NewGameButton onClick={() => addEmptyGameToQueue(count)}>
+                        <span>+ {count} dezenas</span>
+                        <span style={{ color: '#4ade80', fontWeight: 700, marginLeft: 4 }}>
+                          ({formatCurrency(price)})
+                        </span>
+                      </NewGameButton>
+                    </Tooltip>
+                  )
+                })}
+              </AddGameItemsContainer>
 
               {queuedGames.length === 0 ? (
                 <Box
@@ -515,7 +502,7 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                   </Typography>
                 </Box>
               ) : (
-                <GamesListContainer sx={{ maxHeight: 320 }}>
+                <GamesListContainer sx={{ maxHeight: 260 }}>
                   {queuedGames.map((game, index) => {
                     const isActive = game.id === activeGameId
                     const isComplete = game.numbers.length === game.targetCount
