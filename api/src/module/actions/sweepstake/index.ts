@@ -783,13 +783,20 @@ export const sendParticipationResultEmail = defineAction(
       let gamesList = '_Nenhum jogo cadastrado no bolão._'
       if (sweepstake.games && sweepstake.games.length > 0) {
         gamesList = sweepstake.games.map((game, idx) => {
-          const hits = game.filter((n) => resultSet.has(n)).length
-          const formattedNums = game.map((n) => {
+          const sortedGame = [...game].sort((a, b) => a - b)
+          const matched = sortedGame.filter((n) => resultSet.has(n))
+          const hits = matched.length
+          const formattedNums = sortedGame.map((n) => {
             const formatted = n < 10 ? `0${n}` : String(n)
             return resultSet.has(n) ? `**${formatted}**` : formatted
-          }).join(', ')
-          return `- **Jogo ${idx + 1}:** [ ${formattedNums} ] — _${hits} ${hits === 1 ? 'acerto' : 'acertos'}_`
-        }).join('\n')
+          }).join(' - ')
+
+          const hitsDescription = hits > 0
+            ? `🎯 **${hits} ${hits === 1 ? 'acerto' : 'acertos'}** (dezena(s): **${matched.map((n) => (n < 10 ? `0${n}` : String(n))).join(', ')}**)`
+            : `⚪ Nenhum acerto`
+
+          return `- **Jogo ${idx + 1}** (${sortedGame.length} dezenas): ${hitsDescription}\n  - Dezenas: ${formattedNums}`
+        }).join('\n\n')
       }
 
       const emailResult = await sweepstakeResultTemplate.send({

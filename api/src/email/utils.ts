@@ -22,12 +22,13 @@ export const processTemplate = ({ template, variables = {} }: ProcessTemplatePar
 export const sendEmail = async ({ to, subject, template, variables, from }: SendEmailParams): Promise<SendEmailResult> => {
   try {
     const transporter = await email.getInstance()
+    const { processed: processedSubject } = processTemplate({ template: subject, variables })
     const { processed } = processTemplate({ template, variables })
 
     const mailOptions = {
       from: from ?? process.env.EMAIL_FROM,
       to: Array.isArray(to) ? to.join(', ') : to,
-      subject,
+      subject: processedSubject,
       markdown: processed
     }
 

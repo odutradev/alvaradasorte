@@ -11,28 +11,20 @@ Olá, **{{userName}}**!
 
 Os resultados do bolão **{{sweepstakeTitle}}** acabam de ser apurados!
 
----
-
 ### 🏆 Dezenas Sorteadas
-> **{{drawnNumbers}}**
+**{{drawnNumbers}}**
 
 {{lotteryInfo}}
-
----
 
 ### 🎟️ Sua Participação
 - **Cotas:** {{quotaCount}} {{quotaLabel}}
 - **Total Arrecadado no Bolão:** {{collectedValue}}
 - **Prêmio Estimado:** {{prizeValue}}
 
----
-
-### 📋 Jogos do Bolão
+### 📋 Jogos Realizados e Acertos
 {{gamesList}}
 
----
-
-Acompanhe os detalhes completos e confira os jogos acessando a plataforma do **Alvará da Sorte**.
+Acompanhe os detalhes completos acessando a plataforma do **Alvará da Sorte**.
 
 Boa sorte a todos os participantes! 🍀
 `
