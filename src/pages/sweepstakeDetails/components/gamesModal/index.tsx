@@ -776,7 +776,7 @@ export const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalPr
                   variant="contained"
                   color="primary"
                   onClick={handleSaveGames}
-                  disabled={isSavingGames || !queuedGames.length}
+                  disabled={isSavingGames}
                   sx={{ textTransform: 'none', px: 3, borderRadius: 2, fontWeight: 700 }}
                 >
                   {isSavingGames ? 'Salvando...' : 'Salvar Jogos'}

@@ -437,11 +437,6 @@ const useGamesModal = (
   }, [newGameInput, rule.minNumbers, rule.totalNumbers])
 
   const handleSaveGames = useCallback(async () => {
-    if (queuedGames.length === 0) {
-      toast.warn('Nenhum jogo na lista para salvar.')
-      return
-    }
-
     const incomplete = queuedGames.filter((g) => g.numbers.length < g.targetCount)
     if (incomplete.length > 0) {
       toast.warn(
@@ -457,7 +452,7 @@ const useGamesModal = (
         action: () => setSweepstakeGames(sweepstake.id, { games: gamesArray }),
         callback: () => onUpdate(),
         toastMessages: {
-          success: 'Jogos do bolão salvos com sucesso!',
+          success: gamesArray.length > 0 ? 'Jogos do bolão salvos com sucesso!' : 'Jogos do bolão removidos com sucesso!',
           pending: 'Salvando jogos...',
           error: 'Erro ao salvar jogos'
         }
