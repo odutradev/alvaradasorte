@@ -13,6 +13,7 @@ export const userSchema = z.object({
   phone: z.string().optional().openapi({ example: '31999999999' }),
   photoUrl: z.string().optional().openapi({ example: 'https://example.com/photo.jpg' }),
   authProviderId: z.string().optional().openapi({ example: 'google.com' }),
+  notifySweepstakeResult: z.boolean().optional().openapi({ example: true }),
   createdAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' }),
   updatedAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' })
 }).openapi('UserResponse')
@@ -30,7 +31,8 @@ export const updateUserSchema = z.object({
   fullName: z.string().min(1).optional().openapi({ example: 'Johnathan Doe Smith' }),
   department: z.string().min(1).optional().openapi({ example: 'TI' }),
   phone: z.string().min(10).optional().openapi({ example: '31999999999' }),
-  photoUrl: z.string().optional().openapi({ example: 'https://example.com/photo.jpg' })
+  photoUrl: z.string().optional().openapi({ example: 'https://example.com/photo.jpg' }),
+  notifySweepstakeResult: z.boolean().optional().openapi({ example: true })
 }).openapi('UpdateUserRequest')
 
 export const syncResponseSchema = z.object({

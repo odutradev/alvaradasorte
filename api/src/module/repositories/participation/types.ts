@@ -9,6 +9,8 @@ export type ParticipationType = {
   receiptUrl: string
   quotaCount: number
   suggestedNumbers?: number[]
+  resultEmailSent?: boolean
+  resultEmailSentAt?: string
   createdAt: string
 }
 

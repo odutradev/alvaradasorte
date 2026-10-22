@@ -10,6 +10,7 @@ export type UserType = {
   phone?: string
   photoUrl?: string
   authProviderId?: string
+  notifySweepstakeResult?: boolean
   createdAt: string
   updatedAt: string
 }

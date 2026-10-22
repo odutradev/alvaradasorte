@@ -27,6 +27,7 @@ export const userSchema = z.object({
   phone: z.string().optional().openapi({ example: '11999999999' }),
   photoUrl: z.string().optional().openapi({ example: 'https://example.com/photo.jpg' }),
   authProviderId: z.string().optional().openapi({ example: 'google' }),
+  notifySweepstakeResult: z.boolean().optional().openapi({ example: true }),
   createdAt: z.string().openapi({ example: '2026-01-01T00:00:00.000Z' }),
   updatedAt: z.string().openapi({ example: '2026-01-01T00:00:00.000Z' })
 }).openapi('UserResponse')
@@ -37,7 +38,8 @@ export const updateUserSchema = z.object({
   fullName: z.string().optional().openapi({ example: 'João da Silva' }),
   department: z.string().optional().openapi({ example: 'TI' }),
   phone: z.string().optional().openapi({ example: '11999999999' }),
-  role: z.enum(['admin', 'user']).optional().openapi({ example: 'admin' })
+  role: z.enum(['admin', 'user']).optional().openapi({ example: 'admin' }),
+  notifySweepstakeResult: z.boolean().optional().openapi({ example: true })
 }).openapi('UpdateUser')
 
 export const listUsersQuerySchema = z.object({

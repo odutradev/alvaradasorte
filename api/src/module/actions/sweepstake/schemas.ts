@@ -14,6 +14,8 @@ export const participationSchema = z.object({
   receiptUrl: z.string().openapi({ example: 'receipts/bolao-id/user-uid-123456789.png' }),
   quotaCount: z.number().int().min(1).default(1).openapi({ example: 2 }),
   suggestedNumbers: z.array(z.number().int().min(1)).optional().openapi({ example: [7, 14] }),
+  resultEmailSent: z.boolean().optional().openapi({ example: false }),
+  resultEmailSentAt: z.string().optional().openapi({ example: '2023-01-01T00:00:00.000Z' }),
   createdAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' })
 }).openapi('ParticipationResponse')
 

@@ -62,7 +62,7 @@ const userRepository = {
 
     const payload = exists
       ? { ...snapshot.val(), ...data, updatedAt: now }
-      : { ...data, id, role: 'user', createdAt: now, updatedAt: now }
+      : { ...data, id, role: 'user', notifySweepstakeResult: true, createdAt: now, updatedAt: now }
 
     await ref.set(payload)
 
