@@ -235,6 +235,8 @@ export const getSweepstakeDetails = defineAction(
   { params: sweepstakeParamsSchema }
 )
 
+const inFlightJoins = new Set<string>()
+
 export const joinSweepstake = defineAction(
   {
     method: 'post',
@@ -276,6 +278,13 @@ export const joinSweepstake = defineAction(
       return manageError({ code: 'bad_request', details: 'Comprovante não enviado' })
     }
 
+    const lockKey = `${ids.userId}:${params.id}`
+    if (inFlightJoins.has(lockKey)) {
+      return manageError({ code: 'bad_request', details: 'Uma solicitação de compra para este bolão já está sendo processada. Por favor, aguarde.' })
+    }
+
+    inFlightJoins.add(lockKey)
+
     const requestedQuotaCount = data?.quotaCount ?? 1
 
     try {
@@ -287,6 +296,29 @@ export const joinSweepstake = defineAction(
 
       if (!user) return manageError({ code: 'user_not_found' })
       if (!sweepstake) return manageError({ code: 'not_found' })
+
+      const now = Date.now()
+      const recentDuplicate = participations.find((p) => {
+        if (p.userId !== user.id || !p.createdAt) return false
+        const diffMs = now - new Date(p.createdAt).getTime()
+        return diffMs >= 0 && diffMs < 10000
+      })
+
+      if (recentDuplicate) {
+        logRepository.create({
+          category: 'system',
+          level: 'warn',
+          action: 'SWEEPSTAKE_JOIN_FAILED',
+          title: 'Tentativa de compra duplicada prevenida',
+          description: `Tentativa de compra duplicada evitada para o usuário ${user.email} no bolão "${sweepstake.title}"`,
+          userId: user.id,
+          userName: user.fullName || user.name,
+          userEmail: user.email,
+          targetId: sweepstake.id,
+          targetName: sweepstake.title
+        })
+        return manageError({ code: 'bad_request', details: 'Uma cota acabou de ser registrada para você neste bolão. Por favor, aguarde alguns instantes.' })
+      }
 
       const missingProfileInfo = !user.fullName || !user.department || !user.phone
 
@@ -411,6 +443,8 @@ export const joinSweepstake = defineAction(
         details: { requestedQuotaCount }
       })
       return manageError({ code: 'internal_error', error })
+    } finally {
+      inFlightJoins.delete(lockKey)
     }
   },
   { params: sweepstakeParamsSchema, body: joinSweepstakeBodySchema }
@@ -524,6 +558,17 @@ export const addManualParticipation = defineAction(
 
       if (remainingQuotas <= 0) return manageError({ code: 'bad_request', details: 'Cotas esgotadas para este bolão' })
       if (requestedQuotaCount > remainingQuotas) return manageError({ code: 'bad_request', details: `Apenas ${remainingQuotas} cota(s) disponível(is)` })
+
+      const now = Date.now()
+      const recentDuplicate = participations.find((p) => {
+        if (p.userId !== user.id || !p.createdAt) return false
+        const diffMs = now - new Date(p.createdAt).getTime()
+        return diffMs >= 0 && diffMs < 10000
+      })
+
+      if (recentDuplicate) {
+        return manageError({ code: 'bad_request', details: 'Uma participação acabou de ser registrada para este usuário neste bolão. Aguarde alguns instantes.' })
+      }
 
       const payload = {
         sweepstakeId: params.id,
