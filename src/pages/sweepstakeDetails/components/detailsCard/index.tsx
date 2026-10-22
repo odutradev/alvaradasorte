@@ -66,7 +66,7 @@ const DetailsCard = ({ data, preset, presets, onUpdate }: DetailsCardProps) => {
               startIcon={<ChatBubbleOutlineIcon sx={{ fontSize: 16 }} />}
               onClick={() => setIsMessageModalOpen(true)}
             >
-              Ver Mensagem
+              Mensagens
             </Button>
             <Button
               variant="outlined"
