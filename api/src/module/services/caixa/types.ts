@@ -26,3 +26,14 @@ export interface LotteryModalityInfo {
   isAccumulated: boolean
   lastDrawnNumbers?: string[]
 }
+
+export interface CaixaUserContext {
+  id?: string
+  name?: string
+  email?: string
+}
+
+export interface FetchLotteryOptions {
+  forceRefresh?: boolean
+  userContext?: CaixaUserContext
+}

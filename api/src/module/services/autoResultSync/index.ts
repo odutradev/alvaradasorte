@@ -1,4 +1,5 @@
 import sweepstakeRepository from '@module/repositories/sweepstake'
+import logRepository from '@module/repositories/log'
 import { sendSweepstakeResultEmailsRoutine } from '@module/services/sweepstakeResultNotifier'
 import { fetchLotteryFromCaixa } from '@module/services/caixa'
 import createLogger from '@core/utils/logger'
@@ -144,6 +145,24 @@ export const processSweepstakeSync = async (
         `[autoResultSync] SUCESSO na tentativa ${attemptNumber} para bolão "${sweepstake.title}". Dezenas: ${drawnNumbers.join(', ')}`
       )
 
+      logRepository
+        .create({
+          category: 'system',
+          level: 'info',
+          action: 'AUTO_SYNC_CAIXA_SUCCESS',
+          title: `Resultado da Caixa obtido (${sweepstake.title})`,
+          description: `Resultado do concurso #${lotteryData.contestNumber} obtido com sucesso da Caixa para o bolão "${sweepstake.title}". Dezenas: ${drawnNumbers.join(', ')}`,
+          targetId: sweepstake.id,
+          targetName: sweepstake.title,
+          details: {
+            sweepstakeId: sweepstake.id,
+            contestNumber: lotteryData.contestNumber,
+            drawnNumbers,
+            attemptNumber
+          }
+        })
+        .catch((logErr) => logger.warn('[autoResultSync] Falha ao registrar log de sucesso:', logErr))
+
       sendSweepstakeResultEmailsRoutine(sweepstake.id, { triggeredBy: 'auto_sync' }).catch((emailError) => {
         logger.error(
           `[autoResultSync] Erro na rotina de envio de e-mails para o bolão "${sweepstake.title}" (ID: ${sweepstake.id})`,
@@ -220,6 +239,28 @@ export const processSweepstakeSync = async (
     logger.error(
       `[autoResultSync] Exceção na tentativa ${attemptNumber}/${MAX_ATTEMPTS} para bolão "${sweepstake.title}": ${errorMessage}`
     )
+
+    logRepository
+      .create({
+        category: 'system',
+        level: isLastAttempt ? 'error' : 'warn',
+        action: 'AUTO_SYNC_CAIXA_ERROR',
+        title: `Falha na consulta da Caixa (${sweepstake.title})`,
+        description: `Tentativa ${attemptNumber}/${MAX_ATTEMPTS} falhou para o bolão "${sweepstake.title}": ${errorMessage}`,
+        targetId: sweepstake.id,
+        targetName: sweepstake.title,
+        errorMessage,
+        errorStack: (error as Error)?.stack,
+        details: {
+          sweepstakeId: sweepstake.id,
+          lotteryType: sweepstake.lotteryType,
+          contestNumber: sweepstake.contestNumber,
+          attemptNumber,
+          isLastAttempt
+        }
+      })
+      .catch((logErr) => logger.warn('[autoResultSync] Falha ao registrar log de erro:', logErr))
+
     return false
   }
 }

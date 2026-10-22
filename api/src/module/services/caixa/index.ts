@@ -1,5 +1,9 @@
+import createLogger from '@core/utils/logger'
+import logRepository from '@module/repositories/log'
 import { createCaixaClient } from './client'
-import type { CaixaLotteryRawResponse, LotteryModalityInfo } from './types'
+import type { CaixaLotteryRawResponse, LotteryModalityInfo, FetchLotteryOptions, CaixaUserContext } from './types'
+
+const logger = createLogger('caixa')
 
 export const SUPPORTED_LOTTERIES = [
   { type: 'megasena', name: 'Mega-Sena', color: '#209869' },
@@ -34,7 +38,7 @@ const parseCaixaDateToIso = (dateStr?: string): string | null => {
 export const fetchLotteryFromCaixa = async (
   type: string,
   contestNumber?: number,
-  options?: { forceRefresh?: boolean }
+  options?: FetchLotteryOptions
 ): Promise<LotteryModalityInfo | null> => {
   const normalizedType = type.toLowerCase().trim()
   const meta = SUPPORTED_LOTTERIES.find((l) => l.type === normalizedType)
@@ -47,11 +51,11 @@ export const fetchLotteryFromCaixa = async (
     return cached.data
   }
 
-  try {
-    const url = contestNumber
-      ? `${CAIXA_BASE_URL}/${normalizedType}/${contestNumber}`
-      : `${CAIXA_BASE_URL}/${normalizedType}`
+  const url = contestNumber
+    ? `${CAIXA_BASE_URL}/${normalizedType}/${contestNumber}`
+    : `${CAIXA_BASE_URL}/${normalizedType}`
 
+  try {
     const client = createCaixaClient()
     const response = await client.get<CaixaLotteryRawResponse>(url)
 
@@ -78,19 +82,66 @@ export const fetchLotteryFromCaixa = async (
 
     return result
   } catch (error) {
+    const err = error as any
+    const errorCode = err?.code
+    const httpStatus = err?.response?.status
+    const httpStatusText = err?.response?.statusText
+    const isTimeout = errorCode === 'ETIMEDOUT' || errorCode === 'ECONNABORTED'
+    const errorMessage = isTimeout
+      ? 'Tempo limite de conexão esgotado ao contatar o portal da Caixa Econômica Federal'
+      : err?.message || 'Erro de comunicação com a API da Caixa'
+
+    logger.error(
+      `[caixa] Falha ao consultar loteria "${name}" (${normalizedType}${contestNumber ? ` #${contestNumber}` : ''}): ${errorMessage}`,
+      { url, errorCode, httpStatus }
+    )
+
+    await logRepository.create({
+      category: options?.userContext?.id ? 'user' : 'system',
+      level: 'error',
+      action: 'CAIXA_API_ERROR',
+      title: `Erro na consulta da Caixa (${name})`,
+      description: `Falha na requisição para ${normalizedType}${contestNumber ? ` #${contestNumber}` : ''}: ${errorMessage}`,
+      userId: options?.userContext?.id,
+      userName: options?.userContext?.name,
+      userEmail: options?.userContext?.email,
+      targetId: normalizedType,
+      targetName: name,
+      errorMessage,
+      errorStack: err?.stack,
+      details: {
+        url,
+        lotteryType: normalizedType,
+        contestNumber: contestNumber ?? null,
+        httpStatus: httpStatus ?? null,
+        httpStatusText: httpStatusText ?? null,
+        errorCode: errorCode ?? null,
+        isTimeout,
+        cachedFallbackReturned: Boolean(cached)
+      }
+    })
+
     if (cached) {
+      logger.warn(`[caixa] Retornando dados em cache expirados para "${normalizedType}" devido à falha na Caixa.`)
       return cached.data
     }
-    return null
+
+    throw error
   }
 }
 
-export const fetchAllLotteries = async (): Promise<LotteryModalityInfo[]> => {
+export const fetchAllLotteries = async (options?: { userContext?: CaixaUserContext }): Promise<LotteryModalityInfo[]> => {
+  let failedCount = 0
+  const failedLotteries: string[] = []
+
   const promises = SUPPORTED_LOTTERIES.map(async (item) => {
     try {
-      const data = await fetchLotteryFromCaixa(item.type)
+      const data = await fetchLotteryFromCaixa(item.type, undefined, options)
       if (data) return data
-    } catch {}
+    } catch {
+      failedCount++
+      failedLotteries.push(item.name)
+    }
 
     return {
       type: item.type,
@@ -105,5 +156,30 @@ export const fetchAllLotteries = async (): Promise<LotteryModalityInfo[]> => {
     } satisfies LotteryModalityInfo
   })
 
-  return await Promise.all(promises)
+  const results = await Promise.all(promises)
+
+  if (failedCount > 0) {
+    logger.warn(
+      `[caixa] ${failedCount}/${SUPPORTED_LOTTERIES.length} modalidades falharam na consulta em lote da Caixa: ${failedLotteries.join(', ')}`
+    )
+
+    await logRepository.create({
+      category: options?.userContext?.id ? 'user' : 'system',
+      level: failedCount === SUPPORTED_LOTTERIES.length ? 'error' : 'warn',
+      action: 'CAIXA_BATCH_FETCH_FAILED',
+      title: 'Falha na consulta de loterias da Caixa em lote',
+      description: `${failedCount} de ${SUPPORTED_LOTTERIES.length} loterias não puderam ser carregadas da Caixa: ${failedLotteries.join(', ')}`,
+      userId: options?.userContext?.id,
+      userName: options?.userContext?.name,
+      userEmail: options?.userContext?.email,
+      details: {
+        failedCount,
+        total: SUPPORTED_LOTTERIES.length,
+        failedLotteries
+      }
+    })
+  }
+
+  return results
 }
+
