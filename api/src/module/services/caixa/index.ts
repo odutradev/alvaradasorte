@@ -33,19 +33,27 @@ const parseCaixaDateToIso = (dateStr?: string): string | null => {
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T20:00:00.000Z`
 }
 
-export const fetchLotteryFromCaixa = async (type: string): Promise<LotteryModalityInfo | null> => {
+export const fetchLotteryFromCaixa = async (
+  type: string,
+  contestNumber?: number
+): Promise<LotteryModalityInfo | null> => {
   const normalizedType = type.toLowerCase().trim()
   const meta = SUPPORTED_LOTTERIES.find((l) => l.type === normalizedType)
   const name = meta?.name ?? normalizedType.toUpperCase()
   const color = meta?.color ?? '#209869'
 
-  const cached = memoryCache.get(normalizedType)
+  const cacheKey = contestNumber ? `${normalizedType}-${contestNumber}` : normalizedType
+  const cached = memoryCache.get(cacheKey)
   if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
     return cached.data
   }
 
   try {
-    const response = await axios.get<CaixaLotteryRawResponse>(`${CAIXA_BASE_URL}/${normalizedType}`, {
+    const url = contestNumber
+      ? `${CAIXA_BASE_URL}/${normalizedType}/${contestNumber}`
+      : `${CAIXA_BASE_URL}/${normalizedType}`
+
+    const response = await axios.get<CaixaLotteryRawResponse>(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         Accept: 'application/json'
@@ -69,7 +77,7 @@ export const fetchLotteryFromCaixa = async (type: string): Promise<LotteryModali
       lastDrawnNumbers: raw.listaDezenas || raw.dezenasSorteadasOrdemSorteio || []
     }
 
-    memoryCache.set(normalizedType, {
+    memoryCache.set(cacheKey, {
       timestamp: Date.now(),
       data: result
     })

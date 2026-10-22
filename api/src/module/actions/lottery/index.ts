@@ -1,6 +1,6 @@
 import defineAction from '@core/factories/defineAction'
 import { fetchAllLotteries, fetchLotteryFromCaixa } from '@module/services/caixa'
-import { listLotteriesResponseSchema, lotteryItemSchema, lotteryParamsSchema } from './schemas'
+import { listLotteriesResponseSchema, lotteryItemSchema, lotteryParamsSchema, lotteryQuerySchema } from './schemas'
 
 import type { ManageRequestResponse, ManageRequestBody } from '@core/middlewares/manageRequest/types'
 import type { ListLotteriesResponse, LotteryItemResponse, LotteryParamsRequest } from './types'
@@ -37,12 +37,12 @@ export const getLotteryByType = defineAction(
       200: { description: 'Sucesso', schema: lotteryItemSchema }
     }
   },
-  async ({ params, manageError }: ManageRequestBody<LotteryParamsRequest>): ManageRequestResponse<LotteryItemResponse> => {
+  async ({ params, query, manageError }: ManageRequestBody<LotteryParamsRequest>): ManageRequestResponse<LotteryItemResponse> => {
     try {
-      const lottery = await fetchLotteryFromCaixa(params.type)
+      const lottery = await fetchLotteryFromCaixa(params.type, query?.contestNumber)
 
       if (!lottery) {
-        return manageError({ code: 'not_found', details: 'Loteria não encontrada na Caixa' })
+        return manageError({ code: 'not_found', details: 'Loteria ou concurso não encontrado na Caixa' })
       }
 
       return lottery
@@ -50,5 +50,5 @@ export const getLotteryByType = defineAction(
       return manageError({ code: 'internal_error', error })
     }
   },
-  { params: lotteryParamsSchema }
+  { params: lotteryParamsSchema, query: lotteryQuerySchema }
 )

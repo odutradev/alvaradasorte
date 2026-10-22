@@ -21,3 +21,7 @@ export const listLotteriesResponseSchema = z.array(lotteryItemSchema).openapi('L
 export const lotteryParamsSchema = z.object({
   type: z.string().openapi({ example: 'megasena' })
 })
+
+export const lotteryQuerySchema = z.object({
+  contestNumber: z.coerce.number().int().positive().optional().openapi({ example: 3072 })
+})
