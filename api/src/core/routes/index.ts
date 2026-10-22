@@ -20,6 +20,10 @@ const registerGlobalRoutes = (app: Application): void => {
     })
   })
 
+  app.get('/ping', (_req: Request, res: Response) => {
+    res.status(200).send('pong')
+  })
+
   const spec = generateDocs()
 
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec, { swaggerOptions: { persistAuthorization: true } }))

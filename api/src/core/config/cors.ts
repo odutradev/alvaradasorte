@@ -8,11 +8,13 @@ const buildCorsOptions = (): CorsOptions => {
 
   if (!isProduction) return {}
 
-  const originConfig = process.env.CORS_ORIGIN
+  const originConfig = process.env.CORS_ORIGIN || process.env.CORS_ALLOWED_ORIGINS
 
   if (!originConfig) return { origin: false }
 
-  const allowedOrigins = originConfig.split(',')
+  if (originConfig === '*') return {}
+
+  const allowedOrigins = originConfig.split(',').map((origin) => origin.trim())
 
   return {
     origin: allowedOrigins,
