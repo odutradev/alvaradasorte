@@ -6,8 +6,10 @@ export const getLotteries = async (): Promise<ListLotteriesResponse> => {
   return response.data
 }
 
-export const getLotteryByType = async (type: string): Promise<LotteryItemResponse> => {
-  const response = await api.get<LotteryItemResponse>(`/iam/v1/lotteries/${type}`)
+export const getLotteryByType = async (type: string, contestNumber?: number): Promise<LotteryItemResponse> => {
+  const response = await api.get<LotteryItemResponse>(`/iam/v1/lotteries/${type}`, {
+    params: contestNumber ? { contestNumber } : undefined
+  })
   return response.data
 }
 

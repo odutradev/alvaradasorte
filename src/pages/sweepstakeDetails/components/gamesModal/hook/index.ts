@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
+import { toast } from 'react-toastify'
 
 import { setSweepstakeGames, setSweepstakeResult } from '@services/sweepstakes'
 import { allocateGamesByBudget, generateRandomGame, generateAllocatedGames } from '@utils/gameAllocation'
 import { getLotteryRule, getGamePrice } from '@utils/lotteryRules'
+import { getLotteryByType } from '@services/lotteries'
 import { parseNumbers } from '../../../utils/games'
 import useAction from '@hooks/useAction'
 
@@ -19,9 +21,11 @@ const useGamesModal = (
   const [games, setGames] = useState<number[][]>(sweepstake.games ?? [])
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([])
   const [newGameInput, setNewGameInput] = useState('')
+  const [resultNumbers, setResultNumbers] = useState<number[]>(sweepstake.result ?? [])
   const [resultInput, setResultInput] = useState((sweepstake.result ?? []).join(', '))
   const [isSavingGames, setIsSavingGames] = useState(false)
   const [isSavingResult, setIsSavingResult] = useState(false)
+  const [isFetchingCaixaResult, setIsFetchingCaixaResult] = useState(false)
 
   const rule = useMemo(() => getLotteryRule(lotteryType), [lotteryType])
   const [targetCount, setTargetCount] = useState<number>(rule.minNumbers)
@@ -33,7 +37,9 @@ const useGamesModal = (
     const initialRule = getLotteryRule(initialType)
     setTargetCount(initialRule.minNumbers)
     setGames(sweepstake.games ?? [])
-    setResultInput((sweepstake.result ?? []).join(', '))
+    const initialResult = sweepstake.result ?? []
+    setResultNumbers(initialResult)
+    setResultInput(initialResult.join(', '))
     setNewGameInput('')
     setSelectedNumbers([])
   }, [open, sweepstake])
@@ -148,33 +154,93 @@ const useGamesModal = (
   }, [sweepstake.id, games, onUpdate])
 
   const handleSaveResult = useCallback(async () => {
-    const parsed = parseNumbers(resultInput)
-    if (!parsed.length) return
+    const numbersToSave = resultNumbers.length > 0 ? resultNumbers : parseNumbers(resultInput)
+    if (!numbersToSave.length) {
+      toast.warn('Selecione ou digite as dezenas sorteadas antes de salvar.')
+      return
+    }
     setIsSavingResult(true)
     try {
       await useAction({
-        action: () => setSweepstakeResult(sweepstake.id, { result: parsed }),
-        callback: () => onUpdate()
+        action: () => setSweepstakeResult(sweepstake.id, { result: numbersToSave }),
+        callback: () => onUpdate(),
+        toastMessages: {
+          success: 'Resultado do sorteio salvo com sucesso!',
+          pending: 'Salvando resultado...',
+          error: 'Erro ao salvar resultado'
+        }
       })
     } finally {
       setIsSavingResult(false)
     }
-  }, [sweepstake.id, resultInput, onUpdate])
+  }, [sweepstake.id, resultNumbers, resultInput, onUpdate])
+
+  const handleFetchCaixaResult = useCallback(async () => {
+    setIsFetchingCaixaResult(true)
+    try {
+      const data = await getLotteryByType(lotteryType, sweepstake.contestNumber)
+      if (data && data.lastDrawnNumbers && data.lastDrawnNumbers.length > 0) {
+        const numbers = data.lastDrawnNumbers.map(Number).sort((a, b) => a - b)
+        setResultNumbers(numbers)
+        setResultInput(numbers.join(', '))
+        toast.success(`Resultado obtido com sucesso da Caixa! Concurso #${data.contestNumber}`)
+      } else {
+        toast.warn('Nenhum resultado de sorteio foi retornado pela Caixa para este concurso.')
+      }
+    } catch {
+      toast.error('Não foi possível obter o resultado da Caixa Econômica.')
+    } finally {
+      setIsFetchingCaixaResult(false)
+    }
+  }, [lotteryType, sweepstake.contestNumber])
+
+  const toggleResultNumber = useCallback(
+    (num: number) => {
+      setResultNumbers((prev) => {
+        let updated: number[]
+        if (prev.includes(num)) {
+          updated = prev.filter((n) => n !== num)
+        } else {
+          if (prev.length >= rule.minNumbers) {
+            toast.info(`O sorteio desta loteria possui ${rule.minNumbers} dezenas. Desmarque uma dezena para trocar.`)
+            return prev
+          }
+          updated = [...prev, num].sort((a, b) => a - b)
+        }
+        setResultInput(updated.join(', '))
+        return updated
+      })
+    },
+    [rule.minNumbers]
+  )
+
+  const clearResultNumbers = useCallback(() => {
+    setResultNumbers([])
+    setResultInput('')
+  }, [])
+
+  const handleResultInputChange = useCallback((val: string) => {
+    setResultInput(val)
+    const parsed = parseNumbers(val)
+    setResultNumbers(parsed)
+  }, [])
 
   const getMatchedNumbers = useCallback(
     (game: number[]): NumberEntry[] => {
-      const resultSet = new Set(parseNumbers(resultInput))
+      const effectiveResult = resultNumbers.length > 0 ? resultNumbers : parseNumbers(resultInput)
+      const resultSet = new Set(effectiveResult)
       return game.map((n) => ({ number: n, matched: resultSet.has(n) }))
     },
-    [resultInput]
+    [resultNumbers, resultInput]
   )
 
   const getHitsCount = useCallback(
     (game: number[]): number => {
-      const resultSet = new Set(parseNumbers(resultInput))
+      const effectiveResult = resultNumbers.length > 0 ? resultNumbers : parseNumbers(resultInput)
+      const resultSet = new Set(effectiveResult)
       return game.filter((n) => resultSet.has(n)).length
     },
-    [resultInput]
+    [resultNumbers, resultInput]
   )
 
   return {
@@ -189,13 +255,18 @@ const useGamesModal = (
     allocationSuggestion,
     newGameInput,
     resultInput,
+    resultNumbers,
     isSavingGames,
     isSavingResult,
+    isFetchingCaixaResult,
     setNewGameInput,
-    setResultInput,
+    setResultInput: handleResultInputChange,
     setTargetCount,
     setLotteryType,
     toggleNumber,
+    toggleResultNumber,
+    clearResultNumbers,
+    handleFetchCaixaResult,
     generateSurpresinha,
     clearSelectedNumbers,
     addCurrentGame,

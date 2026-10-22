@@ -237,3 +237,16 @@ export const ResultSection = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   gap: theme.spacing(1.5)
 }))
+
+export const ResultCard = styled(Paper)(({ theme }) => {
+  const isDark = theme.palette.mode === 'dark'
+  return {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(1.5),
+    padding: theme.spacing(2),
+    borderRadius: 14,
+    border: `1px solid ${isDark ? alpha('#38bdf8', 0.15) : '#e2e8f0'}`,
+    backgroundColor: isDark ? alpha('#0f172a', 0.5) : '#f8fafc'
+  }
+})

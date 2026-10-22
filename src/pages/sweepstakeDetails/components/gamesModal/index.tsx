@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { alpha } from '@mui/material/styles'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import CasinoIcon from '@mui/icons-material/Casino'
 import DeleteIcon from '@mui/icons-material/Delete'
 import CheckIcon from '@mui/icons-material/Check'
 import AddIcon from '@mui/icons-material/Add'
 
+import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import Typography from '@mui/material/Typography'
 import InputLabel from '@mui/material/InputLabel'
@@ -34,7 +36,8 @@ import {
   NumbersContainer,
   NumberChip,
   SectionDivider,
-  ResultSection
+  ResultSection,
+  ResultCard
 } from './styles'
 import { LOTTERY_METADATA, getLotteryMeta } from '@services/lotteries'
 import { getLotteryRule, getGamePrice } from '@utils/lotteryRules'
@@ -57,13 +60,18 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
     allocationSuggestion,
     newGameInput,
     resultInput,
+    resultNumbers,
     isSavingGames,
     isSavingResult,
+    isFetchingCaixaResult,
     setNewGameInput,
     setResultInput,
     setTargetCount,
     setLotteryType,
     toggleNumber,
+    toggleResultNumber,
+    clearResultNumbers,
+    handleFetchCaixaResult,
     generateSurpresinha,
     clearSelectedNumbers,
     addCurrentGame,
@@ -456,28 +464,111 @@ const GamesModal = ({ sweepstake, onUpdate, open, onClose }: GamesModalProps) =>
 
         {/* Resultado do Sorteio */}
         <ResultSection>
-          <Typography variant="subtitle1" fontWeight={700}>
-            Resultado do Sorteio
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
-            <TextField
-              size="small"
-              fullWidth
-              label="Dezenas sorteadas (separadas por vírgula ou espaço)"
-              placeholder="Ex: 04, 12, 23, 31, 45, 58"
-              value={resultInput}
-              onChange={(e) => setResultInput(e.target.value)}
-            />
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1.5 }}>
+            <Box>
+              <Typography variant="subtitle1" fontWeight={700}>
+                Resultado do Sorteio
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {sweepstake.contestNumber ? `Concurso #${sweepstake.contestNumber}` : 'Concurso do Bolão'} • {rule.minNumbers} dezenas sorteadas
+              </Typography>
+            </Box>
+
             <Button
               variant="contained"
-              color="success"
-              onClick={handleSaveResult}
-              disabled={isSavingResult || !resultInput.trim()}
-              sx={{ whiteSpace: 'nowrap', textTransform: 'none', height: 40, borderRadius: 2 }}
+              size="small"
+              startIcon={isFetchingCaixaResult ? <CircularProgress size={16} color="inherit" /> : <CloudDownloadIcon fontSize="small" />}
+              onClick={handleFetchCaixaResult}
+              disabled={isFetchingCaixaResult}
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                color: '#ffffff',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.35)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #047857 0%, #059669 100%)'
+                }
+              }}
             >
-              {isSavingResult ? 'Salvando...' : 'Salvar Resultado'}
+              {isFetchingCaixaResult ? 'Buscando da Caixa...' : 'Buscar Resultado Oficial na Caixa'}
             </Button>
           </Box>
+
+          <ResultCard elevation={0}>
+            {/* Status e Ações do Volante de Resultado */}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2" fontWeight={600}>
+                  {resultNumbers.length} de {rule.minNumbers} dezenas marcadas
+                </Typography>
+                {resultNumbers.length > 0 && (
+                  <Chip
+                    size="small"
+                    color={resultNumbers.length === rule.minNumbers ? 'success' : 'default'}
+                    label={resultNumbers.length === rule.minNumbers ? 'Completo' : `${resultNumbers.length}/${rule.minNumbers}`}
+                    sx={{ height: 20, fontSize: '0.75rem', fontWeight: 700 }}
+                  />
+                )}
+              </Box>
+
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  size="small"
+                  variant="text"
+                  color="inherit"
+                  startIcon={<RestartAltIcon fontSize="small" />}
+                  onClick={clearResultNumbers}
+                  disabled={!resultNumbers.length}
+                  sx={{ textTransform: 'none' }}
+                >
+                  Limpar
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="small"
+                  startIcon={<CheckIcon fontSize="small" />}
+                  onClick={handleSaveResult}
+                  disabled={isSavingResult || !resultNumbers.length}
+                  sx={{ textTransform: 'none', borderRadius: 2, fontWeight: 700, px: 2 }}
+                >
+                  {isSavingResult ? 'Salvando...' : 'Salvar Resultado'}
+                </Button>
+              </Box>
+            </Box>
+
+            {/* Volante de Dezenas Sorteadas (Seleção Manual com o mesmo componente do volante de jogos) */}
+            <NumberGrid>
+              {availableNumbers.map((num) => {
+                const isSelected = resultNumbers.includes(num)
+                return (
+                  <NumberBall
+                    key={num}
+                    selected={isSelected}
+                    badgeColor="#16a34a"
+                    onClick={() => toggleResultNumber(num)}
+                  >
+                    {num < 10 ? `0${num}` : num}
+                  </NumberBall>
+                )
+              })}
+            </NumberGrid>
+
+            {/* Campo Opcional para Entrada Manual por Texto */}
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 0.5 }}>
+              <TextField
+                size="small"
+                fullWidth
+                label="Ou digite as dezenas sorteadas separadas por vírgula"
+                placeholder="Ex: 04, 12, 23, 31, 45, 58"
+                value={resultInput}
+                onChange={(e) => setResultInput(e.target.value)}
+              />
+            </Box>
+          </ResultCard>
+
           <Typography variant="caption" color="text.secondary">
             Os números acertados em cada jogo do bolão são automaticamente destacados em verde na lista acima com a contagem de acertos.
           </Typography>

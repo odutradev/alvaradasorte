@@ -14,13 +14,18 @@ export interface UseGamesModalReturn {
   allocationSuggestion: GameAllocationResult
   newGameInput: string
   resultInput: string
+  resultNumbers: number[]
   isSavingGames: boolean
   isSavingResult: boolean
+  isFetchingCaixaResult: boolean
   setNewGameInput: (v: string) => void
   setResultInput: (v: string) => void
   setTargetCount: (count: number) => void
   setLotteryType: (type: string) => void
   toggleNumber: (n: number) => void
+  toggleResultNumber: (n: number) => void
+  clearResultNumbers: () => void
+  handleFetchCaixaResult: () => Promise<void>
   generateSurpresinha: () => void
   clearSelectedNumbers: () => void
   addCurrentGame: () => boolean
