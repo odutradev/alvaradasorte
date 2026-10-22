@@ -1,0 +1,17 @@
+{
+  "name": "alvaradasorte",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Alvara da Sorte monorepo",
+  "scripts": {
+    "dev:api": "npm --prefix api run dev",
+    "dev:ui": "npm --prefix ui run dev",
+    "build:api": "npm --prefix api run build",
+    "build:ui": "npm --prefix ui run build",
+    "build": "npm run build:api && npm run build:ui",
+    "publish": "npx pub --bump-package --build --push"
+  },
+  "devDependencies": {
+    "project-publisher": "latest"
+  }
+}
