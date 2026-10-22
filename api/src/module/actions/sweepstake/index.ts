@@ -469,16 +469,22 @@ export const addSweepstakeGames = defineAction(
 
       const updated = await sweepstakeRepository.update(params.id, { games: data.games })
 
+      const gamesCount = data.games.length
+      const description =
+        gamesCount > 0
+          ? `Admin definiu ${gamesCount} jogo(s) no bolão "${sweepstake.title}"`
+          : `Admin removeu todos os jogos do bolão "${sweepstake.title}"`
+
       logRepository.create({
         category: 'admin',
         level: 'info',
         action: 'SWEEPSTAKE_GAMES_UPDATE',
-        title: 'Jogos do bolão configurados',
-        description: `Admin definiu ${data.games.length} jogo(s) no bolão "${sweepstake.title}"`,
+        title: gamesCount > 0 ? 'Jogos do bolão configurados' : 'Jogos do bolão removidos',
+        description,
         userId: ids.userId,
         targetId: params.id,
         targetName: sweepstake.title,
-        details: { gamesCount: data.games.length }
+        details: { gamesCount }
       })
 
       return updated!

@@ -120,7 +120,7 @@ export const updateSweepstakeSchema = z.object({
 }).openapi('UpdateSweepstakeRequest')
 
 export const addSweepstakeGamesSchema = z.object({
-  games: z.array(z.array(z.number().int().min(1)).min(1)).min(1).openapi({ example: [[1, 2, 3, 4], [5, 6, 7, 8]] })
+  games: z.array(z.array(z.number().int().min(1)).min(1)).openapi({ example: [[1, 2, 3, 4], [5, 6, 7, 8]] })
 }).openapi('AddSweepstakeGamesRequest')
 
 export const setSweepstakeResultSchema = z.object({
