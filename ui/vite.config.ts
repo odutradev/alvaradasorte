@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import chalk from 'chalk'
 import path from 'path'
+import fs from 'fs'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
@@ -11,7 +12,35 @@ export default defineConfig(({ mode }) => {
     if (!env[key]) throw new Error(chalk.red(`The environment variable ${chalk.bold(key)} is not defined.`))
   })
 
+  let appVersion = env.VITE_APP_VERSION || process.env.VITE_APP_VERSION
+  if (!appVersion) {
+    try {
+      const rootPkgPath = path.resolve(__dirname, '../package.json')
+      if (fs.existsSync(rootPkgPath)) {
+        const rootPkg = JSON.parse(fs.readFileSync(rootPkgPath, 'utf-8'))
+        appVersion = rootPkg.version
+      }
+    } catch {
+      // ignore
+    }
+  }
+  if (!appVersion) {
+    try {
+      const localPkgPath = path.resolve(__dirname, 'package.json')
+      if (fs.existsSync(localPkgPath)) {
+        const localPkg = JSON.parse(fs.readFileSync(localPkgPath, 'utf-8'))
+        appVersion = localPkg.version
+      }
+    } catch {
+      // ignore
+    }
+  }
+  appVersion = appVersion || '3.0.1'
+
   return {
+    define: {
+      'import.meta.env.VITE_APP_VERSION': JSON.stringify(appVersion)
+    },
     plugins: [react()],
     resolve: {
       alias: {

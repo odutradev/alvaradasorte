@@ -4,7 +4,7 @@
   "private": true,
   "description": "Alvara da Sorte monorepo",
   "scripts": {
-    "dev": "concurrently -n \"API,UI\" -c \"blue,magenta\" \"npm run dev:api\" \"npm run dev:ui\",
+    "dev": "concurrently -n \"API,UI\" -c \"blue,magenta\" \"npm run dev:api\" \"npm run dev:ui\"",
     "dev:api": "npm --prefix api run dev",
     "dev:ui": "npm --prefix ui run dev",
     "build:api": "npm --prefix api run build",
