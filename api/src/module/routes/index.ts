@@ -5,10 +5,13 @@ import { getLotteryByType, listLotteries } from '@module/actions/lottery/index'
 import { updatePreset, createPreset, deletePreset, listPresets } from '@module/actions/preset/index'
 import { updateUser, deleteUser, listUsers } from '@module/actions/user/index'
 import { syncAuthUser, updateMe, getMe } from '@module/actions/auth/index'
+import { listLogs } from '@module/actions/log/index'
 import adminMiddleware from '@module/middlewares/admin'
 import authMiddleware from '@module/middlewares/auth'
 
 const defaultModuleRouter = Router()
+
+defaultModuleRouter.get('/logs', authMiddleware, listLogs)
 
 defaultModuleRouter.post('/auth/sync', syncAuthUser)
 defaultModuleRouter.patch('/auth/me', authMiddleware, updateMe)

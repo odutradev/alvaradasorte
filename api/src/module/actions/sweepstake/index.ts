@@ -2,6 +2,7 @@ import { updateParticipationBodySchema, deleteParticipationParamsSchema, addManu
 import participationRepository from '@module/repositories/participation/index'
 import sweepstakeRepository from '@module/repositories/sweepstake/index'
 import userRepository from '@module/repositories/user/index'
+import logRepository from '@module/repositories/log/index'
 import { firebaseStorage } from '@core/database/connection'
 import defineAction from '@core/factories/defineAction'
 import upload from '@core/middlewares/upload'
@@ -88,6 +89,18 @@ export const createSweepstake = defineAction(
       const payload = { ...data, adminId: ids.userId }
       const sweepstake = await sweepstakeRepository.create(payload)
 
+      logRepository.create({
+        category: 'admin',
+        level: 'info',
+        action: 'SWEEPSTAKE_CREATE',
+        title: 'Bolão criado',
+        description: `Bolão "${sweepstake.title}" foi criado`,
+        userId: ids.userId,
+        targetId: sweepstake.id,
+        targetName: sweepstake.title,
+        details: { quotaPrice: sweepstake.quotaPrice, availableQuotas: sweepstake.availableQuotas }
+      })
+
       return sweepstake
     } catch (error) {
       return manageError({ code: 'internal_error', error })
@@ -107,11 +120,23 @@ export const updateSweepstake = defineAction(
       200: { description: 'Sucesso', schema: sweepstakeSchema }
     }
   },
-  async ({ params, data, manageError }: ManageRequestBody<UpdateSweepstakeRequest>): ManageRequestResponse<SweepstakeResponse> => {
+  async ({ ids, params, data, manageError }: ManageRequestBody<UpdateSweepstakeRequest>): ManageRequestResponse<SweepstakeResponse> => {
     try {
       const sweepstake = await sweepstakeRepository.update(params.id, data)
 
       if (!sweepstake) return manageError({ code: 'not_found' })
+
+      logRepository.create({
+        category: 'admin',
+        level: 'info',
+        action: 'SWEEPSTAKE_UPDATE',
+        title: 'Bolão atualizado',
+        description: `Bolão "${sweepstake.title}" teve configurações alteradas`,
+        userId: ids.userId,
+        targetId: params.id,
+        targetName: sweepstake.title,
+        details: data
+      })
 
       return sweepstake
     } catch (error) {
@@ -132,11 +157,23 @@ export const deleteSweepstake = defineAction(
       204: { description: 'Sucesso' }
     }
   },
-  async ({ params, manageError }: ManageRequestBody<DeleteSweepstakeRequest>): ManageRequestResponse => {
+  async ({ ids, params, manageError }: ManageRequestBody<DeleteSweepstakeRequest>): ManageRequestResponse => {
     try {
+      const sweepstake = await sweepstakeRepository.findById(params.id)
       const deleted = await sweepstakeRepository.delete(params.id)
 
       if (!deleted) return manageError({ code: 'not_found' })
+
+      logRepository.create({
+        category: 'admin',
+        level: 'warn',
+        action: 'SWEEPSTAKE_DELETE',
+        title: 'Bolão excluído',
+        description: `Bolão "${sweepstake?.title || params.id}" foi removido do sistema`,
+        userId: ids.userId,
+        targetId: params.id,
+        targetName: sweepstake?.title
+      })
     } catch (error) {
       return manageError({ code: 'internal_error', error })
     }
@@ -226,7 +263,18 @@ export const joinSweepstake = defineAction(
   },
   async ({ ids, params, data, file, manageError }: ManageRequestBody<JoinSweepstakeRequest>): ManageRequestResponse => {
     if (!ids.userId) return manageError({ code: 'unauthorized' })
-    if (!file) return manageError({ code: 'bad_request', details: 'Comprovante não enviado' })
+    if (!file) {
+      logRepository.create({
+        category: 'system',
+        level: 'warn',
+        action: 'SWEEPSTAKE_JOIN_FAILED',
+        title: 'Tentativa de participação sem comprovante',
+        description: 'Usuário tentou participar sem anexar o comprovante',
+        userId: ids.userId,
+        targetId: params.id
+      })
+      return manageError({ code: 'bad_request', details: 'Comprovante não enviado' })
+    }
 
     const requestedQuotaCount = data?.quotaCount ?? 1
 
@@ -242,17 +290,74 @@ export const joinSweepstake = defineAction(
 
       const missingProfileInfo = !user.fullName || !user.department || !user.phone
 
-      if (missingProfileInfo) return manageError({ code: 'bad_request', details: 'Perfil incompleto. Preencha nome completo, setor e telefone.' })
+      if (missingProfileInfo) {
+        logRepository.create({
+          category: 'system',
+          level: 'warn',
+          action: 'SWEEPSTAKE_JOIN_FAILED',
+          title: 'Perfil incompleto na compra de cota',
+          description: `Usuário ${user.email} tentou participar do bolão "${sweepstake.title}" com perfil incompleto`,
+          userId: user.id,
+          userName: user.fullName || user.name,
+          userEmail: user.email,
+          targetId: sweepstake.id,
+          targetName: sweepstake.title
+        })
+        return manageError({ code: 'bad_request', details: 'Perfil incompleto. Preencha nome completo, setor e telefone.' })
+      }
 
       const isClosed = isPast(new Date(sweepstake.purchaseLimitDate))
 
-      if (isClosed) return manageError({ code: 'bad_request', details: 'Data limite para compra excedida' })
+      if (isClosed) {
+        logRepository.create({
+          category: 'system',
+          level: 'warn',
+          action: 'SWEEPSTAKE_JOIN_FAILED',
+          title: 'Tentativa de compra após prazo limite',
+          description: `Tentativa de compra de cota no bolão "${sweepstake.title}" após a data limite (${sweepstake.purchaseLimitDate})`,
+          userId: user.id,
+          userName: user.fullName || user.name,
+          userEmail: user.email,
+          targetId: sweepstake.id,
+          targetName: sweepstake.title
+        })
+        return manageError({ code: 'bad_request', details: 'Data limite para compra excedida' })
+      }
 
       const currentFilledQuotas = participations.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0)
       const remainingQuotas = sweepstake.availableQuotas - currentFilledQuotas
 
-      if (remainingQuotas <= 0) return manageError({ code: 'bad_request', details: 'Cotas esgotadas' })
-      if (requestedQuotaCount > remainingQuotas) return manageError({ code: 'bad_request', details: `Apenas ${remainingQuotas} cota(s) disponível(is)` })
+      if (remainingQuotas <= 0) {
+        logRepository.create({
+          category: 'system',
+          level: 'warn',
+          action: 'SWEEPSTAKE_JOIN_FAILED',
+          title: 'Tentativa de compra em bolão esgotado',
+          description: `Usuário tentou comprar cota no bolão "${sweepstake.title}", mas as cotas estão esgotadas (${currentFilledQuotas}/${sweepstake.availableQuotas})`,
+          userId: user.id,
+          userName: user.fullName || user.name,
+          userEmail: user.email,
+          targetId: sweepstake.id,
+          targetName: sweepstake.title
+        })
+        return manageError({ code: 'bad_request', details: 'Cotas esgotadas' })
+      }
+
+      if (requestedQuotaCount > remainingQuotas) {
+        logRepository.create({
+          category: 'system',
+          level: 'warn',
+          action: 'SWEEPSTAKE_JOIN_FAILED',
+          title: 'Tentativa de compra acima do saldo de cotas',
+          description: `Tentativa de adquirir ${requestedQuotaCount} cota(s) quando restam apenas ${remainingQuotas} no bolão "${sweepstake.title}"`,
+          userId: user.id,
+          userName: user.fullName || user.name,
+          userEmail: user.email,
+          targetId: sweepstake.id,
+          targetName: sweepstake.title
+        })
+        return manageError({ code: 'bad_request', details: `Apenas ${remainingQuotas} cota(s) disponível(is)` })
+      }
 
       const bucket = firebaseStorage.bucket()
       const fileExtension = file.originalname.split('.').pop()
@@ -273,7 +378,38 @@ export const joinSweepstake = defineAction(
       }
 
       await participationRepository.create(payload)
-    } catch (error) {
+
+      // Log do usuário (auditoria da compra)
+      logRepository.create({
+        category: 'user',
+        level: 'info',
+        action: 'SWEEPSTAKE_JOIN',
+        title: 'Cota adquirida com sucesso',
+        description: `${user.fullName} adquiriu ${requestedQuotaCount} cota(s) no bolão "${sweepstake.title}"`,
+        userId: user.id,
+        userName: user.fullName as string,
+        userEmail: user.email,
+        targetId: sweepstake.id,
+        targetName: sweepstake.title,
+        details: {
+          quotaCount: requestedQuotaCount,
+          totalPrice: requestedQuotaCount * sweepstake.quotaPrice,
+          suggestedNumbers: data.suggestedNumbers
+        }
+      })
+    } catch (error: any) {
+      logRepository.create({
+        category: 'system',
+        level: 'error',
+        action: 'SWEEPSTAKE_JOIN_ERROR',
+        title: 'Erro no cadastramento de cotas do bolão',
+        description: `Falha interna ao processar comprovante ou registrar cota no bolão ID ${params.id}`,
+        userId: ids.userId,
+        targetId: params.id,
+        errorMessage: error?.message || 'Erro desconhecido',
+        errorStack: error?.stack,
+        details: { requestedQuotaCount }
+      })
       return manageError({ code: 'internal_error', error })
     }
   },
@@ -291,13 +427,25 @@ export const addSweepstakeGames = defineAction(
       200: { description: 'Sucesso', schema: sweepstakeSchema }
     }
   },
-  async ({ params, data, manageError }: ManageRequestBody<AddSweepstakeGamesRequest>): ManageRequestResponse<SweepstakeResponse> => {
+  async ({ ids, params, data, manageError }: ManageRequestBody<AddSweepstakeGamesRequest>): ManageRequestResponse<SweepstakeResponse> => {
     try {
       const sweepstake = await sweepstakeRepository.findById(params.id)
 
       if (!sweepstake) return manageError({ code: 'not_found' })
 
       const updated = await sweepstakeRepository.update(params.id, { games: data.games })
+
+      logRepository.create({
+        category: 'admin',
+        level: 'info',
+        action: 'SWEEPSTAKE_GAMES_UPDATE',
+        title: 'Jogos do bolão configurados',
+        description: `Admin definiu ${data.games.length} jogo(s) no bolão "${sweepstake.title}"`,
+        userId: ids.userId,
+        targetId: params.id,
+        targetName: sweepstake.title,
+        details: { gamesCount: data.games.length }
+      })
 
       return updated!
     } catch (error) {
@@ -318,13 +466,25 @@ export const setSweepstakeResult = defineAction(
       200: { description: 'Sucesso', schema: sweepstakeSchema }
     }
   },
-  async ({ params, data, manageError }: ManageRequestBody<SetSweepstakeResultRequest>): ManageRequestResponse<SweepstakeResponse> => {
+  async ({ ids, params, data, manageError }: ManageRequestBody<SetSweepstakeResultRequest>): ManageRequestResponse<SweepstakeResponse> => {
     try {
       const sweepstake = await sweepstakeRepository.findById(params.id)
 
       if (!sweepstake) return manageError({ code: 'not_found' })
 
       const updated = await sweepstakeRepository.update(params.id, { result: data.result })
+
+      logRepository.create({
+        category: 'admin',
+        level: 'info',
+        action: 'SWEEPSTAKE_RESULT_SET',
+        title: 'Resultado do bolão apurado',
+        description: `Admin registrou o resultado sorteado do bolão "${sweepstake.title}"`,
+        userId: ids.userId,
+        targetId: params.id,
+        targetName: sweepstake.title,
+        details: { result: data.result }
+      })
 
       return updated!
     } catch (error) {
@@ -345,7 +505,7 @@ export const addManualParticipation = defineAction(
       200: { description: 'Sucesso', schema: participationSchema }
     }
   },
-  async ({ params, data, manageError }: ManageRequestBody<AddManualParticipationRequest>): ManageRequestResponse<ParticipationResponse> => {
+  async ({ ids, params, data, manageError }: ManageRequestBody<AddManualParticipationRequest>): ManageRequestResponse<ParticipationResponse> => {
     try {
       const user = await userRepository.findByEmail(data.email)
 
@@ -378,6 +538,18 @@ export const addManualParticipation = defineAction(
 
       const participation = await participationRepository.create(payload)
 
+      logRepository.create({
+        category: 'admin',
+        level: 'info',
+        action: 'MANUAL_PARTICIPATION_ADD',
+        title: 'Participação manual adicionada',
+        description: `Admin inseriu participação de ${payload.userName} (${requestedQuotaCount} cota(s)) no bolão "${sweepstake.title}"`,
+        userId: ids.userId,
+        targetId: params.id,
+        targetName: sweepstake.title,
+        details: { participantUserId: user.id, quotaCount: requestedQuotaCount, email: data.email }
+      })
+
       return participation
     } catch (error) {
       return manageError({ code: 'internal_error', error })
@@ -397,7 +569,7 @@ export const deleteParticipation = defineAction(
       204: { description: 'Sucesso' }
     }
   },
-  async ({ params, manageError }: ManageRequestBody<DeleteParticipationRequest>): ManageRequestResponse => {
+  async ({ ids, params, manageError }: ManageRequestBody<DeleteParticipationRequest>): ManageRequestResponse => {
     try {
       const participation = await participationRepository.findById(params.participationId)
 
@@ -406,6 +578,17 @@ export const deleteParticipation = defineAction(
       }
 
       await participationRepository.delete(params.participationId)
+
+      logRepository.create({
+        category: 'admin',
+        level: 'warn',
+        action: 'PARTICIPATION_DELETE',
+        title: 'Participação removida',
+        description: `Admin removeu a participação de ${participation.userName} no bolão ID ${params.id}`,
+        userId: ids.userId,
+        targetId: params.id,
+        details: { participationId: params.participationId, userName: participation.userName }
+      })
     } catch (error) {
       return manageError({ code: 'internal_error', error })
     }
@@ -424,7 +607,7 @@ export const updateParticipation = defineAction(
       200: { description: 'Sucesso', schema: participationSchema }
     }
   },
-  async ({ params, data, manageError }: ManageRequestBody<UpdateParticipationRequest>): ManageRequestResponse<ParticipationResponse> => {
+  async ({ ids, params, data, manageError }: ManageRequestBody<UpdateParticipationRequest>): ManageRequestResponse<ParticipationResponse> => {
     try {
       const participation = await participationRepository.findById(params.participationId)
 
@@ -465,6 +648,17 @@ export const updateParticipation = defineAction(
           ...(data.userPhone && { phone: data.userPhone })
         })
       }
+
+      logRepository.create({
+        category: 'admin',
+        level: 'info',
+        action: 'PARTICIPATION_UPDATE',
+        title: 'Participação atualizada',
+        description: `Admin alterou dados da participação de ${participation.userName} no bolão ID ${params.id}`,
+        userId: ids.userId,
+        targetId: params.id,
+        details: { participationId: params.participationId, changes: data }
+      })
 
       return updatedParticipation!
     } catch (error) {
