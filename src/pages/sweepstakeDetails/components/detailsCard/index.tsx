@@ -29,7 +29,7 @@ const DetailsCard = ({ data, preset, presets, onUpdate }: DetailsCardProps) => {
     <CardContainer elevation={0}>
       <HeaderRow>
         <Typography variant="h6" fontWeight={600} color="primary" noWrap>
-          {capitalizeWords(data.title)}
+          {capitalizeWords(data?.title ?? '')}
         </Typography>
         {!isEditing && (
           <Button

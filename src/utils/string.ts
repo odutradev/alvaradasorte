@@ -1,9 +1,11 @@
-export const capitalizeWords = (text: string): string =>
-  text
+export const capitalizeWords = (text?: string | null): string => {
+  if (!text) return ''
+  return text
     .toLowerCase()
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
+}
 
 export const formatCurrency = (value: number): string =>
   new Intl.NumberFormat('pt-BR', {
@@ -54,12 +56,14 @@ export const formatCompactCurrency = (value: number, includePrefix = true): stri
   return `${sign}${prefix}${formatted}`
 }
 
-export const normalizeString = (text: string): string =>
-  text
+export const normalizeString = (text?: string | null): string => {
+  if (!text) return ''
+  return text
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .trim()
+}
 
 const computeJaro = (a: string, b: string): number => {
   if (a === b) return 1
