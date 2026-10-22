@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import WhatsAppIcon from '@mui/icons-material/WhatsApp'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import CasinoIcon from '@mui/icons-material/Casino'
@@ -63,11 +62,6 @@ const MessageModal = ({ open, onClose, data, preset }: MessageModalProps) => {
     document.body.removeChild(textarea)
   }
 
-  const handleShareWhatsApp = () => {
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(messageText)}`
-    window.open(url, '_blank')
-  }
-
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessageText(e.target.value)
   }
@@ -92,26 +86,15 @@ const MessageModal = ({ open, onClose, data, preset }: MessageModalProps) => {
             Fechar
           </Button>
 
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              onClick={handleShareWhatsApp}
-              variant="outlined"
-              color="success"
-              startIcon={<WhatsAppIcon fontSize="small" />}
-              sx={{ textTransform: 'none', fontWeight: 600, borderRadius: 2 }}
-            >
-              Abrir no WhatsApp
-            </Button>
-            <Button
-              onClick={handleCopyMessage}
-              variant="contained"
-              color={copied ? 'success' : 'primary'}
-              startIcon={<ContentCopyIcon fontSize="small" />}
-              sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2, px: 2.5 }}
-            >
-              {copied ? 'Copiado!' : 'Copiar Mensagem'}
-            </Button>
-          </Box>
+          <Button
+            onClick={handleCopyMessage}
+            variant="contained"
+            color={copied ? 'success' : 'primary'}
+            startIcon={<ContentCopyIcon fontSize="small" />}
+            sx={{ textTransform: 'none', fontWeight: 700, borderRadius: 2, px: 2.5 }}
+          >
+            {copied ? 'Copiado!' : 'Copiar Mensagem'}
+          </Button>
         </Box>
       }
     >
