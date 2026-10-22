@@ -16,6 +16,24 @@ export const participationSchema = z.object({
   createdAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' })
 }).openapi('ParticipationResponse')
 
+export const resultSyncAttemptSchema = z.object({
+  attemptNumber: z.number().int().openapi({ example: 1 }),
+  timestamp: z.string().openapi({ example: '2023-12-20T20:15:00.000Z' }),
+  success: z.boolean().openapi({ example: false }),
+  message: z.string().optional().openapi({ example: 'Resultado ainda não apurado pela Caixa' }),
+  drawnNumbers: z.array(z.number()).optional().openapi({ example: [4, 12, 23, 31, 45, 58] })
+}).openapi('ResultSyncAttempt')
+
+export const resultSyncLogSchema = z.object({
+  status: z.enum(['pending', 'success', 'failed']).openapi({ example: 'success' }),
+  attemptsCount: z.number().int().openapi({ example: 2 }),
+  maxAttempts: z.number().int().openapi({ example: 6 }),
+  lastAttemptAt: z.string().optional().openapi({ example: '2023-12-20T20:25:00.000Z' }),
+  nextAttemptAt: z.string().optional().openapi({ example: '2023-12-20T20:35:00.000Z' }),
+  successAt: z.string().optional().openapi({ example: '2023-12-20T20:25:00.000Z' }),
+  attempts: z.array(resultSyncAttemptSchema).openapi({ example: [] })
+}).openapi('ResultSyncLog')
+
 export const sweepstakeSchema = z.object({
   id: z.string().openapi({ example: 'chave-unica' }),
   adminId: z.string().openapi({ example: 'admin-uid' }),
@@ -31,6 +49,7 @@ export const sweepstakeSchema = z.object({
   lotteryType: z.string().optional().openapi({ example: 'megasena' }),
   games: z.array(z.array(z.number())).optional().openapi({ example: [[1, 2, 3, 4], [5, 6, 7, 8]] }),
   result: z.array(z.number()).optional().openapi({ example: [1, 2, 3, 4] }),
+  resultSyncLog: resultSyncLogSchema.optional(),
   createdAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' }),
   updatedAt: z.string().openapi({ example: '2023-01-01T00:00:00.000Z' })
 }).openapi('SweepstakeResponse')
