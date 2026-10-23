@@ -1,0 +1,28 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "sweepstakes": {
+      ".read": "auth != null",
+      ".write": false
+    },
+    "participations": {
+      ".read": false,
+      ".write": false
+    },
+    "logs": {
+      ".read": false,
+      ".write": false
+    },
+    "presets": {
+      ".read": "auth != null",
+      ".write": false
+    }
+  }
+}
