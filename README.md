@@ -1,4 +1,4 @@
-# 🍀 Alvará da Sorte
+﻿# 🍀 Alvará da Sorte
 
 > Plataforma completa e moderna para gerenciamento, acompanhamento e apuração automatizada de bolões de loterias, com conferência de dezenas e notificação por e-mail para cotistas.
 
@@ -99,7 +99,7 @@ api/
 │   │   ├── actions/             # Controllers divididos por domínio (auth, sweepstake, etc.)
 │   │   ├── middlewares/         # Middlewares de autorização específicos do módulo
 │   │   ├── repositories/        # Camada de acesso a dados (Firebase Realtime Database)
-│   │   ├── routes/              # Definição das rotas REST (/iam/v1/...)
+│   │   ├── routes/              # Definição das rotas REST (/...)
 │   │   └── services/            # Regras de negócio e rotinas em background
 │   │       ├── autoResultSync/  # Rotina autônoma de sincronização pós-sorteio
 │   │       ├── caixa/           # Integração resiliente com loterias Caixa
@@ -112,14 +112,14 @@ api/
 
 ### Autenticação e Permissões
 
-- **Fluxo Híbrido:** O cliente autentica via Firebase Authentication no frontend e envia seu Firebase ID Token para a rota `POST /iam/v1/auth/sync`. O backend valida o token, sincroniza o usuário no banco de dados e emite um token JWT de sessão.
+- **Fluxo Híbrido:** O cliente autentica via Firebase Authentication no frontend e envia seu Firebase ID Token para a rota `POST /auth/sync`. O backend valida o token, sincroniza o usuário no banco de dados e emite um token JWT de sessão.
 - **Controle de Acesso (RBAC):**
   - `authMiddleware`: Valida a presença e integridade do token JWT de sessão.
   - `adminMiddleware`: Garante que apenas usuários com `role: 'admin'` acessem recursos privilegiados (criar bolões, gerenciar cotistas, cadastrar jogos, alterar presets e usuários).
 
 ### Rotas e Endpoints REST
 
-Todas as rotas de negócio são servidas sob o prefixo `/iam/v1`:
+Todas as rotas de negócio são servidas sob o prefixo ``:
 
 #### 1. Sistema e Health Check
 | Método | Endpoint | Autenticação | Descrição |
@@ -131,51 +131,51 @@ Todas as rotas de negócio são servidas sob o prefixo `/iam/v1`:
 #### 2. Autenticação e Perfil
 | Método | Endpoint | Autenticação | Descrição |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/iam/v1/auth/sync` | Pública (Firebase Token) | Sincroniza usuário autenticado e gera JWT de sessão |
-| `GET` | `/iam/v1/auth/me` | Usuário | Obtém dados do usuário logado |
-| `PATCH` | `/iam/v1/auth/me` | Usuário | Atualiza perfil (nome, telefone, dados pix) |
+| `POST` | `/auth/sync` | Pública (Firebase Token) | Sincroniza usuário autenticado e gera JWT de sessão |
+| `GET` | `/auth/me` | Usuário | Obtém dados do usuário logado |
+| `PATCH` | `/auth/me` | Usuário | Atualiza perfil (nome, telefone, dados pix) |
 
 #### 3. Gestão de Bolões (`/sweepstakes`)
 | Método | Endpoint | Permissão | Descrição |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/iam/v1/sweepstakes` | Usuário | Lista bolões disponíveis e status de participação |
-| `POST` | `/iam/v1/sweepstakes` | Admin | Cria um novo bolão |
-| `GET` | `/iam/v1/sweepstakes/:id/details` | Admin | Detalhes completos, participantes, cotas e jogos |
-| `POST` | `/iam/v1/sweepstakes/:id/join` | Usuário | Participa adquirindo cotas de um bolão |
-| `POST` | `/iam/v1/sweepstakes/:id/participations/manual` | Admin | Adiciona participação manual (off-line / Pix direto) |
-| `PATCH` | `/iam/v1/sweepstakes/:id/participations/:participationId` | Admin | Atualiza cota ou status de pagamento |
-| `DELETE` | `/iam/v1/sweepstakes/:id/participations/:participationId` | Admin | Remove uma participação |
-| `POST` | `/iam/v1/sweepstakes/:id/participations/:participationId/send-result-email` | Admin | Reenvia e-mail de resultado individual |
-| `PATCH` | `/iam/v1/sweepstakes/:id/games` | Admin | Cadastra ou atualiza os jogos/dezenas do bolão |
-| `PATCH` | `/iam/v1/sweepstakes/:id/result` | Admin | Define manualmente o resultado/dezenas sorteadas |
-| `PATCH` | `/iam/v1/sweepstakes/:id` | Admin | Edita informações gerais do bolão |
-| `DELETE` | `/iam/v1/sweepstakes/:id` | Admin | Remove o bolão e suas participações |
+| `GET` | `/sweepstakes` | Usuário | Lista bolões disponíveis e status de participação |
+| `POST` | `/sweepstakes` | Admin | Cria um novo bolão |
+| `GET` | `/sweepstakes/:id/details` | Admin | Detalhes completos, participantes, cotas e jogos |
+| `POST` | `/sweepstakes/:id/join` | Usuário | Participa adquirindo cotas de um bolão |
+| `POST` | `/sweepstakes/:id/participations/manual` | Admin | Adiciona participação manual (off-line / Pix direto) |
+| `PATCH` | `/sweepstakes/:id/participations/:participationId` | Admin | Atualiza cota ou status de pagamento |
+| `DELETE` | `/sweepstakes/:id/participations/:participationId` | Admin | Remove uma participação |
+| `POST` | `/sweepstakes/:id/participations/:participationId/send-result-email` | Admin | Reenvia e-mail de resultado individual |
+| `PATCH` | `/sweepstakes/:id/games` | Admin | Cadastra ou atualiza os jogos/dezenas do bolão |
+| `PATCH` | `/sweepstakes/:id/result` | Admin | Define manualmente o resultado/dezenas sorteadas |
+| `PATCH` | `/sweepstakes/:id` | Admin | Edita informações gerais do bolão |
+| `DELETE` | `/sweepstakes/:id` | Admin | Remove o bolão e suas participações |
 
 #### 4. Modelos e Predefinições (`/presets`)
 | Método | Endpoint | Permissão | Descrição |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/iam/v1/presets` | Admin | Lista modelos pré-configurados de bolões |
-| `POST` | `/iam/v1/presets` | Admin | Cria novo preset |
-| `PATCH` | `/iam/v1/presets/:id` | Admin | Edita um preset |
-| `DELETE` | `/iam/v1/presets/:id` | Admin | Remove um preset |
+| `GET` | `/presets` | Admin | Lista modelos pré-configurados de bolões |
+| `POST` | `/presets` | Admin | Cria novo preset |
+| `PATCH` | `/presets/:id` | Admin | Edita um preset |
+| `DELETE` | `/presets/:id` | Admin | Remove um preset |
 
 #### 5. Usuários e Administração (`/users`)
 | Método | Endpoint | Permissão | Descrição |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/iam/v1/users` | Admin | Lista todos os usuários cadastrados |
-| `PATCH` | `/iam/v1/users/:id` | Admin | Atualiza permissão (`admin`/`user`) e status |
-| `DELETE` | `/iam/v1/users/:id` | Admin | Remove cadastro de usuário |
+| `GET` | `/users` | Admin | Lista todos os usuários cadastrados |
+| `PATCH` | `/users/:id` | Admin | Atualiza permissão (`admin`/`user`) e status |
+| `DELETE` | `/users/:id` | Admin | Remove cadastro de usuário |
 
 #### 6. Loterias Caixa (`/lotteries`)
 | Método | Endpoint | Permissão | Descrição |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/iam/v1/lotteries` | Admin | Lista todas as modalidades suportadas |
-| `GET` | `/iam/v1/lotteries/:type` | Admin | Consulta concurso atual ou específico de uma loteria |
+| `GET` | `/lotteries` | Admin | Lista todas as modalidades suportadas |
+| `GET` | `/lotteries/:type` | Admin | Consulta concurso atual ou específico de uma loteria |
 
 #### 7. Logs e Auditoria (`/logs`)
 | Método | Endpoint | Permissão | Descrição |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/iam/v1/logs` | Usuário/Admin | Auditoria de eventos do sistema, erros e ações |
+| `GET` | `/logs` | Usuário/Admin | Auditoria de eventos do sistema, erros e ações |
 
 ### Serviços e Rotinas Automáticas
 
@@ -455,3 +455,4 @@ docker compose down
 
 Desenvolvido por **[odutradev](https://github.com/odutradev)**.
 Distribuído sob licença proprietária. Todos os direitos reservados.
+

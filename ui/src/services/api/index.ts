@@ -1,4 +1,4 @@
-import axios from 'axios'
+﻿import axios from 'axios'
 
 import { firebaseAuth } from '@lib/firebase/config'
 import useAuthStore from '@stores/auth'
@@ -69,7 +69,7 @@ api.interceptors.response.use(
         const firebaseToken = await currentUser.getIdToken(true)
 
         const { data } = await axios.post<SyncResponse>(
-          `${api.defaults.baseURL}/iam/v1/auth/sync`,
+          `${api.defaults.baseURL}/auth/sync`,
           {
             authProviderId: currentUser.providerData[0]?.providerId ?? 'password',
             name: currentUser.displayName ?? 'Unknown',

@@ -11,9 +11,9 @@ import type { SyncUserResponse, UpdateUserRequest, SyncUserRequest, UserResponse
 export const syncAuthUser = defineAction(
   {
     method: 'post',
-    path: '/iam/v1/auth/sync',
+    path: '/auth/sync',
     summary: 'Sincronizar usuário logado via Frontend',
-    tags: ['IAM - Autenticação'],
+    tags: ['Autenticação'],
     authenticate: false,
     responses: {
       200: { description: 'Sucesso', schema: syncResponseSchema }
@@ -56,9 +56,9 @@ export const syncAuthUser = defineAction(
 export const getMe = defineAction(
   {
     method: 'get',
-    path: '/iam/v1/auth/me',
+    path: '/auth/me',
     summary: 'Buscar dados do usuário logado',
-    tags: ['IAM - Autenticação'],
+    tags: ['Autenticação'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: userSchema }
@@ -82,9 +82,9 @@ export const getMe = defineAction(
 export const updateMe = defineAction(
   {
     method: 'patch',
-    path: '/iam/v1/auth/me',
+    path: '/auth/me',
     summary: 'Atualizar dados do usuário logado',
-    tags: ['IAM - Autenticação'],
+    tags: ['Autenticação'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: userSchema }
@@ -117,4 +117,6 @@ export const updateMe = defineAction(
   },
   { body: updateUserSchema }
 )
+
+
 

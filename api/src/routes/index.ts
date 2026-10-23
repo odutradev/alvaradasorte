@@ -36,8 +36,8 @@ const registerGlobalRoutes = (app: Application): void => {
     res.status(200).send('pong')
   })
 
-  app.use('/iam/v1', apiRouter)
-  app.use('/api/iam/v1', apiRouter)
+  app.use('/', apiRouter)
+  app.use('/api', apiRouter)
 
   const spec = generateDocs()
   const swaggerMiddleware = [

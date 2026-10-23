@@ -1,4 +1,4 @@
-## **Comandos Disponíveis**
+﻿## **Comandos Disponíveis**
 
 * npm run dev: Inicia o servidor em modo de desenvolvimento (watch).  
 * npm run build: Compila o projeto para o diretório dist/.  
@@ -48,7 +48,7 @@ import type { ExemploRequest, ExemploResponse } from './types'
 export const criarExemplo = defineAction(  
   {  
     method: 'post',  
-    path: '/iam/v1/entidades/create',  
+    path: '/entidades/create',  
     summary: 'Criar nova entidade',  
     tags: ['Entidades'],  
     authenticate: true,  

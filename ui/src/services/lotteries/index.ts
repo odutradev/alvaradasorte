@@ -1,4 +1,4 @@
-import axios from 'axios'
+﻿import axios from 'axios'
 import api from '@services/api'
 import type { ListLotteriesResponse, LotteryItemResponse } from './types'
 
@@ -65,7 +65,7 @@ export const fetchDirectFromCaixa = async (type: string, contestNumber?: number)
 
 export const getLotteries = async (): Promise<ListLotteriesResponse> => {
   try {
-    const response = await api.get<ListLotteriesResponse>('/iam/v1/lotteries')
+    const response = await api.get<ListLotteriesResponse>('/lotteries')
     const hasData = response.data && response.data.some((l) => l.contestNumber > 0 || l.estimatedPrize > 0)
     if (hasData) {
       return response.data
@@ -98,14 +98,14 @@ export const getLotteries = async (): Promise<ListLotteriesResponse> => {
     )
     return directResults.filter(Boolean) as ListLotteriesResponse
   } catch {
-    const response = await api.get<ListLotteriesResponse>('/iam/v1/lotteries')
+    const response = await api.get<ListLotteriesResponse>('/lotteries')
     return response.data
   }
 }
 
 export const getLotteryByType = async (type: string, contestNumber?: number): Promise<LotteryItemResponse> => {
   try {
-    const response = await api.get<LotteryItemResponse>(`/iam/v1/lotteries/${type}`, {
+    const response = await api.get<LotteryItemResponse>(`/lotteries/${type}`, {
       params: contestNumber ? { contestNumber } : undefined
     })
     if (
@@ -121,8 +121,9 @@ export const getLotteryByType = async (type: string, contestNumber?: number): Pr
   const direct = await fetchDirectFromCaixa(type, contestNumber)
   if (direct) return direct
 
-  const response = await api.get<LotteryItemResponse>(`/iam/v1/lotteries/${type}`, {
+  const response = await api.get<LotteryItemResponse>(`/lotteries/${type}`, {
     params: contestNumber ? { contestNumber } : undefined
   })
   return response.data
 }
+

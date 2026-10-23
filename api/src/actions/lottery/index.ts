@@ -9,7 +9,7 @@ import type { ListLotteriesResponse, LotteryItemResponse, LotteryParamsRequest }
 export const listLotteries = defineAction(
   {
     method: 'get',
-    path: '/iam/v1/lotteries',
+    path: '/lotteries',
     summary: 'Listar loterias e próximos concursos da Caixa',
     tags: ['Loterias - Caixa'],
     authenticate: true,
@@ -37,7 +37,7 @@ export const listLotteries = defineAction(
 export const getLotteryByType = defineAction(
   {
     method: 'get',
-    path: '/iam/v1/lotteries/{type}',
+    path: '/lotteries/{type}',
     summary: 'Buscar detalhes de uma loteria específica da Caixa',
     tags: ['Loterias - Caixa'],
     authenticate: true,
@@ -74,5 +74,6 @@ export const getLotteryByType = defineAction(
   },
   { params: lotteryParamsSchema, query: lotteryQuerySchema }
 )
+
 
 

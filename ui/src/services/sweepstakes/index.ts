@@ -1,30 +1,30 @@
-import api from '@services/api'
+﻿import api from '@services/api'
 
 import type { UpdateParticipationRequest, AddManualParticipationRequest, ListSweepstakesResponse, SweepstakeDetailsResponse, CreateSweepstakeRequest, UpdateSweepstakeRequest, ParticipationResponse, JoinSweepstakeRequest, SweepstakeResponse, SetGamesRequest, SetResultRequest } from './types'
 
 export const getSweepstakes = async (userId?: string): Promise<ListSweepstakesResponse> => {
-  const response = await api.get<ListSweepstakesResponse>('/iam/v1/sweepstakes', {
+  const response = await api.get<ListSweepstakesResponse>('/sweepstakes', {
     params: userId ? { userId } : undefined
   })
   return response.data
 }
 
 export const createSweepstake = async (payload: CreateSweepstakeRequest): Promise<SweepstakeResponse> => {
-  const response = await api.post<SweepstakeResponse>('/iam/v1/sweepstakes', payload)
+  const response = await api.post<SweepstakeResponse>('/sweepstakes', payload)
   return response.data
 }
 
 export const updateSweepstake = async (id: string, payload: UpdateSweepstakeRequest): Promise<SweepstakeResponse> => {
-  const response = await api.patch<SweepstakeResponse>(`/iam/v1/sweepstakes/${id}`, payload)
+  const response = await api.patch<SweepstakeResponse>(`/sweepstakes/${id}`, payload)
   return response.data
 }
 
 export const deleteSweepstake = async (id: string): Promise<void> => {
-  await api.delete(`/iam/v1/sweepstakes/${id}`)
+  await api.delete(`/sweepstakes/${id}`)
 }
 
 export const getSweepstakeDetails = async (id: string): Promise<SweepstakeDetailsResponse> => {
-  const response = await api.get<SweepstakeDetailsResponse>(`/iam/v1/sweepstakes/${id}/details`)
+  const response = await api.get<SweepstakeDetailsResponse>(`/sweepstakes/${id}/details`)
   return response.data
 }
 
@@ -35,36 +35,36 @@ export const joinSweepstake = async (id: string, payload: JoinSweepstakeRequest)
   if (payload.suggestedNumbers && payload.suggestedNumbers.length > 0) {
     formData.append('suggestedNumbers', JSON.stringify(payload.suggestedNumbers))
   }
-  await api.post(`/iam/v1/sweepstakes/${id}/join`, formData, {
+  await api.post(`/sweepstakes/${id}/join`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 }
 
 export const addManualParticipation = async (id: string, payload: AddManualParticipationRequest): Promise<ParticipationResponse> => {
-  const response = await api.post<ParticipationResponse>(`/iam/v1/sweepstakes/${id}/participations/manual`, payload)
+  const response = await api.post<ParticipationResponse>(`/sweepstakes/${id}/participations/manual`, payload)
   return response.data
 }
 
 export const updateParticipation = async (sweepstakeId: string, participationId: string, payload: UpdateParticipationRequest): Promise<ParticipationResponse> => {
-  const response = await api.patch<ParticipationResponse>(`/iam/v1/sweepstakes/${sweepstakeId}/participations/${participationId}`, payload)
+  const response = await api.patch<ParticipationResponse>(`/sweepstakes/${sweepstakeId}/participations/${participationId}`, payload)
   return response.data
 }
 
 export const deleteParticipation = async (sweepstakeId: string, participationId: string): Promise<void> => {
-  await api.delete(`/iam/v1/sweepstakes/${sweepstakeId}/participations/${participationId}`)
+  await api.delete(`/sweepstakes/${sweepstakeId}/participations/${participationId}`)
 }
 
 export const setSweepstakeGames = async (id: string, payload: SetGamesRequest): Promise<SweepstakeResponse> => {
-  const response = await api.patch<SweepstakeResponse>(`/iam/v1/sweepstakes/${id}/games`, payload)
+  const response = await api.patch<SweepstakeResponse>(`/sweepstakes/${id}/games`, payload)
   return response.data
 }
 
 export const setSweepstakeResult = async (id: string, payload: SetResultRequest): Promise<SweepstakeResponse> => {
-  const response = await api.patch<SweepstakeResponse>(`/iam/v1/sweepstakes/${id}/result`, payload)
+  const response = await api.patch<SweepstakeResponse>(`/sweepstakes/${id}/result`, payload)
   return response.data
 }
 
 export const sendParticipationResultEmail = async (sweepstakeId: string, participationId: string): Promise<ParticipationResponse> => {
-  const response = await api.post<ParticipationResponse>(`/iam/v1/sweepstakes/${sweepstakeId}/participations/${participationId}/send-result-email`)
+  const response = await api.post<ParticipationResponse>(`/sweepstakes/${sweepstakeId}/participations/${participationId}/send-result-email`)
   return response.data
 }

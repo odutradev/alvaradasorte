@@ -16,9 +16,9 @@ import type { ManageRequestResponse, ManageRequestBody } from '@/middlewares/man
 export const listSweepstakes = defineAction(
   {
     method: 'get',
-    path: '/iam/v1/sweepstakes',
+    path: '/sweepstakes',
     summary: 'Listar bolões disponíveis',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: listSweepstakesResponseSchema }
@@ -75,9 +75,9 @@ export const listSweepstakes = defineAction(
 export const createSweepstake = defineAction(
   {
     method: 'post',
-    path: '/iam/v1/sweepstakes',
+    path: '/sweepstakes',
     summary: 'Criar bolão (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: sweepstakeSchema }
@@ -113,9 +113,9 @@ export const createSweepstake = defineAction(
 export const updateSweepstake = defineAction(
   {
     method: 'patch',
-    path: '/iam/v1/sweepstakes/{id}',
+    path: '/sweepstakes/{id}',
     summary: 'Atualizar bolão (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: sweepstakeSchema }
@@ -150,9 +150,9 @@ export const updateSweepstake = defineAction(
 export const deleteSweepstake = defineAction(
   {
     method: 'delete',
-    path: '/iam/v1/sweepstakes/{id}',
+    path: '/sweepstakes/{id}',
     summary: 'Remover bolão (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       204: { description: 'Sucesso' }
@@ -185,9 +185,9 @@ export const deleteSweepstake = defineAction(
 export const getSweepstakeDetails = defineAction(
   {
     method: 'get',
-    path: '/iam/v1/sweepstakes/{id}/details',
+    path: '/sweepstakes/{id}/details',
     summary: 'Detalhes completos do bolão (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: sweepstakeDetailsSchema }
@@ -241,9 +241,9 @@ const inFlightJoins = new Set<string>()
 export const joinSweepstake = defineAction(
   {
     method: 'post',
-    path: '/iam/v1/sweepstakes/{id}/join',
+    path: '/sweepstakes/{id}/join',
     summary: 'Entrar em um bolão',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     middlewares: [upload.single('receipt')],
     requestBody: {
@@ -453,9 +453,9 @@ export const joinSweepstake = defineAction(
 export const addSweepstakeGames = defineAction(
   {
     method: 'patch',
-    path: '/iam/v1/sweepstakes/{id}/games',
+    path: '/sweepstakes/{id}/games',
     summary: 'Definir jogos do bolão (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: sweepstakeSchema }
@@ -498,9 +498,9 @@ export const addSweepstakeGames = defineAction(
 export const setSweepstakeResult = defineAction(
   {
     method: 'patch',
-    path: '/iam/v1/sweepstakes/{id}/result',
+    path: '/sweepstakes/{id}/result',
     summary: 'Definir resultado do bolão (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: sweepstakeSchema }
@@ -537,9 +537,9 @@ export const setSweepstakeResult = defineAction(
 export const addManualParticipation = defineAction(
   {
     method: 'post',
-    path: '/iam/v1/sweepstakes/{id}/participations/manual',
+    path: '/sweepstakes/{id}/participations/manual',
     summary: 'Adicionar participação manualmente (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: participationSchema }
@@ -612,9 +612,9 @@ export const addManualParticipation = defineAction(
 export const deleteParticipation = defineAction(
   {
     method: 'delete',
-    path: '/iam/v1/sweepstakes/{id}/participations/{participationId}',
+    path: '/sweepstakes/{id}/participations/{participationId}',
     summary: 'Remover participação de bolão (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       204: { description: 'Sucesso' }
@@ -650,9 +650,9 @@ export const deleteParticipation = defineAction(
 export const updateParticipation = defineAction(
   {
     method: 'patch',
-    path: '/iam/v1/sweepstakes/{id}/participations/{participationId}',
+    path: '/sweepstakes/{id}/participations/{participationId}',
     summary: 'Atualizar participação de bolão (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: participationSchema }
@@ -722,9 +722,9 @@ export const updateParticipation = defineAction(
 export const sendParticipationResultEmail = defineAction(
   {
     method: 'post',
-    path: '/iam/v1/sweepstakes/{id}/participations/{participationId}/send-result-email',
+    path: '/sweepstakes/{id}/participations/{participationId}/send-result-email',
     summary: 'Enviar e-mail com resultado do bolão para participante (Admin)',
-    tags: ['IAM - Bolões'],
+    tags: ['Bolões'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: participationSchema }
@@ -794,3 +794,5 @@ export const sendParticipationResultEmail = defineAction(
   },
   { params: sendResultEmailParamsSchema }
 )
+
+

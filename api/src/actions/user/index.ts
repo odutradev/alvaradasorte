@@ -8,9 +8,9 @@ import type { ManageRequestResponse, ManageRequestBody } from '@/middlewares/man
 export const listUsers = defineAction(
   {
     method: 'get',
-    path: '/iam/v1/users',
+    path: '/users',
     summary: 'Listar usuários (Admin)',
-    tags: ['IAM - Usuários'],
+    tags: ['Usuários'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: listUsersResponseSchema }
@@ -30,9 +30,9 @@ export const listUsers = defineAction(
 export const updateUser = defineAction(
   {
     method: 'patch',
-    path: '/iam/v1/users/{id}',
+    path: '/users/{id}',
     summary: 'Atualizar usuário (Admin)',
-    tags: ['IAM - Usuários'],
+    tags: ['Usuários'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: userSchema }
@@ -55,9 +55,9 @@ export const updateUser = defineAction(
 export const deleteUser = defineAction(
   {
     method: 'delete',
-    path: '/iam/v1/users/{id}',
+    path: '/users/{id}',
     summary: 'Remover usuário (Admin)',
-    tags: ['IAM - Usuários'],
+    tags: ['Usuários'],
     authenticate: true,
     responses: {
       204: { description: 'Sucesso' }
@@ -74,4 +74,6 @@ export const deleteUser = defineAction(
   },
   { params: userParamsSchema }
 )
+
+
 

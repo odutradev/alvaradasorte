@@ -9,9 +9,9 @@ import type { ListLogsRequest, ListLogsResponse } from './types'
 export const listLogs = defineAction(
   {
     method: 'get',
-    path: '/iam/v1/logs',
+    path: '/logs',
     summary: 'Listar logs (Usuário e Admin)',
-    tags: ['IAM - Logs'],
+    tags: ['Logs'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: listLogsResponseSchema }
@@ -44,4 +44,6 @@ export const listLogs = defineAction(
   },
   { query: listLogsQuerySchema }
 )
+
+
 

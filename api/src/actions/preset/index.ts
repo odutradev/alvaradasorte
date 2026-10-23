@@ -8,9 +8,9 @@ import type { UpdatePresetRequest, CreatePresetRequest, ListPresetsResponse, Pre
 export const listPresets = defineAction(
   {
     method: 'get',
-    path: '/iam/v1/presets',
+    path: '/presets',
     summary: 'Listar predefinições (Admin)',
-    tags: ['IAM - Predefinições'],
+    tags: ['Predefinições'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: listPresetsResponseSchema }
@@ -30,9 +30,9 @@ export const listPresets = defineAction(
 export const createPreset = defineAction(
   {
     method: 'post',
-    path: '/iam/v1/presets',
+    path: '/presets',
     summary: 'Criar predefinição (Admin)',
-    tags: ['IAM - Predefinições'],
+    tags: ['Predefinições'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: presetSchema }
@@ -56,9 +56,9 @@ export const createPreset = defineAction(
 export const updatePreset = defineAction(
   {
     method: 'patch',
-    path: '/iam/v1/presets/{id}',
+    path: '/presets/{id}',
     summary: 'Atualizar predefinição (Admin)',
-    tags: ['IAM - Predefinições'],
+    tags: ['Predefinições'],
     authenticate: true,
     responses: {
       200: { description: 'Sucesso', schema: presetSchema }
@@ -81,9 +81,9 @@ export const updatePreset = defineAction(
 export const deletePreset = defineAction(
   {
     method: 'delete',
-    path: '/iam/v1/presets/{id}',
+    path: '/presets/{id}',
     summary: 'Remover predefinição (Admin)',
-    tags: ['IAM - Predefinições'],
+    tags: ['Predefinições'],
     authenticate: true,
     responses: {
       204: { description: 'Sucesso' }
@@ -100,3 +100,5 @@ export const deletePreset = defineAction(
   },
   { params: presetParamsSchema }
 )
+
+
