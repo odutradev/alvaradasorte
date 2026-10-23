@@ -1,5 +1,4 @@
-﻿import createLogger from '@/utils/logger'
-import { appConfig } from '@/config/app'
+import createLogger from '@/utils/logger'
 import sendError from '@/error'
 
 import type { ManageRequestBody, ManageErrorParams, ServiceFunction, RouteSchema, ManageRequestSchema, FileData } from '@/middlewares/manageRequest/types'
@@ -72,9 +71,6 @@ const manageRequest = <T extends ManageRequestSchema = unknown>(
       if (result === 'error') return
       if (res.headersSent) return
 
-      res.set('api-database-name', appConfig.clusterName)
-      res.set('api-version', appConfig.version)
-      res.set('api-mode', appConfig.mode)
       res.status(200).json(result)
     } catch (error) {
       if (res.headersSent) {
