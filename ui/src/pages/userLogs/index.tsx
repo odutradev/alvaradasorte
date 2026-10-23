@@ -13,7 +13,7 @@ import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import { useNavigate } from 'react-router-dom'
 
-import { ContainerWrapper, HeaderSection, LogItemCard } from './styles'
+import { ContainerWrapper, HeaderSection, LogsListContainer, LogItemCard } from './styles'
 import PageContainer from '@components/pageContainer'
 import EmptyState from '@components/emptyState'
 import { formatCurrency } from '@utils/string'
@@ -91,17 +91,20 @@ const UserLogs = () => {
         </HeaderSection>
 
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, py: 8 }}>
             <CircularProgress size={36} />
           </Box>
         ) : logs.length === 0 ? (
-          <EmptyState
-            title="Nenhum log encontrado"
-            description="Você ainda não possui registros de ações ou compras de cotas no sistema."
-            icon={<HistoryIcon sx={{ fontSize: 48, color: 'text.secondary' }} />}
-          />
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+            <EmptyState
+              title="Nenhum log encontrado"
+              description="Você ainda não possui registros de ações ou compras de cotas no sistema."
+              icon={<HistoryIcon sx={{ fontSize: 48, color: 'text.secondary' }} />}
+            />
+          </Box>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <>
+            <LogsListContainer>
             {logs.map((log) => {
               const suggestedNumbers = log.details?.suggestedNumbers as number[] | undefined
               return (
@@ -177,9 +180,10 @@ const UserLogs = () => {
                 </LogItemCard>
               )
             })}
+            </LogsListContainer>
 
             {totalPages > 1 && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1, flexShrink: 0 }}>
                 <Pagination
                   count={totalPages}
                   page={page}
@@ -189,7 +193,7 @@ const UserLogs = () => {
                 />
               </Box>
             )}
-          </Box>
+          </>
         )}
       </ContainerWrapper>
     </PageContainer>

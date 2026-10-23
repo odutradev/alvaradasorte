@@ -26,7 +26,7 @@ import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
 
-import { ContainerWrapper, HeaderSection, FiltersBar, LogCard, ErrorBox, CodeBlock } from './styles'
+import { ContainerWrapper, HeaderSection, FiltersBar, LogsListContainer, LogCard, ErrorBox, CodeBlock } from './styles'
 import PageContainer from '@components/pageContainer'
 import EmptyState from '@components/emptyState'
 import { formatCurrency } from '@utils/string'
@@ -204,16 +204,19 @@ const AdminLogs = () => {
         </FiltersBar>
 
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, py: 8 }}>
             <CircularProgress size={36} />
           </Box>
         ) : logs.length === 0 ? (
-          <EmptyState
-            title="Nenhum log encontrado para estes critérios"
-            description="Tente ajustar a categoria, remover filtros de busca ou verificar novamente mais tarde."
-          />
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+            <EmptyState
+              title="Nenhum log encontrado para estes critérios"
+              description="Tente ajustar a categoria, remover filtros de busca ou verificar novamente mais tarde."
+            />
+          </Box>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <>
+            <LogsListContainer>
             {logs.map((log) => {
               const hasCodeDetails = log.details && Object.keys(log.details).length > 0
               const hasStack = Boolean(log.errorStack)
@@ -328,9 +331,10 @@ const AdminLogs = () => {
                 </LogCard>
               )
             })}
+            </LogsListContainer>
 
             {totalPages > 1 && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1, flexShrink: 0 }}>
                 <Pagination
                   count={totalPages}
                   page={page}
@@ -340,7 +344,7 @@ const AdminLogs = () => {
                 />
               </Box>
             )}
-          </Box>
+          </>
         )}
       </ContainerWrapper>
     </PageContainer>

@@ -8,8 +8,40 @@ export const ContainerWrapper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius * 2,
   gap: theme.spacing(2.5),
+  height: '100%',
+  minHeight: 0,
+  flex: 1,
+  overflow: 'hidden',
+  boxSizing: 'border-box',
   border: `1px solid ${theme.palette.divider}`,
-  backgroundColor: theme.palette.background.paper
+  backgroundColor: theme.palette.background.paper,
+  [theme.breakpoints.down('md')]: {
+    height: 'auto',
+    overflow: 'visible',
+    flex: 'none'
+  }
+}))
+
+export const LogsListContainer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(1.5),
+  flex: 1,
+  minHeight: 0,
+  overflowY: 'auto',
+  paddingRight: theme.spacing(0.5),
+  '&::-webkit-scrollbar': {
+    width: 6,
+    height: 6
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.palette.divider,
+    borderRadius: 3
+  },
+  [theme.breakpoints.down('md')]: {
+    overflowY: 'visible',
+    flex: 'none'
+  }
 }))
 
 export const HeaderSection = styled(Box)(({ theme }) => ({
