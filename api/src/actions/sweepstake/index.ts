@@ -27,6 +27,13 @@ export const listSweepstakes = defineAction(
   },
   async ({ ids, query, manageError }: ManageRequestBody<ListSweepstakesRequest>): ManageRequestResponse<ListSweepstakesResponse> => {
     try {
+      if (query?.userId && query.userId !== ids.userId) {
+        const currentUser = ids.userId ? await userRepository.findById(ids.userId) : null
+        if (!currentUser || currentUser.role !== 'admin') {
+          return manageError({ code: 'forbidden' })
+        }
+      }
+
       const [sweepstakes, participations] = await Promise.all([
         sweepstakeRepository.findAll(),
         participationRepository.findAll()
