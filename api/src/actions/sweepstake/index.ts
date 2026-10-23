@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import { sendResultEmailToParticipantGroup } from '@/services/sweepstakeResultNotifier'
 import { sendResultEmailParamsSchema, updateParticipationBodySchema, deleteParticipationParamsSchema, addManualParticipationBodySchema, listSweepstakesResponseSchema, listSweepstakesQuerySchema, setSweepstakeResultSchema, addSweepstakeGamesSchema, sweepstakeDetailsSchema, updateSweepstakeSchema, createSweepstakeSchema, sweepstakeParamsSchema, joinSweepstakeBodySchema, participationSchema, sweepstakeSchema } from './schemas'
 import participationRepository from '@/repositories/participation/index'
@@ -416,7 +417,8 @@ export const joinSweepstake = defineAction(
       }
 
       const bucket = firebaseStorage.bucket()
-      const filePath = `receipts/${params.id}/${ids.userId}-${Date.now()}.${safeExtension}`
+      const receiptId = randomUUID()
+      const filePath = `receipts/${params.id}/${receiptId}.${safeExtension}`
       const fileRef = bucket.file(filePath)
 
       await fileRef.save(file.buffer, { metadata: { contentType: file.mimetype } })
