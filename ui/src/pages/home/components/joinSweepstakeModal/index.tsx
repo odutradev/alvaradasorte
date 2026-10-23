@@ -5,6 +5,7 @@ import RemoveIcon from '@mui/icons-material/Remove'
 import AddIcon from '@mui/icons-material/Add'
 import { useForm } from 'react-hook-form'
 import { useState, useMemo, useRef } from 'react'
+import { toast } from 'react-toastify'
 
 import {
   FileUploadBox,
@@ -28,6 +29,9 @@ import useAction from '@hooks/useAction'
 import Modal from '@components/modal'
 
 import type { JoinSweepstakeModalProps, JoinFormData } from './types'
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
 
 const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, open }: JoinSweepstakeModalProps) => {
   const { register, handleSubmit, reset } = useForm<JoinFormData>()
@@ -94,7 +98,19 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
   }
 
   const onSubmit = async (data: JoinFormData) => {
-    if (!data.receipt || data.receipt.length === 0 || isSubmittingRef.current) return
+    const file = data.receipt?.[0]
+    if (!file || isSubmittingRef.current) return
+
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      toast.error('Formato inválido. Selecione apenas imagens (JPEG, PNG) ou PDF.')
+      return
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('O arquivo é muito grande. O limite máximo permitido é 5MB.')
+      return
+    }
+
     isSubmittingRef.current = true
     setIsSubmitting(true)
 
@@ -317,7 +333,7 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
               2. Tire uma foto ou salve o comprovante da transação.
             </Typography>
             <Typography variant="caption" fontWeight={500} sx={{ lineHeight: 1.3 }}>
-              3. Toque no botão ao lado para anexar o comprovante.
+              3. Toque no botão ao lado para anexar o comprovante (máx. 5MB, JPEG/PNG/PDF).
             </Typography>
           </InstructionBox>
 
@@ -331,11 +347,32 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
               id="receipt-upload"
               type="file"
               disabled={isSubmitting}
-              accept="image/*,application/pdf"
+              accept="image/jpeg,image/png,application/pdf"
               style={{ display: 'none' }}
               onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (!file) {
+                  setSelectedFile(null)
+                  onChange(e)
+                  return
+                }
+
+                if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+                  toast.error('Formato inválido. Selecione apenas imagem (JPEG, PNG) ou PDF.')
+                  e.target.value = ''
+                  setSelectedFile(null)
+                  return
+                }
+
+                if (file.size > MAX_FILE_SIZE) {
+                  toast.error('O arquivo é muito grande. O tamanho máximo permitido é 5MB.')
+                  e.target.value = ''
+                  setSelectedFile(null)
+                  return
+                }
+
                 onChange(e)
-                setSelectedFile(e.target.files?.[0] ?? null)
+                setSelectedFile(file)
               }}
             />
             {selectedFile ? (

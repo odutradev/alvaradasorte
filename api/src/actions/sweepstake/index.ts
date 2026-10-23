@@ -1,4 +1,4 @@
-﻿import { sendResultEmailToParticipantGroup } from '@/services/sweepstakeResultNotifier'
+import { sendResultEmailToParticipantGroup } from '@/services/sweepstakeResultNotifier'
 import { sendResultEmailParamsSchema, updateParticipationBodySchema, deleteParticipationParamsSchema, addManualParticipationBodySchema, listSweepstakesResponseSchema, listSweepstakesQuerySchema, setSweepstakeResultSchema, addSweepstakeGamesSchema, sweepstakeDetailsSchema, updateSweepstakeSchema, createSweepstakeSchema, sweepstakeParamsSchema, joinSweepstakeBodySchema, participationSchema, sweepstakeSchema } from './schemas'
 import participationRepository from '@/repositories/participation/index'
 import sweepstakeRepository from '@/repositories/sweepstake/index'
@@ -6,7 +6,7 @@ import userRepository from '@/repositories/user/index'
 import logRepository from '@/repositories/log/index'
 import { firebaseStorage } from '@/database/connection'
 import defineAction from '@/factories/defineAction'
-import upload from '@/middlewares/upload'
+import upload, { MIME_EXTENSION_MAP, MAX_FILE_SIZE } from '@/middlewares/upload'
 import { isPast } from '@/utils/date'
 
 import type { SendResultEmailRequest, UpdateParticipationRequest, AddManualParticipationRequest, DeleteParticipationRequest, SetSweepstakeResultRequest, AddSweepstakeGamesRequest, SweepstakeDetailsResponse, DeleteSweepstakeRequest, UpdateSweepstakeRequest, CreateSweepstakeRequest, SweepstakeParamsRequest, ListSweepstakesResponse, ListSweepstakesRequest, JoinSweepstakeRequest, ParticipationResponse, SweepstakeResponse } from './types'
@@ -392,9 +392,23 @@ export const joinSweepstake = defineAction(
         return manageError({ code: 'bad_request', details: `Apenas ${remainingQuotas} cota(s) disponível(is)` })
       }
 
+      const safeExtension = MIME_EXTENSION_MAP[file.mimetype]
+      if (!safeExtension) {
+        return manageError({
+          code: 'bad_request',
+          details: 'Formato de arquivo inválido. Tipos permitidos: JPEG, PNG e PDF.'
+        })
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        return manageError({
+          code: 'bad_request',
+          details: 'O arquivo enviado excede o limite máximo permitido de 5MB.'
+        })
+      }
+
       const bucket = firebaseStorage.bucket()
-      const fileExtension = file.originalname.split('.').pop()
-      const filePath = `receipts/${params.id}/${ids.userId}-${Date.now()}.${fileExtension}`
+      const filePath = `receipts/${params.id}/${ids.userId}-${Date.now()}.${safeExtension}`
       const fileRef = bucket.file(filePath)
 
       await fileRef.save(file.buffer, { metadata: { contentType: file.mimetype } })
