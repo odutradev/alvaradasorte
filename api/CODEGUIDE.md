@@ -6,67 +6,51 @@
 * npm run docs:swagger: Gera o arquivo JSON do Swagger na pasta cache/docs/.  
 * npm run docs:postman: Gera a coleção Postman na pasta cache/docs/.  
 
-## **Guia Estrutural e Arquitetural de Módulos**
+## **Guia Estrutural e Arquitetural da API**
 
-Este documento define as regras estritas para a criação de novos módulos na API. Todo novo módulo deve seguir esta estrutura baseando-se no módulo de referência src/shared/iam.
+Este documento define os padrões para desenvolvimento na API. Toda a aplicação fica centralizada diretamente em `src/`, utilizando o alias base `@/*`.
 
-### **Estrutura de Diretórios Obrigatória**
+### **Estrutura de Diretórios**
 
-Os módulos devem ser alocados em duas pastas principais dentro de src/, dependendo do seu escopo e finalidade:
+A pasta `src/` organiza a aplicação de forma limpa e modular:
 
-* **src/shared/**: Destinado a módulos de configurações gerais, integrações e domínios base que podem ser utilizados por outras partes do sistema (ex: src/shared/iam).  
-* **src/modules/**: Destinado ao restante dos módulos, focado nas funcionalidades e regras de negócio específicas da aplicação (ex: src/modules/meu-modulo).
-
-Independentemente de estar em shared ou modules, um módulo completo deve possuir a seguinte estrutura interna de pastas e arquivos:
-
-* index.ts (Ponto de entrada e definição do módulo)  
-* routes/index.ts (Orquestrador de rotas Express)  
-* repositories/ (Camada de acesso a dados usando Firebase Realtime Database)  
-  * entidade/index.ts  
-  * entidade/types.ts  
-* actions/ (Controladores lógicos e definição OpenAPI)  
-  * entidade/index.ts (Lógica e defineAction)  
-  * entidade/schemas.ts (Schemas Zod estendidos com OpenAPI)  
-  * entidade/types.ts (Tipagens inferidas dos schemas Zod)
+* `src/server.ts` (Inicialização do servidor HTTP, conexões e rotinas)
+* `src/app.ts` (Configuração da aplicação Express e middlewares globais)
+* `src/routes/` (Roteamento central da API: `index.ts` e `api.ts`)
+* `src/actions/` (Controladores lógicos e definição OpenAPI via `defineAction`)
+  * `entidade/index.ts` (Lógica e defineAction)
+  * `entidade/schemas.ts` (Schemas Zod estendidos com OpenAPI)
+  * `entidade/types.ts` (Tipagens inferidas dos schemas Zod)
+* `src/repositories/` (Camada de acesso a dados usando Firebase Realtime Database)
+  * `entidade/index.ts`
+  * `entidade/types.ts`
+* `src/services/` (Serviços e rotinas em background)
+* `src/middlewares/` (Middlewares de autenticação, admin, manageRequest, upload, etc.)
+* `src/database/` (Conexão e inicialização do Firebase)
+* `src/config/` (Configurações de ambiente, CORS, etc.)
+* `src/docs/` (Gerador e registro do OpenAPI/Swagger)
+* `src/factories/` (Factories utilitárias como `defineAction`, `pagination`, `filters`)
 
 ### **Regras de Implementação por Camada**
 
-#### **1\. Definição do Módulo (index.ts principal)**
+#### **1. Ações / Controllers (actions/entidade/index.ts)**
 
-Todo módulo deve exportar um objeto do tipo AppModule contendo seu nome, roteador, e prefixo.
-
-```ts
-import rotasMeuModulo from '@modules/meu-modulo/routes/index'  
-
-import type { AppModule } from '@core/types/module'
-
-const meuModulo: AppModule = {  
-  name: 'meu-modulo',  
-  router: rotasMeuModulo,  
-  routePrefix: '/meu-modulo/v1'
-}
-
-export default meuModulo
-```
-
-#### **2\. Ações / Controllers (actions/entidade/index.ts)**
-
-As ações **não usam** controllers tradicionais do Express. Elas usam a factory defineAction que integra rotas, validação Zod, OpenAPI e injeção de dependências (ids, manageError).
+As ações **não usam** controllers tradicionais do Express. Elas usam a factory `defineAction` que integra rotas, validação Zod, OpenAPI e injeção de dependências (`ids`, `manageError`).
 
 ```ts
-import defineAction from '@core/factories/defineAction'  
+import defineAction from '@/factories/defineAction'  
 import { schemaExemplo } from './schemas'  
-import repositorioEntidade from '@modules/meu-modulo/repositories/entidade'
+import repositorioEntidade from '@/repositories/entidade'
 
-import type { ManageRequestResponse, ManageRequestBody } from '@core/middlewares/manageRequest/types'  
+import type { ManageRequestResponse, ManageRequestBody } from '@/middlewares/manageRequest/types'  
 import type { ExemploRequest, ExemploResponse } from './types'
 
 export const criarExemplo = defineAction(  
   {  
     method: 'post',  
-    path: '/meu-modulo/v1/entidades/create',  
+    path: '/iam/v1/entidades/create',  
     summary: 'Criar nova entidade',  
-    tags: ['Meu Módulo - Entidades'],  
+    tags: ['Entidades'],  
     authenticate: true,  
     responses: {  
       200: { description: 'Sucesso', schema: schemaExemplo }  
@@ -85,18 +69,18 @@ export const criarExemplo = defineAction(
 )
 ```
 
-#### **3\. Schemas Zod + OpenAPI (actions/entidade/schemas.ts)**
+#### **2. Schemas Zod + OpenAPI (actions/entidade/schemas.ts)**
 
-Toda validação e documentação deve ser feita via Zod com o plugin @asteasolutions/zod-to-openapi.
+Toda validação e documentação deve ser feita via Zod com o plugin `@asteasolutions/zod-to-openapi`.
 
 ```ts
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'  
 import { z } from 'zod'
 
-import { createPaginatedSchema, paginationQuerySchema } from '@core/factories/pagination/schemas'  
-import { createFilterQuerySchema } from '@core/factories/filters/schemas'
+import { createPaginatedSchema, paginationQuerySchema } from '@/factories/pagination/schemas'  
+import { createFilterQuerySchema } from '@/factories/filters/schemas'
 
-import type { FilterConfig } from '@core/factories/filters/types'
+import type { FilterConfig } from '@/factories/filters/types'
 
 extendZodWithOpenApi(z)
 
@@ -121,7 +105,7 @@ export const listEntidadesQuerySchema = z.object({
 export const listEntidadesResponseSchema = createPaginatedSchema(entidadeSchema, 'ListEntidadesResponse')
 ```
 
-#### **4\. Tipos DTOs (actions/entidade/types.ts)**
+#### **3. Tipos DTOs (actions/entidade/types.ts)**
 
 Os tipos devem ser obrigatoriamente inferidos do Zod.
 
@@ -139,18 +123,18 @@ export type EntidadeResponse = z.infer<typeof entidadeSchema>
 export type ListEntidadesResponse = z.infer<typeof listEntidadesResponseSchema>
 ```
 
-#### **5\. Repositórios (repositories/entidade/index.ts)**
+#### **4. Repositórios (repositories/entidade/index.ts)**
 
 Centraliza as interações com o Firebase Realtime Database. Utiliza filtragem em memória para compensar limitações do RTDB em consultas complexas.
 
 ```ts
-import { firebaseDb } from '@core/database/connection'
-import { entidadeFiltersConfig } from '@modules/meu-modulo/actions/entidade/schemas'  
-import { parseFilters, applyInMemoryFilters } from '@core/factories/filters/utils'  
-import { getPaginationOptions, buildPaginatedResponse } from '@core/factories/pagination/utils'
+import { firebaseDb } from '@/database/connection'
+import { entidadeFiltersConfig } from '@/actions/entidade/schemas'  
+import { parseFilters, applyInMemoryFilters } from '@/factories/filters/utils'  
+import { getPaginationOptions, buildPaginatedResponse } from '@/factories/pagination/utils'
 
 import type { FindAllEntidadeFilters, CreateEntidadePayload, EntidadeType } from './types'  
-import type { PaginatedResponse } from '@core/factories/pagination/types'  
+import type { PaginatedResponse } from '@/factories/pagination/types'  
 
 const REF_PATH = 'entidades'
 
@@ -189,17 +173,18 @@ const entidadeRepository = {
 export default entidadeRepository
 ```
 
-#### **6\. Rotas (routes/index.ts)**
+#### **5. Rotas (routes/api.ts)**
 
 Apenas associa os verbos e caminhos às ações exportadas.
 
 ```ts
 import { Router } from 'express'
 
-import { criarExemplo } from '@modules/meu-modulo/actions/entidade/index'
+import { criarExemplo } from '@/actions/entidade/index'
 
-const meuModuloRouter = Router()
+const apiRouter = Router()
 
-meuModuloRouter.post('/entidades/create', criarExemplo)
+apiRouter.post('/entidades/create', criarExemplo)
 
-export default meuModuloRouter
+export default apiRouter
+```

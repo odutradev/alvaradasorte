@@ -1,7 +1,7 @@
-import 'dotenv/config'
+﻿import 'dotenv/config'
 
-import userRepository from '@module/repositories/user/index'
-import createLogger from '@core/utils/logger'
+import userRepository from '@/repositories/user/index'
+import createLogger from '@/utils/logger'
 
 const logger = createLogger('make-admin')
 

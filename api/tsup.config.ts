@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig((options) => ({
-  entry: ['src/core/server.ts'],
+  entry: ['src/server.ts'],
   target: 'node18',
   format: ['cjs'],
   splitting: false,

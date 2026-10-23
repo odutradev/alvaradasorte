@@ -1,7 +1,7 @@
-import nodemailer from 'nodemailer'
+﻿import nodemailer from 'nodemailer'
 
 import { markdownPlugin } from '@email/markdownPlugin'
-import createLogger from '@core/utils/logger'
+import createLogger from '@/utils/logger'
 
 import type { EmailTransporter, EmailInstance, EmailModule, EmailConfig } from '@email/types'
 
@@ -60,3 +60,4 @@ const email: EmailModule = {
 export const connectEmail = email.initializeEmail
 
 export default email
+

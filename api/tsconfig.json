@@ -9,11 +9,22 @@
     "forceConsistentCasingInFileNames": true,
     "rootDir": "./src",
     "outDir": "./dist",
+    "baseUrl": "./",
     "paths": {
-      "@module/*": ["./src/module/*"],
-      "@core/*": ["./src/core/*"],
+      "@/*": ["./src/*"],
+      "@actions/*": ["./src/actions/*"],
+      "@config/*": ["./src/config/*"],
+      "@database/*": ["./src/database/*"],
+      "@docs/*": ["./src/docs/*"],
       "@email/*": ["./src/email/*"],
-      "@/*": ["./src/*"]
+      "@error/*": ["./src/error/*"],
+      "@factories/*": ["./src/factories/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@repositories/*": ["./src/repositories/*"],
+      "@routes/*": ["./src/routes/*"],
+      "@services/*": ["./src/services/*"],
+      "@types/*": ["./src/types/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "include": [

@@ -1,9 +1,11 @@
+import 'dotenv/config'
+
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 import express from 'express'
 
-import registerGlobalRoutes from '@core/routes/index'
-import { generateDocs } from '@core/docs/generator'
+import registerGlobalRoutes from '@/routes/index'
+import { generateDocs } from '@/docs/generator'
 
 type SchemaProperty = {
   type?: string
