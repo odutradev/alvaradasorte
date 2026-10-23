@@ -39,19 +39,23 @@ const registerGlobalRoutes = (app: Application): void => {
   app.use('/', apiRouter)
   app.use('/api', apiRouter)
 
-  const spec = generateDocs()
-  const swaggerMiddleware = [
-    ensureTrailingSlash,
-    ...swaggerUi.serve,
-    swaggerUi.setup(spec, { swaggerOptions: { persistAuthorization: true } })
-  ]
+  const isSwaggerEnabled = appConfig.mode !== 'production' || process.env.SWAGGER_ENABLED === 'true'
 
-  app.get(['/docs.json', '/api/docs.json'], (_req: Request, res: Response) => {
-    res.status(200).json(spec)
-  })
+  if (isSwaggerEnabled) {
+    const spec = generateDocs()
+    const swaggerMiddleware = [
+      ensureTrailingSlash,
+      ...swaggerUi.serve,
+      swaggerUi.setup(spec, { swaggerOptions: { persistAuthorization: true } })
+    ]
 
-  app.use('/docs', ...swaggerMiddleware)
-  app.use('/api/docs', ...swaggerMiddleware)
+    app.get(['/docs.json', '/api/docs.json'], (_req: Request, res: Response) => {
+      res.status(200).json(spec)
+    })
+
+    app.use('/docs', ...swaggerMiddleware)
+    app.use('/api/docs', ...swaggerMiddleware)
+  }
 }
 
 export default registerGlobalRoutes
