@@ -24,6 +24,7 @@ export type SweepstakeType = {
   quotaPrice: number
   prizeValue: number
   availableQuotas: number
+  filledQuotas?: number
   drawDate: string
   purchaseLimitDate: string
   presetId: string

@@ -45,6 +45,7 @@ export const sweepstakeSchema = z.object({
   quotaPrice: z.number().openapi({ example: 50.0 }),
   prizeValue: z.number().openapi({ example: 1000.0 }),
   availableQuotas: z.number().openapi({ example: 20 }),
+  filledQuotas: z.number().int().min(0).optional().openapi({ example: 5 }),
   drawDate: z.string().openapi({ example: '2023-12-20T20:00:00.000Z' }),
   purchaseLimitDate: z.string().openapi({ example: '2023-12-19T23:59:59.000Z' }),
   presetId: z.string().openapi({ example: 'preset-id' }),

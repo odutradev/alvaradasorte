@@ -1,4 +1,4 @@
-﻿import { firebaseDb, firebaseStorage } from '@/database/connection'
+import { firebaseDb, firebaseStorage } from '@/database/connection'
 
 import type { CreateParticipationPayload, UpdateParticipationPayload, ParticipationType } from './types'
 
@@ -15,6 +15,14 @@ const participationRepository = {
   },
   findBySweepstakeId: async (sweepstakeId: string): Promise<ParticipationType[]> => {
     const snapshot = await firebaseDb.ref(REF_PATH).orderByChild('sweepstakeId').equalTo(sweepstakeId).once('value')
+    const data = snapshot.val() as Record<string, ParticipationType> | null
+
+    if (!data) return []
+
+    return Object.entries(data).map(([id, item]) => ({ ...item, quotaCount: item.quotaCount ?? 1, id }))
+  },
+  findByUserId: async (userId: string): Promise<ParticipationType[]> => {
+    const snapshot = await firebaseDb.ref(REF_PATH).orderByChild('userId').equalTo(userId).once('value')
     const data = snapshot.val() as Record<string, ParticipationType> | null
 
     if (!data) return []

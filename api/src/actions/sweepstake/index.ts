@@ -35,25 +35,24 @@ export const listSweepstakes = defineAction(
         }
       }
 
-      const [sweepstakes, participations] = await Promise.all([
-        sweepstakeRepository.findAll(),
-        participationRepository.findAll()
-      ])
-
       const targetUserId = query?.userId ?? ids.userId
 
-      const mappedSweepstakes = sweepstakes.map((sweepstake) => {
-        const sweepstakeParticipations = participations.filter((p) => p.sweepstakeId === sweepstake.id)
-        const filledQuotas = sweepstakeParticipations.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0)
+      const [sweepstakes, userParticipations] = await Promise.all([
+        sweepstakeRepository.findAll(),
+        targetUserId ? participationRepository.findByUserId(targetUserId) : Promise.resolve([])
+      ])
 
-        const userParticipations = targetUserId
-          ? sweepstakeParticipations.filter((p) => p.userId === targetUserId)
+      const mappedSweepstakes = sweepstakes.map((sweepstake) => {
+        const filledQuotas = sweepstake.filledQuotas ?? 0
+
+        const userSweepstakeParticipations = targetUserId
+          ? userParticipations.filter((p) => p.sweepstakeId === sweepstake.id)
           : []
 
-        const isParticipant = userParticipations.length > 0
-        const userQuotaCount = userParticipations.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0)
+        const isParticipant = userSweepstakeParticipations.length > 0
+        const userQuotaCount = userSweepstakeParticipations.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0)
         const firstJoinedAt = isParticipant
-          ? userParticipations.reduce((oldest, p) => (p.createdAt < oldest ? p.createdAt : oldest), userParticipations[0].createdAt)
+          ? userSweepstakeParticipations.reduce((oldest, p) => (p.createdAt < oldest ? p.createdAt : oldest), userSweepstakeParticipations[0].createdAt)
           : null
 
         const userParticipation = targetUserId
@@ -366,41 +365,6 @@ export const joinSweepstake = defineAction(
         return manageError({ code: 'bad_request', details: 'Data limite para compra excedida' })
       }
 
-      const currentFilledQuotas = participations.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0)
-      const remainingQuotas = sweepstake.availableQuotas - currentFilledQuotas
-
-      if (remainingQuotas <= 0) {
-        logRepository.create({
-          category: 'system',
-          level: 'warn',
-          action: 'SWEEPSTAKE_JOIN_FAILED',
-          title: 'Tentativa de compra em bolão esgotado',
-          description: `Usuário tentou comprar cota no bolão "${sweepstake.title}", mas as cotas estão esgotadas (${currentFilledQuotas}/${sweepstake.availableQuotas})`,
-          userId: user.id,
-          userName: user.fullName || user.name,
-          userEmail: user.email,
-          targetId: sweepstake.id,
-          targetName: sweepstake.title
-        })
-        return manageError({ code: 'bad_request', details: 'Cotas esgotadas' })
-      }
-
-      if (requestedQuotaCount > remainingQuotas) {
-        logRepository.create({
-          category: 'system',
-          level: 'warn',
-          action: 'SWEEPSTAKE_JOIN_FAILED',
-          title: 'Tentativa de compra acima do saldo de cotas',
-          description: `Tentativa de adquirir ${requestedQuotaCount} cota(s) quando restam apenas ${remainingQuotas} no bolão "${sweepstake.title}"`,
-          userId: user.id,
-          userName: user.fullName || user.name,
-          userEmail: user.email,
-          targetId: sweepstake.id,
-          targetName: sweepstake.title
-        })
-        return manageError({ code: 'bad_request', details: `Apenas ${remainingQuotas} cota(s) disponível(is)` })
-      }
-
       const safeExtension = MIME_EXTENSION_MAP[file.mimetype]
       if (!safeExtension) {
         return manageError({
@@ -416,25 +380,82 @@ export const joinSweepstake = defineAction(
         })
       }
 
-      const bucket = firebaseStorage.bucket()
-      const receiptId = randomUUID()
-      const filePath = `receipts/${params.id}/${receiptId}.${safeExtension}`
-      const fileRef = bucket.file(filePath)
-
-      await fileRef.save(file.buffer, { metadata: { contentType: file.mimetype } })
-
-      const payload = {
-        sweepstakeId: params.id,
-        userId: user.id,
-        userName: user.fullName as string,
-        userPhone: user.phone as string,
-        userDepartment: user.department as string,
-        receiptUrl: filePath,
-        quotaCount: requestedQuotaCount,
-        ...(data.suggestedNumbers && data.suggestedNumbers.length > 0 && { suggestedNumbers: data.suggestedNumbers })
+      if (typeof sweepstake.filledQuotas !== 'number') {
+        sweepstake.filledQuotas = await sweepstakeRepository.syncFilledQuotas(params.id)
       }
 
-      await participationRepository.create(payload)
+      const reservation = await sweepstakeRepository.reserveQuotas(params.id, requestedQuotaCount)
+      if (!reservation.success) {
+        if (reservation.reason === 'already_closed') {
+          return manageError({ code: 'bad_request', details: 'Data limite para compra excedida' })
+        }
+
+        const remainingQuotas = reservation.remainingQuotas ?? 0
+        if (remainingQuotas <= 0) {
+          logRepository.create({
+            category: 'system',
+            level: 'warn',
+            action: 'SWEEPSTAKE_JOIN_FAILED',
+            title: 'Tentativa de compra em bolão esgotado',
+            description: `Usuário tentou comprar cota no bolão "${sweepstake.title}", mas as cotas estão esgotadas (${sweepstake.availableQuotas}/${sweepstake.availableQuotas})`,
+            userId: user.id,
+            userName: user.fullName || user.name,
+            userEmail: user.email,
+            targetId: sweepstake.id,
+            targetName: sweepstake.title
+          })
+          return manageError({ code: 'bad_request', details: 'Cotas esgotadas' })
+        }
+
+        logRepository.create({
+          category: 'system',
+          level: 'warn',
+          action: 'SWEEPSTAKE_JOIN_FAILED',
+          title: 'Tentativa de compra acima do saldo de cotas',
+          description: `Tentativa de adquirir ${requestedQuotaCount} cota(s) quando restam apenas ${remainingQuotas} no bolão "${sweepstake.title}"`,
+          userId: user.id,
+          userName: user.fullName || user.name,
+          userEmail: user.email,
+          targetId: sweepstake.id,
+          targetName: sweepstake.title
+        })
+        return manageError({ code: 'bad_request', details: `Apenas ${remainingQuotas} cota(s) disponível(is)` })
+      }
+
+      let fileUploaded = false
+      let filePath = ''
+
+      try {
+        const bucket = firebaseStorage.bucket()
+        const receiptId = randomUUID()
+        filePath = `receipts/${params.id}/${receiptId}.${safeExtension}`
+        const fileRef = bucket.file(filePath)
+
+        await fileRef.save(file.buffer, { metadata: { contentType: file.mimetype } })
+        fileUploaded = true
+
+        const payload = {
+          sweepstakeId: params.id,
+          userId: user.id,
+          userName: user.fullName as string,
+          userPhone: user.phone as string,
+          userDepartment: user.department as string,
+          receiptUrl: filePath,
+          quotaCount: requestedQuotaCount,
+          ...(data.suggestedNumbers && data.suggestedNumbers.length > 0 && { suggestedNumbers: data.suggestedNumbers })
+        }
+
+        await participationRepository.create(payload)
+      } catch (saveError) {
+        await sweepstakeRepository.adjustFilledQuotas(params.id, -requestedQuotaCount)
+        if (fileUploaded && filePath) {
+          try {
+            const bucket = firebaseStorage.bucket()
+            await bucket.file(filePath).delete()
+          } catch {}
+        }
+        throw saveError
+      }
 
       logRepository.create({
         category: 'user',
@@ -583,11 +604,18 @@ export const addManualParticipation = defineAction(
       if (!sweepstake) return manageError({ code: 'not_found' })
 
       const requestedQuotaCount = data.quotaCount ?? 1
-      const currentFilledQuotas = participations.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0)
-      const remainingQuotas = sweepstake.availableQuotas - currentFilledQuotas
 
-      if (remainingQuotas <= 0) return manageError({ code: 'bad_request', details: 'Cotas esgotadas para este bolão' })
-      if (requestedQuotaCount > remainingQuotas) return manageError({ code: 'bad_request', details: `Apenas ${remainingQuotas} cota(s) disponível(is)` })
+      if (typeof sweepstake.filledQuotas !== 'number') {
+        sweepstake.filledQuotas = await sweepstakeRepository.syncFilledQuotas(params.id)
+      }
+
+      const reservation = await sweepstakeRepository.reserveQuotas(params.id, requestedQuotaCount)
+      if (!reservation.success) {
+        if (reservation.remainingQuotas !== undefined && reservation.remainingQuotas <= 0) {
+          return manageError({ code: 'bad_request', details: 'Cotas esgotadas para este bolão' })
+        }
+        return manageError({ code: 'bad_request', details: `Apenas ${reservation.remainingQuotas ?? 0} cota(s) disponível(is)` })
+      }
 
       const now = Date.now()
       const recentDuplicate = participations.find((p) => {
@@ -597,6 +625,7 @@ export const addManualParticipation = defineAction(
       })
 
       if (recentDuplicate) {
+        await sweepstakeRepository.adjustFilledQuotas(params.id, -requestedQuotaCount)
         return manageError({ code: 'bad_request', details: 'Uma participação acabou de ser registrada para este usuário neste bolão. Aguarde alguns instantes.' })
       }
 
@@ -611,7 +640,13 @@ export const addManualParticipation = defineAction(
         ...(data.suggestedNumbers && data.suggestedNumbers.length > 0 && { suggestedNumbers: data.suggestedNumbers })
       }
 
-      const participation = await participationRepository.create(payload)
+      let participation
+      try {
+        participation = await participationRepository.create(payload)
+      } catch (saveError) {
+        await sweepstakeRepository.adjustFilledQuotas(params.id, -requestedQuotaCount)
+        throw saveError
+      }
 
       logRepository.create({
         category: 'admin',
@@ -653,6 +688,7 @@ export const deleteParticipation = defineAction(
       }
 
       await participationRepository.delete(params.participationId)
+      await sweepstakeRepository.adjustFilledQuotas(params.id, -(participation.quotaCount ?? 1))
 
       logRepository.create({
         category: 'admin',
@@ -691,20 +727,24 @@ export const updateParticipation = defineAction(
       }
 
       if (data.quotaCount !== undefined && data.quotaCount !== participation.quotaCount) {
-        const [sweepstake, participations] = await Promise.all([
-          sweepstakeRepository.findById(params.id),
-          participationRepository.findBySweepstakeId(params.id)
-        ])
+        const sweepstake = await sweepstakeRepository.findById(params.id)
 
         if (!sweepstake) return manageError({ code: 'not_found' })
 
-        const currentFilledQuotas = participations.reduce((acc, p) => acc + (p.quotaCount ?? 1), 0)
-        const newTotalQuotas = currentFilledQuotas - participation.quotaCount + data.quotaCount
+        if (typeof sweepstake.filledQuotas !== 'number') {
+          sweepstake.filledQuotas = await sweepstakeRepository.syncFilledQuotas(params.id)
+        }
+
+        const currentFilledQuotas = sweepstake.filledQuotas ?? 0
+        const quotaDiff = data.quotaCount - participation.quotaCount
+        const newTotalQuotas = currentFilledQuotas + quotaDiff
 
         if (newTotalQuotas > sweepstake.availableQuotas) {
           const maxAllowed = sweepstake.availableQuotas - (currentFilledQuotas - participation.quotaCount)
           return manageError({ code: 'bad_request', details: `Apenas ${maxAllowed} cota(s) disponível(is) para esta alteração` })
         }
+
+        await sweepstakeRepository.adjustFilledQuotas(params.id, quotaDiff)
       }
 
       const updateData: Partial<ParticipationType> = {}
