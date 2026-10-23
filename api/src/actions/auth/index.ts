@@ -1,5 +1,6 @@
-﻿import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 
+import { firebaseAuth } from '@/database/connection'
 import userRepository from '@/repositories/user/index'
 import logRepository from '@/repositories/log/index'
 import defineAction from '@/factories/defineAction'
@@ -15,11 +16,38 @@ export const syncAuthUser = defineAction(
     summary: 'Sincronizar usuário logado via Frontend',
     tags: ['Autenticação'],
     authenticate: false,
+    security: [{ bearerAuth: [] }],
     responses: {
-      200: { description: 'Sucesso', schema: syncResponseSchema }
+      200: { description: 'Sucesso', schema: syncResponseSchema },
+      401: { description: 'Token do Firebase não fornecido ou inválido' },
+      403: { description: 'Acesso negado' }
     }
   },
-  async ({ data, manageError }: ManageRequestBody<SyncUserRequest>): ManageRequestResponse<SyncUserResponse> => {
+  async ({ defaultExpress, data, manageError }: ManageRequestBody<SyncUserRequest>): ManageRequestResponse<SyncUserResponse> => {
+    const authHeader = defaultExpress.req.headers.authorization
+
+    if (!authHeader?.startsWith('Bearer ')) {
+      return manageError({ code: 'no_token' })
+    }
+
+    const token = authHeader.split('Bearer ')[1]?.trim()
+
+    if (!token) {
+      return manageError({ code: 'no_token' })
+    }
+
+    let decodedToken
+
+    try {
+      decodedToken = await firebaseAuth.verifyIdToken(token)
+    } catch (error) {
+      return manageError({ code: 'token_is_not_valid', error })
+    }
+
+    if (decodedToken.uid !== data.id) {
+      return manageError({ code: 'forbidden' })
+    }
+
     try {
       const payload = {
         name: data.name,
