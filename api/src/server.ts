@@ -1,5 +1,6 @@
 import 'dotenv/config'
 
+import { validateEnv } from '@/config/env'
 import { connectEmail } from '@/email/connect'
 import database from '@/database/database'
 import createLogger from '@/utils/logger'
@@ -9,6 +10,8 @@ import { startAutoResultSyncRoutine } from '@/services/autoResultSync'
 const logger = createLogger('server')
 
 const startServer = async (): Promise<void> => {
+  validateEnv()
+
   const app = buildApp()
   const port = process.env.PORT ?? 3000
 

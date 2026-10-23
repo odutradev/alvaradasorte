@@ -6,7 +6,11 @@ const logger = createLogger('database')
 const database = {
   connect: async (): Promise<{ clusterName: string }> => {
     try {
-      const projectId = process.env.FIREBASE_PROJECT_ID ?? 'unknown'
+      const projectId = process.env.FIREBASE_PROJECT_ID
+
+      if (!projectId) {
+        throw new Error('FIREBASE_PROJECT_ID is not defined')
+      }
 
       logger.success(`Connected: Firebase App (${projectId})`)
 

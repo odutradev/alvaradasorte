@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 
+import { getJwtSecret } from '@/config/env'
 import { firebaseAuth } from '@/database/connection'
 import userRepository from '@/repositories/user/index'
 import logRepository from '@/repositories/log/index'
@@ -57,7 +58,7 @@ export const syncAuthUser = defineAction(
       }
 
       const user = await userRepository.upsert(data.id, payload)
-      const secret = process.env.JWT_SECRET ?? 'default-secret-key'
+      const secret = getJwtSecret()
       const tokenPayload = { email: user.email, authProviderId: user.authProviderId }
       
       const token = jwt.sign(tokenPayload, secret, { subject: user.id, expiresIn: '7d' })

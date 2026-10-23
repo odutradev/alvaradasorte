@@ -1,5 +1,6 @@
-﻿import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 
+import { getJwtSecret } from '@/config/env'
 import { firebaseAuth } from '@/database/connection'
 import sendError from '@/error/index'
 
@@ -15,7 +16,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
   }
 
   const token = authHeader.split('Bearer ')[1]
-  const secret = process.env.JWT_SECRET ?? 'default-secret-key'
+  const secret = getJwtSecret()
 
   try {
     const decoded = jwt.verify(token, secret) as { sub: string }
