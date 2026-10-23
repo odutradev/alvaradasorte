@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 
+import { authRateLimiter } from '@/middlewares/rateLimit'
 import { getJwtSecret } from '@/config/env'
 import { firebaseAuth } from '@/database/connection'
 import userRepository from '@/repositories/user/index'
@@ -17,6 +18,7 @@ export const syncAuthUser = defineAction(
     summary: 'Sincronizar usuário logado via Frontend',
     tags: ['Autenticação'],
     authenticate: false,
+    middlewares: [authRateLimiter],
     security: [{ bearerAuth: [] }],
     responses: {
       200: { description: 'Sucesso', schema: syncResponseSchema },

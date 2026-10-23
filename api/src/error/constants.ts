@@ -1,4 +1,4 @@
-﻿import type { ResponseError } from '@/error/types'
+import type { ResponseError } from '@/error/types'
 
 export const ResponseErrors = {
   internal_error: { message: 'Erro interno no servidor', statusCode: 500 },
@@ -12,5 +12,6 @@ export const ResponseErrors = {
   token_is_not_valid: { message: 'Token de autenticação inválido ou expirado', statusCode: 401 },
   no_credentials_send: { message: 'Credenciais não enviadas na requisição', statusCode: 400 },
   invalid_credentials: { message: 'Credenciais inválidas', statusCode: 401 },
-  user_not_found: { message: 'Usuário não localizado no sistema', statusCode: 404 }
+  user_not_found: { message: 'Usuário não localizado no sistema', statusCode: 404 },
+  too_many_requests: { message: 'Muitas requisições. Tente novamente mais tarde.', statusCode: 429 }
 } as const

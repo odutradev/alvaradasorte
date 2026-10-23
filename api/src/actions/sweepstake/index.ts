@@ -5,6 +5,7 @@ import sweepstakeRepository from '@/repositories/sweepstake/index'
 import userRepository from '@/repositories/user/index'
 import logRepository from '@/repositories/log/index'
 import { firebaseStorage } from '@/database/connection'
+import { joinSweepstakeRateLimiter } from '@/middlewares/rateLimit'
 import defineAction from '@/factories/defineAction'
 import upload, { MIME_EXTENSION_MAP, MAX_FILE_SIZE } from '@/middlewares/upload'
 import { isPast } from '@/utils/date'
@@ -245,7 +246,7 @@ export const joinSweepstake = defineAction(
     summary: 'Entrar em um bolão',
     tags: ['Bolões'],
     authenticate: true,
-    middlewares: [upload.single('receipt')],
+    middlewares: [joinSweepstakeRateLimiter, upload.single('receipt')],
     requestBody: {
       content: {
         'multipart/form-data': {
