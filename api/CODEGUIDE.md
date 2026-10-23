@@ -1,4 +1,4 @@
-﻿## **Comandos Disponíveis**
+## **Comandos Disponíveis**
 
 * npm run dev: Inicia o servidor em modo de desenvolvimento (watch).  
 * npm run build: Compila o projeto para o diretório dist/.  
@@ -173,18 +173,32 @@ const entidadeRepository = {
 export default entidadeRepository
 ```
 
-#### **5. Rotas (routes/api.ts)**
+#### **5. Rotas Modulares por Domínio (routes/*.routes.ts e routes/api.ts)**
 
-Apenas associa os verbos e caminhos às ações exportadas.
+As rotas são organizadas por domínio em arquivos dedicados (`routes/<dominio>.routes.ts`) e agregadas no `routes/api.ts`.
 
 ```ts
+// routes/entidade.routes.ts
 import { Router } from 'express'
-
 import { criarExemplo } from '@/actions/entidade/index'
+import authMiddleware from '@/middlewares/auth'
+
+const entidadeRoutes = Router()
+
+entidadeRoutes.post('/create', authMiddleware, criarExemplo)
+
+export default entidadeRoutes
+```
+
+```ts
+// routes/api.ts
+import { Router } from 'express'
+import entidadeRoutes from '@/routes/entidade.routes'
 
 const apiRouter = Router()
 
-apiRouter.post('/entidades/create', criarExemplo)
+apiRouter.use('/entidades', entidadeRoutes)
 
 export default apiRouter
 ```
+
