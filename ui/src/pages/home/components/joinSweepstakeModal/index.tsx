@@ -170,7 +170,7 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
       actions={
         <>
           <Button onClick={handleClose} color="inherit" size="medium" disabled={isSubmitting}>
-            Cancelar
+            <span>Cancelar</span>
           </Button>
           <Button
             type="submit"
@@ -180,7 +180,7 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
             startIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : undefined}
             size="medium"
           >
-            {isSubmitting ? 'Enviando...' : 'Confirmar'}
+            <span>{isSubmitting ? 'Enviando...' : 'Confirmar'}</span>
           </Button>
         </>
       }
