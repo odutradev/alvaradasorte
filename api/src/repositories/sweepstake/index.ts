@@ -53,8 +53,7 @@ const sweepstakeRepository = {
 
     const result = await ref.transaction((current: SweepstakeType | null) => {
       if (!current) {
-        failureReason = 'not_found'
-        return undefined
+        return current
       }
 
       if (current.purchaseLimitDate && new Date(current.purchaseLimitDate).getTime() < Date.now()) {
@@ -76,7 +75,15 @@ const sweepstakeRepository = {
       current.updatedAt = new Date().toISOString()
       updatedSweepstake = { ...current, id }
       return current
-    })
+    }, undefined, false)
+
+    if (!result.snapshot.exists()) {
+      return {
+        success: false,
+        reason: 'not_found',
+        remainingQuotas: 0
+      }
+    }
 
     if (!result.committed) {
       return {
@@ -88,7 +95,8 @@ const sweepstakeRepository = {
 
     return {
       success: true,
-      sweepstake: updatedSweepstake ?? (result.snapshot.val() as SweepstakeType)
+      sweepstake: updatedSweepstake ?? (result.snapshot.val() as SweepstakeType),
+      remainingQuotas: calculatedRemaining - count
     }
   },
   adjustFilledQuotas: async (id: string, diff: number): Promise<void> => {
@@ -99,7 +107,7 @@ const sweepstakeRepository = {
       current.filledQuotas = Math.max(0, currentFilled + diff)
       current.updatedAt = new Date().toISOString()
       return current
-    })
+    }, undefined, false)
   },
   update: async (id: string, data: UpdateSweepstakePayload): Promise<SweepstakeType | null> => {
     const ref = firebaseDb.ref(`${REF_PATH}/${id}`)

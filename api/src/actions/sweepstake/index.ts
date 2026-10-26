@@ -386,6 +386,10 @@ export const joinSweepstake = defineAction(
 
       const reservation = await sweepstakeRepository.reserveQuotas(params.id, requestedQuotaCount)
       if (!reservation.success) {
+        if (reservation.reason === 'not_found') {
+          return manageError({ code: 'not_found' })
+        }
+
         if (reservation.reason === 'already_closed') {
           return manageError({ code: 'bad_request', details: 'Data limite para compra excedida' })
         }
@@ -397,7 +401,7 @@ export const joinSweepstake = defineAction(
             level: 'warn',
             action: 'SWEEPSTAKE_JOIN_FAILED',
             title: 'Tentativa de compra em bolão esgotado',
-            description: `Usuário tentou comprar cota no bolão "${sweepstake.title}", mas as cotas estão esgotadas (${sweepstake.availableQuotas}/${sweepstake.availableQuotas})`,
+            description: `Usuário tentou comprar cota no bolão "${sweepstake.title}", mas as cotas estão esgotadas (${sweepstake.filledQuotas ?? 0}/${sweepstake.availableQuotas})`,
             userId: user.id,
             userName: user.fullName || user.name,
             userEmail: user.email,
@@ -611,6 +615,12 @@ export const addManualParticipation = defineAction(
 
       const reservation = await sweepstakeRepository.reserveQuotas(params.id, requestedQuotaCount)
       if (!reservation.success) {
+        if (reservation.reason === 'not_found') {
+          return manageError({ code: 'not_found' })
+        }
+        if (reservation.reason === 'already_closed') {
+          return manageError({ code: 'bad_request', details: 'Data limite para compra excedida' })
+        }
         if (reservation.remainingQuotas !== undefined && reservation.remainingQuotas <= 0) {
           return manageError({ code: 'bad_request', details: 'Cotas esgotadas para este bolão' })
         }
