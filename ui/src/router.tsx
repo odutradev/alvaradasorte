@@ -4,6 +4,7 @@ import { createElement } from 'react'
 import SweepstakeDetailsPage from '@pages/sweepstakeDetails'
 import Sweepstakes from '@pages/sweepstakes'
 import AdminLogs from '@pages/adminLogs'
+import ErrorPage from '@pages/errorPage'
 import UserLogs from '@pages/userLogs'
 import NotFound from '@pages/notFound'
 import Presets from '@pages/presets'
@@ -22,17 +23,22 @@ const processProtectedRoutes = (routes: AppRoute[]): RouteObject[] =>
   })
 
 const appRouter = createBrowserRouter([
-  { path: '/login', element: createElement(Login) },
-  { path: '/', element: createElement(Home) },
-  ...processProtectedRoutes([
-    { path: '/my-logs', element: createElement(UserLogs), auth: true },
-    { path: '/admin/logs', element: createElement(AdminLogs), auth: true },
-    { path: '/sweepstakes', element: createElement(Sweepstakes), auth: true },
-    { path: '/sweepstakes/:id', element: createElement(SweepstakeDetailsPage), auth: true },
-    { path: '/presets', element: createElement(Presets), auth: true },
-    { path: '/users', element: createElement(Users), auth: true }
-  ]),
-  { path: '*', element: createElement(NotFound) }
+  {
+    errorElement: createElement(ErrorPage),
+    children: [
+      { path: '/login', element: createElement(Login) },
+      { path: '/', element: createElement(Home) },
+      ...processProtectedRoutes([
+        { path: '/my-logs', element: createElement(UserLogs), auth: true },
+        { path: '/admin/logs', element: createElement(AdminLogs), auth: true },
+        { path: '/sweepstakes', element: createElement(Sweepstakes), auth: true },
+        { path: '/sweepstakes/:id', element: createElement(SweepstakeDetailsPage), auth: true },
+        { path: '/presets', element: createElement(Presets), auth: true },
+        { path: '/users', element: createElement(Users), auth: true }
+      ]),
+      { path: '*', element: createElement(NotFound) }
+    ]
+  }
 ])
 
 export default appRouter
