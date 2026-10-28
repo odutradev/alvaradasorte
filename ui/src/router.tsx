@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import { createElement } from 'react'
 
 import SweepstakeDetailsPage from '@pages/sweepstakeDetails'
+import ResetPassword from '@pages/resetPassword'
 import Sweepstakes from '@pages/sweepstakes'
 import AdminLogs from '@pages/adminLogs'
 import ErrorPage from '@pages/errorPage'
@@ -27,6 +28,7 @@ const appRouter = createBrowserRouter([
     errorElement: createElement(ErrorPage),
     children: [
       { path: '/login', element: createElement(Login) },
+      { path: '/reset-password', element: createElement(ResetPassword) },
       { path: '/', element: createElement(Home) },
       ...processProtectedRoutes([
         { path: '/my-logs', element: createElement(UserLogs), auth: true },

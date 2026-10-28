@@ -18,3 +18,13 @@ export interface UpdateMePayload {
   name?: string
   notifySweepstakeResult?: boolean
 }
+
+export interface ForgotPasswordPayload {
+  email: string
+  redirectUrl?: string
+}
+
+export interface ResetPasswordPayload {
+  token: string
+  password: string
+}

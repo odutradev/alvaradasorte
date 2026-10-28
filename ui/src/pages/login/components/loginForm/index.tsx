@@ -1,14 +1,15 @@
 import TextField from '@mui/material/TextField'
 import { useForm } from 'react-hook-form'
 
-import { FormContainer, SubmitButton } from './styles'
+import { FormContainer, SubmitButton, ForgotPasswordRow, ForgotPasswordButton } from './styles'
 
 import type { AuthFormData } from '../../hook/types'
 import type { LoginFormProps } from './types'
 
-const LoginForm = ({ onSubmit, mode }: LoginFormProps) => {
+const LoginForm = ({ onSubmit, onForgotPassword, mode }: LoginFormProps) => {
   const { handleSubmit, register, watch } = useForm<AuthFormData>()
   const password = watch('password')
+  const email = watch('email')
 
   return (
     <FormContainer component="form" onSubmit={handleSubmit(onSubmit)}>
@@ -17,6 +18,19 @@ const LoginForm = ({ onSubmit, mode }: LoginFormProps) => {
       )}
       <TextField {...register('email')} type="email" label="E-mail" required fullWidth />
       <TextField {...register('password')} type="password" label="Senha" required fullWidth />
+      {mode === 'login' && (
+        <ForgotPasswordRow>
+          <ForgotPasswordButton
+            type="button"
+            variant="text"
+            size="small"
+            color="primary"
+            onClick={() => onForgotPassword(email)}
+          >
+            Esqueci minha senha
+          </ForgotPasswordButton>
+        </ForgotPasswordRow>
+      )}
       {mode === 'register' && (
         <TextField
           {...register('confirmPassword', {

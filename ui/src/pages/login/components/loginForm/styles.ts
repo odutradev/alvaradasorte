@@ -11,3 +11,16 @@ export const FormContainer = styled(Box)(({ theme }) => ({
 export const SubmitButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(1)
 }))
+
+export const ForgotPasswordRow = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  marginTop: theme.spacing(-1)
+}))
+
+export const ForgotPasswordButton = styled(Button)({
+  textTransform: 'none',
+  fontWeight: 500,
+  padding: '2px 4px',
+  minWidth: 'auto'
+})
