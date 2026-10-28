@@ -39,3 +39,13 @@ export const syncResponseSchema = z.object({
   token: z.string().openapi({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }),
   user: userSchema
 }).openapi('SyncResponse')
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email().openapi({ example: 'john@example.com' }),
+  redirectUrl: z.string().url().optional().openapi({ example: 'https://alvaradasorte.odutra.com' })
+}).openapi('ForgotPasswordRequest')
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1).openapi({ example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' }),
+  password: z.string().min(6).openapi({ example: 'novaSenha123' })
+}).openapi('ResetPasswordRequest')
