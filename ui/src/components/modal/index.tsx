@@ -1,5 +1,7 @@
+import useMediaQuery from '@mui/material/useMediaQuery'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
+import { useTheme } from '@mui/material/styles'
 import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 
@@ -22,18 +24,34 @@ const Modal = ({
   disableBodyWrap = false,
   formProps,
   fullWidth = true,
+  fullScreen,
   maxWidth = 'sm',
   PaperProps,
   ...dialogProps
 }: ModalProps) => {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const isFullScreen = fullScreen ?? isMobile
   const showHeader = Boolean(title || subtitle || (!hideCloseButton && onClose))
 
   const mergedPaperProps = {
     ...PaperProps,
-    sx: {
-      ...paperSx,
-      ...(PaperProps?.sx as object)
-    }
+    sx: [
+      ...(Array.isArray(paperSx) ? paperSx : paperSx ? [paperSx] : []),
+      ...(Array.isArray(PaperProps?.sx) ? PaperProps.sx : PaperProps?.sx ? [PaperProps.sx] : []),
+      ...(isFullScreen
+        ? [
+            {
+              width: '100% !important',
+              maxWidth: '100% !important',
+              height: '100% !important',
+              maxHeight: '100% !important',
+              margin: 0,
+              borderRadius: 0
+            }
+          ]
+        : [])
+    ]
   }
 
   const content = (
@@ -84,6 +102,7 @@ const Modal = ({
       open={open}
       onClose={onClose}
       fullWidth={fullWidth}
+      fullScreen={isFullScreen}
       maxWidth={maxWidth}
       PaperProps={mergedPaperProps}
       {...dialogProps}

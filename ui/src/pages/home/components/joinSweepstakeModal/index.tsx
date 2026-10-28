@@ -157,7 +157,6 @@ const JoinSweepstakeModal = ({ sweepstakeId, sweepstake, onSuccess, onClose, ope
         overflow: 'hidden'
       }}
       bodySx={{
-        overflowY: 'hidden',
         py: 1.5,
         px: 2.5
       }}
