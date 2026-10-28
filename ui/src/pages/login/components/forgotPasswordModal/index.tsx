@@ -86,3 +86,4 @@ const ForgotPasswordModal = ({ open, onClose, initialEmail = '' }: ForgotPasswor
 }
 
 export default ForgotPasswordModal
+

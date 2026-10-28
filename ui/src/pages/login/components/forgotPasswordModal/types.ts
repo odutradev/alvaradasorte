@@ -7,3 +7,4 @@ export interface ForgotPasswordModalProps {
 export interface ForgotPasswordFormData {
   email: string
 }
+

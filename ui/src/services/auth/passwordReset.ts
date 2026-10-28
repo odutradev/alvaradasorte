@@ -12,3 +12,4 @@ export const requestPasswordReset = async (payload: ForgotPasswordPayload): Prom
 export const confirmPasswordReset = async (payload: ResetPasswordPayload): Promise<void> => {
   await api.post('/auth/reset-password', payload)
 }
+

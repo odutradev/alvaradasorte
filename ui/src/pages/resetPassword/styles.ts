@@ -39,3 +39,4 @@ export const SubmitButton = styled(Button)(({ theme }) => ({
 export const ThemeToggleWrapper = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(3)
 }))
+

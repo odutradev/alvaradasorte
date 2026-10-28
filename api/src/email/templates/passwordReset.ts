@@ -27,3 +27,4 @@ Se o botão acima não funcionar, copie e cole o endereço abaixo no seu navegad
 }
 
 export const passwordResetTemplate = enrichTemplate(passwordResetTemplateDef)
+
