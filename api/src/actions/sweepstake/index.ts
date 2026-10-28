@@ -613,13 +613,12 @@ export const addManualParticipation = defineAction(
         sweepstake.filledQuotas = await sweepstakeRepository.syncFilledQuotas(params.id)
       }
 
-      const reservation = await sweepstakeRepository.reserveQuotas(params.id, requestedQuotaCount)
+      const reservation = await sweepstakeRepository.reserveQuotas(params.id, requestedQuotaCount, {
+        ignorePurchaseLimit: true
+      })
       if (!reservation.success) {
         if (reservation.reason === 'not_found') {
           return manageError({ code: 'not_found' })
-        }
-        if (reservation.reason === 'already_closed') {
-          return manageError({ code: 'bad_request', details: 'Data limite para compra excedida' })
         }
         if (reservation.remainingQuotas !== undefined && reservation.remainingQuotas <= 0) {
           return manageError({ code: 'bad_request', details: 'Cotas esgotadas para este bolão' })
@@ -868,5 +867,3 @@ export const sendParticipationResultEmail = defineAction(
   },
   { params: sendResultEmailParamsSchema }
 )
-
-

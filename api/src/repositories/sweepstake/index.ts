@@ -39,7 +39,8 @@ const sweepstakeRepository = {
   },
   reserveQuotas: async (
     id: string,
-    count: number
+    count: number,
+    options?: { ignorePurchaseLimit?: boolean }
   ): Promise<{
     success: boolean
     reason?: 'not_found' | 'insufficient_quotas' | 'already_closed'
@@ -56,7 +57,11 @@ const sweepstakeRepository = {
         return current
       }
 
-      if (current.purchaseLimitDate && new Date(current.purchaseLimitDate).getTime() < Date.now()) {
+      if (
+        !options?.ignorePurchaseLimit &&
+        current.purchaseLimitDate &&
+        new Date(current.purchaseLimitDate).getTime() < Date.now()
+      ) {
         failureReason = 'already_closed'
         return undefined
       }
