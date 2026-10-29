@@ -269,7 +269,7 @@ const SweepstakeFormModal = ({
                 value={field.value}
                 onChange={field.onChange}
                 min={10}
-                max={100}
+                max={200}
                 format="number"
                 markStep={5}
               />
